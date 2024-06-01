@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Участники соревнования</title>
+		<link
+			rel="stylesheet"
+			href="styles.css" />
+	</head>
+	<body>
+		<div class="tabs">
+			<button
+				class="tab-link active"
+				onclick="openTab(event, 'PoleSport')">
+				Pole Sport
+			</button>
+			<button
+				class="tab-link"
+				onclick="openTab(event, 'PoleArt')">
+				Pole Art
+			</button>
+			<button
+				class="tab-link"
+				onclick="openTab(event, 'AerialSilks')">
+				Aerial Silks Sport
+			</button>
+			<button
+				class="tab-link"
+				onclick="openTab(event, 'AerialSilksArt')">
+				Aerial Silks Art
+			</button>
+			<!-- Добавьте дополнительные вкладки по необходимости -->
+		</div>
+
+		<div
+			id="PoleSport"
+			class="tab-content active">
+			<!-- Содержимое для Pole Sport -->
+			<p>Содержимое для Pole Sport</p>
+		</div>
+
+		<div
+			id="PoleArt"
+			class="tab-content">
+			<!-- Содержимое для Pole Art -->
+			<p>Содержимое для Pole Art</p>
+		</div>
+
+		<div
+			id="AerialSilks"
+			class="tab-content">
+			<!-- Содержимое для Aerial Silks Sport -->
+			<p>Содержимое для Aerial Silks Sport</p>
+		</div>
+
+		<div
+			id="AerialSilksArt"
+			class="tab-content">
+			<!-- Содержимое для Aerial Silks Art -->
+			<p>Содержимое для Aerial Silks Art</p>
+		</div>
+
+		<script>
+			function openTab(evt, tabName) {
+				let i, tabcontent, tablinks;
+				tabcontent = document.getElementsByClassName('tab-content');
+				for (i = 0; i < tabcontent.length; i++) {
+					tabcontent[i].style.display = 'none';
+				}
+				tablinks = document.getElementsByClassName('tab-link');
+				for (i = 0; i < tablinks.length; i++) {
+					tablinks[i].className = tablinks[i].className.replace(
+						' active',
+						''
+					);
+				}
+				document.getElementById(tabName).style.display = 'block';
+				evt.currentTarget.className += ' active';
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Протокол оценки</title>
+		<style>
+			table {
+				width: 700px;
+				border-collapse: collapse;
+			}
+			th,
+			td {
+				border: 1px solid black;
+				padding: 5px;
+				text-align: center;
+			}
+			.left {
+				text-align: left;
+			}
+			.header {
+				background-color: #d3d3d3;
+			}
+			.yellow {
+				background-color: #ffff00;
+			}
+			.purple {
+				background-color: #ee82ee;
+			}
+			.blue {
+				background-color: #add8e6;
+			}
+			.green {
+				background-color: #90ee90;
+			}
+			.red {
+				background-color: #ffc0cb;
+			}
+			.orange {
+				background-color: #ffa07a;
+			}
+			.negative {
+				background-color: #ffd700;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>Протокол оцінювання арт</h2>
+		<table>
+			<tr>
+				<th class="header">Критерій</th>
+				<th class="header">Максимальний бал</th>
+				<th class="header">Оцінка судді</th>
+			</tr>
+			<tr>
+				<td class="yellow left">
+					Загальне враження від усього виступу
+				</td>
+				<td class="yellow">10</td>
+				<td class="yellow">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="10"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="purple left">Розвиток теми та образу</td>
+				<td class="purple">5</td>
+				<td class="purple">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="purple left">
+					Образ і його відповідність (костюм, зачіска)
+				</td>
+				<td class="purple">5</td>
+				<td class="purple">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="purple left">
+					Музика, її відповідність образу та розкриття
+				</td>
+				<td class="purple">5</td>
+				<td class="purple">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="purple left">Реквізит, доцільність використання</td>
+				<td class="purple">5</td>
+				<td class="purple">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="purple left">Присутність і харизма</td>
+				<td class="purple">5</td>
+				<td class="purple">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="purple left">Реалізм, акторська гра</td>
+				<td class="purple">5</td>
+				<td class="purple">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="blue left">Танцювальні комбінації</td>
+				<td class="blue">5</td>
+				<td class="blue">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="blue left">
+					Хореографія в контексті загального сюжету
+				</td>
+				<td class="blue">5</td>
+				<td class="blue">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="blue left">
+					Музична інтерпретація, заповнення акцентів
+				</td>
+				<td class="blue">5</td>
+				<td class="blue">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="blue left">Хореографія на знарядді та з ним</td>
+				<td class="blue">5</td>
+				<td class="blue">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="blue left">Заповнення сцени</td>
+				<td class="blue">5</td>
+				<td class="blue">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="green left">Володіння предметом</td>
+				<td class="green">5</td>
+				<td class="green">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="green left">Складність виконаних трюків</td>
+				<td class="green">5</td>
+				<td class="green">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="green left">Баланс у виконанні трюків</td>
+				<td class="green">5</td>
+				<td class="green">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="green left">Оригінальність трюків та переходів</td>
+				<td class="green">5</td>
+				<td class="green">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="green left">Акробатика в партері</td>
+				<td class="green">5</td>
+				<td class="green">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="5"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="orange left">
+					Впевненість виконання (трюки, переходи)
+				</td>
+				<td class="orange">10</td>
+				<td class="orange">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="10"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="orange left">Чистота виконання трюків</td>
+				<td class="orange">10</td>
+				<td class="orange">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="10"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="orange left">Потік</td>
+				<td class="orange">10</td>
+				<td class="orange">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="1"
+						max="10"
+						step="0.5" />
+				</td>
+			</tr>
+
+			<tr>
+				<td class="red">Проблеми з костюмом чи реквізитом</td>
+				<td class="red">-5</td>
+				<td class="red">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="-5"
+						max="0"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="red">Падіння</td>
+				<td class="red">-5</td>
+				<td class="red">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="-5"
+						max="0"
+						step="0.5" />
+				</td>
+			</tr>
+			<tr>
+				<td class="red">Замінка виступу</td>
+				<td class="red">-5</td>
+				<td class="red">
+					<input
+						type="number"
+						id="score"
+						name="score"
+						min="-5"
+						max="0"
+						step="0.5" />
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

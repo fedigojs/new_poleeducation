@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<title></title>
+		<style>
+			table {
+				width: 1000px;
+				border-collapse: collapse;
+				margin-bottom: 20px; /* Отступ между таблицами */
+			}
+			th,
+			td {
+				border: 1px solid black;
+				padding: 5px;
+				text-align: center;
+			}
+			.height {
+				height: 100px;
+			}
+			.one {
+				width: 320px;
+			}
+			.onetd {
+				text-align: left;
+			}
+			.two {
+				width: 150px;
+			}
+			.three {
+				width: 100px;
+			}
+			.description {
+				width: 90%;
+			}
+			.header {
+				background-color: #d3d3d3; /* Серый цвет заголовков */
+			}
+			.pink {
+				background-color: #ffc0cb;
+			} /* Розовый цвет */
+			.lightpink {
+				background-color: #ffb6c1;
+			} /* Светло-розовый цвет */
+			.lightgray {
+				background-color: #d3d3d3;
+			} /* Светло-серый цвет */
+			.white {
+				background-color: #ffffff;
+			} /* Белый цвет, можно и не указывать */
+		</style>
+	</head>
+	<body>
+		<h2>Протокол оцінки артистичної та хореографічної постановки</h2>
+		<table>
+			<tr class="pink height">
+				<td class="one">Критерій оцінки</td>
+				<td class="two">Максимальный бал</td>
+				<td class="three">Оцінка</td>
+				<td class="four">Коментар</td>
+			</tr>
+
+			<tr>
+				<td class="onetd">Загальне враження від усієї постановк</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">
+					Потік, легкість та віртуозність переходів між рухами
+				</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">
+					Креативні переходи на предметі і в партері
+				</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">
+					Оригінальність та збалансованість хореографічної постановки
+				</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">
+					Інтерпретація музики тілом, заповнення музичних акцентів
+				</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Харизма, володіння сценою, впевненість</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">
+					Зоровий контакт з глядачем, міміка, виразність та
+					емоційність
+				</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Гармонійність усієї постановки</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Баланс трюків на предметі</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Складність акробатичних рухів</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Використання сцени</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Костюм та сценічний образ</td>
+				<td class="white">5</td>
+				<td>
+					<input
+						type="number"
+						min="0"
+						max="5"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+
+			<tr class="pink height">
+				<td class="one">Загальне зниження балів</td>
+				<td class="two">Одноразово</td>
+				<td class="three">Оцінка</td>
+				<td class="four">Коментар</td>
+			</tr>
+			<tr>
+				<td class="onetd">Відсутність логічного початку чи кінця</td>
+				<td class="white">-3</td>
+				<td>
+					<input
+						type="number"
+						min="-3"
+						max="0"
+						step="3" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">
+					Торкання системи тросів та кріплення знаряддя під час
+					виступу
+				</td>
+				<td class="white">-3</td>
+				<td>
+					<input
+						type="number"
+						min="-3"
+						max="0"
+						step="3" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Невідповідність костюма образу</td>
+				<td class="white">-3</td>
+				<td>
+					<input
+						type="number"
+						min="-3"
+						max="0"
+						step="3" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

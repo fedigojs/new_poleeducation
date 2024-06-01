@@ -1,0 +1,9 @@
+.home-baner {
+	width: 100%;
+	overflow: hidden;
+}
+.home-baner img {
+	width: 100%;
+	height: auto;
+	display: block;
+}

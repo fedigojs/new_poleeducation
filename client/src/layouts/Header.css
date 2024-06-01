@@ -1,0 +1,57 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Roboto', sans-serif;
+}
+
+/* Стили для шапки и навигации */
+.header {
+	background: #000000;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	display: flex;
+	justify-content: space-between;
+	padding: 10px 70px;
+}
+
+.nav-logo {
+	font-size: 24px;
+	font-weight: bold;
+	color: #ffffff;
+	text-decoration: none;
+	padding-left: 5px;
+}
+
+.nav-links {
+	display: flex;
+	align-items: center;
+}
+
+.nav-item {
+	margin-left: 20px;
+	font-size: 16px;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+/* Стили для кнопок */
+.button {
+	padding: 8px 15px;
+	margin-left: 10px;
+	font-size: 16px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.button-log-in {
+	background-color: hsl(0, 0%, 100%);
+	color: #000000;
+	text-decoration: none;
+	font-family: 'Ubuntu', sans-serif;
+}
+
+.button-log-in:hover {
+	background-color: #d4d4d4;
+}

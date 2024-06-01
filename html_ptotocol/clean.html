@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<title></title>
+		<style>
+			table {
+				width: 1000px;
+				border-collapse: collapse;
+				margin-bottom: 20px; /* Отступ между таблицами */
+			}
+			th,
+			td {
+				border: 1px solid black;
+				padding: 5px;
+				text-align: center;
+			}
+			.height {
+				height: 100px;
+			}
+			.one {
+				width: 320px;
+			}
+			.onetd {
+				text-align: left;
+			}
+			.two {
+				width: 150px;
+			}
+			.three {
+				width: 100px;
+			}
+			.description {
+				width: 90%;
+			}
+			.header {
+				background-color: #d3d3d3; /* Серый цвет заголовков */
+			}
+			.pink {
+				background-color: #ffc0cb;
+			} /* Розовый цвет */
+			.lightpink {
+				background-color: #ffb6c1;
+			} /* Светло-розовый цвет */
+			.lightgray {
+				background-color: #d3d3d3;
+			} /* Светло-серый цвет */
+			.white {
+				background-color: #ffffff;
+			} /* Белый цвет, можно и не указывать */
+		</style>
+	</head>
+	<body>
+		<h2>Протокол оцінки чистоти виконання, штрафи</h2>
+		<table>
+			<tr class="pink height">
+				<td class="one">Критерій оцінки</td>
+				<td class="two">Балів за кожен раз</td>
+				<td class="three">Збавка</td>
+				<td class="four">Коментар</td>
+			</tr>
+
+			<tr>
+				<td class="onetd">Неправильні лінії</td>
+				<td class="white">-0.2</td>
+				<td>
+					<input
+						type="number"
+						min="-10"
+						max="0"
+						step="0.2" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Погане виконання переходів</td>
+				<td class="white">-0.5</td>
+				<td>
+					<input
+						type="number"
+						min="-10"
+						max="0"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Неправильний кут руху</td>
+				<td class="white">-0.5</td>
+				<td>
+					<input
+						type="number"
+						min="-10"
+						max="0"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Зісковзування</td>
+				<td class="white">-0.5</td>
+				<td>
+					<input
+						type="number"
+						min="-10"
+						max="0"
+						step="0.5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Втрата балансу</td>
+				<td class="white">-1</td>
+				<td>
+					<input
+						type="number"
+						min="-10"
+						max="0"
+						step="1" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Заплутування (тільки полотно)</td>
+				<td class="white">-1</td>
+				<td>
+					<input
+						type="number"
+						min="-10"
+						max="0"
+						step="1" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Втрата предмету (тільки кільце)</td>
+				<td class="white">-1</td>
+				<td>
+					<input
+						type="number"
+						min="-10"
+						max="0"
+						step="1" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">
+					Витирання рук, поправляння костюма, зачіски, підспівування
+				</td>
+				<td class="white">-1</td>
+				<td>
+					<input
+						type="number"
+						min="-10"
+						max="0"
+						step="1" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Падіння</td>
+				<td class="white">-5</td>
+				<td>
+					<input
+						type="number"
+						min="-100"
+						max="0"
+						step="5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+
+			<tr>
+				<td class="onetd">Відверті чи еротичні рухи та позиції</td>
+				<td class="white">-5</td>
+				<td>
+					<input
+						type="number"
+						min="-100"
+						max="0"
+						step="5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+
+			<tr class="pink height">
+				<td class="one">Загальне зниження балів</td>
+				<td class="two">Одноразово</td>
+				<td class="three">Оцінка</td>
+				<td class="four">Коментар</td>
+			</tr>
+			<tr>
+				<td class="onetd">Надмірна повторюваність рухів</td>
+				<td class="white">-2</td>
+				<td>
+					<input
+						type="number"
+						min="-2"
+						max="0"
+						step="2" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">
+					Нерівноцінне використання обох пілонів та незаповнення
+					висоти
+				</td>
+				<td class="white">-2</td>
+				<td>
+					<input
+						type="number"
+						min="-2"
+						max="0"
+						step="2" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+			<tr>
+				<td class="onetd">Проблеми з костюмом та зачіскою</td>
+				<td class="white">-5</td>
+				<td>
+					<input
+						type="number"
+						min="-5"
+						max="0"
+						step="5" />
+				</td>
+				<td>
+					<input
+						class="description"
+						type="text" />
+				</td>
+			</tr>
+
+			<tr>
+				<td class="onetd"><b>Всього</b></td>
+				<td class="white"></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</table>
+	</body>
+</html>
