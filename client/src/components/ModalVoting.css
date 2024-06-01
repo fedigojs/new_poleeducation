@@ -66,7 +66,13 @@
 	background-color: #0056b3;
 }
 
-.protocol_button.filled {
-	background-color: green;
+.protocol_button.filled-by-current-judge {
+	background-color: green; /* Или другой цвет, который обозначает, что протокол заполнен текущим судьей */
 	color: white;
+}
+
+.protocol_button.filled-by-other-judge {
+	background-color: red; /* Или другой цвет, который обозначает, что протокол заполнен другим судьей */
+	color: white;
+	cursor: not-allowed;
 }

@@ -51,6 +51,7 @@ const ModalVotingProtocol = ({
 			}));
 
 			setScores(newScores);
+			setJudgeId(user.userId); // Убедитесь, что userId устанавливается здесь
 		} else {
 			setScores([]);
 		}
@@ -58,7 +59,7 @@ const ModalVotingProtocol = ({
 
 	useEffect(() => {
 		const loadExistingProtocol = async () => {
-			if (isOpen && protocolTypeId) {
+			if (isOpen && protocolTypeId && judgeId) {
 				try {
 					const response = await api.get(
 						`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}/judge/${judgeId}`
@@ -73,9 +74,6 @@ const ModalVotingProtocol = ({
 						}));
 
 						setScores(existingProtocol);
-						setJudgeId(
-							existingProtocol[0]?.judgeId || 'Неизвестный судья'
-						);
 						setIsExistingProtocol(true);
 					} else {
 						console.log('No existing protocol found');
@@ -89,7 +87,7 @@ const ModalVotingProtocol = ({
 			}
 		};
 
-		if (isOpen) {
+		if (isOpen && judgeId) {
 			loadExistingProtocol();
 		}
 	}, [
@@ -98,6 +96,7 @@ const ModalVotingProtocol = ({
 		athleteId,
 		competitionParticipationId,
 		protocolTypeId,
+		judgeId,
 	]);
 
 	if (!isOpen || (!protocol && !errorMessage)) {
@@ -190,12 +189,7 @@ const ModalVotingProtocol = ({
 			({ elementName, maxScore, ...rest }) => rest
 		);
 
-		console.log('Filtered scores to update:', filteredScores);
-
 		try {
-			console.log(
-				`Updating protocol with protocolTypeId=${protocolTypeId}, competitionParticipationId=${competitionParticipationId}, judgeId=${judgeId}`
-			);
 			const response = await api.put(
 				`/api/protocol-result/type/${protocolTypeId}/participation/${competitionParticipationId}/judge/${judgeId}`,
 				filteredScores
@@ -270,7 +264,7 @@ const ModalVotingProtocol = ({
 															) || 0
 														)
 													}
-													step='0.5'
+													step='0.1'
 												/>
 											</td>
 											<td>

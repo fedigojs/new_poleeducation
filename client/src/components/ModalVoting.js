@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import api from '../api/api';
 import './ModalVoting.css';
@@ -9,7 +9,7 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 	const [isProtocolModalOpen, setIsProtocolModalOpen] = useState(false);
 	const [selectedProtocol, setSelectedProtocol] = useState(null);
 	const [errorMessage, setErrorMessage] = useState('');
-	const [shouldUpdate, setShouldUpdate] = useState(false); // Новое состояние
+	const [shouldUpdate, setShouldUpdate] = useState(false);
 
 	useEffect(() => {
 		if (isOpen && participant?.participation?.AthleteTrend) {
@@ -36,9 +36,17 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 							participant.competitionParticipationId,
 							judgeId
 						);
+						const filledByCurrentJudge =
+							await checkIfFilledByCurrentJudge(
+								protocol.protocolType.id,
+								participant.participation.athleteId,
+								participant.competitionParticipationId,
+								judgeId
+							);
 						return {
 							...protocol,
 							isFilled,
+							filledByCurrentJudge,
 						};
 					})
 				);
@@ -52,6 +60,22 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 	};
 
 	const checkIfProtocolIsFilled = async (
+		protocolTypeId,
+		athleteId,
+		competitionParticipationId,
+		judgeId
+	) => {
+		try {
+			const response = await api.get(
+				`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}`
+			);
+			return response.data && response.data.length > 0;
+		} catch (error) {
+			return false;
+		}
+	};
+
+	const checkIfFilledByCurrentJudge = async (
 		protocolTypeId,
 		athleteId,
 		competitionParticipationId,
@@ -122,11 +146,26 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 							<button
 								key={protocol.id}
 								className={`protocol_button ${
-									protocol.isFilled ? 'filled' : ''
+									protocol.isFilled
+										? protocol.filledByCurrentJudge
+											? 'filled-by-current-judge'
+											: 'filled-by-other-judge'
+										: ''
 								}`}
 								onClick={() => {
-									openProtocolModal(protocol.protocolType.id);
-								}}>
+									if (
+										!protocol.isFilled ||
+										protocol.filledByCurrentJudge
+									) {
+										openProtocolModal(
+											protocol.protocolType.id
+										);
+									}
+								}}
+								disabled={
+									protocol.isFilled &&
+									!protocol.filledByCurrentJudge
+								}>
 								{protocol.protocolType.name}
 							</button>
 						))}

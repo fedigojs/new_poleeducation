@@ -393,8 +393,8 @@ const AthletesDrawJudge = () => {
 																	{status.isFilled &&
 																	status.judgeId ===
 																		user.userId
-																		? '✔️'
-																		: '❌'}
+																		? '❌'
+																		: '✔️'}
 																</span>
 															);
 														}
