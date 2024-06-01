@@ -62,8 +62,7 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 	const checkIfProtocolIsFilled = async (
 		protocolTypeId,
 		athleteId,
-		competitionParticipationId,
-		judgeId
+		competitionParticipationId
 	) => {
 		try {
 			const response = await api.get(
@@ -149,13 +148,16 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 									protocol.isFilled
 										? protocol.filledByCurrentJudge
 											? 'filled-by-current-judge'
+											: protocol.protocolType.id === 6
+											? 'allow-multiple'
 											: 'filled-by-other-judge'
 										: ''
 								}`}
 								onClick={() => {
 									if (
 										!protocol.isFilled ||
-										protocol.filledByCurrentJudge
+										protocol.filledByCurrentJudge ||
+										protocol.protocolType.id === 6
 									) {
 										openProtocolModal(
 											protocol.protocolType.id
@@ -164,7 +166,8 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 								}}
 								disabled={
 									protocol.isFilled &&
-									!protocol.filledByCurrentJudge
+									!protocol.filledByCurrentJudge &&
+									protocol.protocolType.id !== 6
 								}>
 								{protocol.protocolType.name}
 							</button>
