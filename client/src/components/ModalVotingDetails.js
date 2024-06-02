@@ -17,6 +17,7 @@ const fetchProtocolDetails = async (athleteId, competitionParticipationId) => {
 
 const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 	const [details, setDetails] = useState([]);
+	const [totalScore, setTotalScore] = useState(0);
 
 	useEffect(() => {
 		const loadProtocolDetails = async () => {
@@ -26,6 +27,13 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 					participant.participation.id // Используйте id участия, если он соответствует competitionParticipationId
 				);
 				setDetails(data);
+
+				// Вычисляем общую оценку
+				const total = data.reduce(
+					(sum, detail) => sum + detail.score,
+					0
+				);
+				setTotalScore(total);
 			}
 		};
 
@@ -54,7 +62,7 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 			isOpen={isOpen}
 			onClose={onClose}
 			className='modal-fullscreen'>
-			<div className='modal-content'>
+			<div className='modal-content detail-voting-content'>
 				<button
 					className='modal-close-button'
 					onClick={onClose}
@@ -70,6 +78,7 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 					Возрастная категория:{' '}
 					{participant?.participation?.AthleteAge?.age}
 				</p>
+				<p>Загальний рахунок: {totalScore} </p>
 				{Object.keys(groupedDetails).map((key, index) => {
 					const [protocolName, judgeId] = key.split('-');
 					return (

@@ -8,7 +8,8 @@ const {
 	Athlete,
 	AthleteAge,
 	AthleteTrend,
-	Level,s
+	Level,
+	s,
 } = require('../models');
 
 exports.conductDraw = async (req, res) => {
@@ -258,6 +259,60 @@ exports.deleteDrawResultsByCompetitionId = async (req, res) => {
 		console.error('Error deleting draw results:', error);
 		res.status(500).json({
 			message: 'Error deleting draw results',
+			error: error.message,
+		});
+	}
+};
+
+exports.getDrawResultsByCoach = async (req, res) => {
+	try {
+		const { userId } = req.params; // Получаем userId из параметров маршрута
+
+		console.log('Received userId:', userId); // Логируем userId
+
+		if (!userId) {
+			return res.status(400).json({
+				message: 'UserId is required',
+			});
+		}
+
+		const drawResults = await DrawResult.findAll({
+			include: [
+				{
+					model: CompetitionsParticipation,
+					as: 'participation',
+					include: [
+						{
+							model: Athlete,
+							as: 'Athlete',
+							where: { coachId: userId }, // Фильтрация по coachId
+						},
+						{
+							model: Discipline,
+							as: 'discipline',
+						},
+						{
+							model: Exercise,
+							as: 'exercises',
+						},
+						{
+							model: Level,
+						},
+						{
+							model: AthleteAge,
+						},
+						{
+							model: AthleteTrend,
+						},
+					],
+				},
+			],
+		});
+		res.status(200).json(drawResults);
+	} catch (error) {
+		console.error('Error retrieving draw results by coach:', error);
+		res.status(500).json({
+			message: 'Error retrieving draw results by coach',
 			error: error.message,
 		});
 	}

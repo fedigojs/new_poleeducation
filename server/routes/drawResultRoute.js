@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const drawResultController = require('../controllers/drawResultController');
 
+router.get('/by-coach/:userId', drawResultController.getDrawResultsByCoach);
 router.post('/draw/:competitionId', drawResultController.conductDraw);
 router.put('/update-timing/:competitionId', drawResultController.updateTiming);
 router.get('/', drawResultController.getAllDrawResults);

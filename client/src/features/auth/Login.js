@@ -31,6 +31,8 @@ const Login = () => {
 				navigate('/admin');
 			} else if (role === 'Judge') {
 				navigate('/judge');
+			} else if (role === 'Coach') {
+				navigate('/coach');
 			}
 		} catch (err) {
 			setError(err.response?.data.message || 'Произошла ошибка');

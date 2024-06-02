@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './features/auth/Login';
 import AdminPage from './features/dashboard/AdminPage';
 import JudgePage from './features/dashboard/JudgePage';
+import CoachPage from './features/dashboard/CoachPage';
 import AddUserPage from './components/adminpanel/AddUserPage';
 import HomePage from './pages/HomePage/HomePage';
 import AddAthletesPage from './components/adminpanel/AddAthletesPage';
@@ -14,6 +15,8 @@ import RegisterAthletePage from './components/adminpanel/RegisterAthletePage';
 import AthletesDraw from './components/adminpanel/AthletesDraw';
 import AthletesDrawJudge from './components/judgepanel/AthletesDrawJudge';
 import HomeJudge from './components/judgepanel/HomeJudge';
+import HomeCoach from './components/coachpanel/HomeCoach';
+import AthletesCoach from './components/coachpanel/AthletesCoach';
 
 const AppRoutes = () => (
 	<Router>
@@ -72,6 +75,23 @@ const AppRoutes = () => (
 				<Route
 					path='athletes-draw'
 					element={<AthletesDrawJudge />}
+				/>
+			</Route>
+
+			<Route
+				path='/coach/*'
+				element={
+					<ProtectedRoute>
+						<CoachPage />
+					</ProtectedRoute>
+				}>
+				<Route
+					path=''
+					element={<HomeCoach />}
+				/>
+				<Route
+					path='athletes'
+					element={<AthletesCoach />}
 				/>
 			</Route>
 		</Routes>
