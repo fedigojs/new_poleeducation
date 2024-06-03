@@ -15,24 +15,55 @@ const fetchProtocolDetails = async (athleteId, competitionParticipationId) => {
 	}
 };
 
+const fetchExerciseProtocolDetails = async (competitionParticipationId) => {
+	try {
+		const response = await api.get(
+			`/api/protocol-exercise-result/participation/${competitionParticipationId}`
+		);
+		return response.data.exercises || [];
+	} catch (error) {
+		console.error(
+			'Ошибка при получении данных протокола упражнений:',
+			error
+		);
+		return [];
+	}
+};
+
 const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 	const [details, setDetails] = useState([]);
+	const [exerciseDetails, setExerciseDetails] = useState([]);
+	const [completedExercises, setCompletedExercises] = useState({});
 	const [totalScore, setTotalScore] = useState(0);
 
 	useEffect(() => {
 		const loadProtocolDetails = async () => {
 			if (participant) {
-				const data = await fetchProtocolDetails(
+				const protocolData = await fetchProtocolDetails(
 					participant.participation.athleteId,
 					participant.participation.id // Используйте id участия, если он соответствует competitionParticipationId
 				);
-				setDetails(data);
+				console.log('Protocol Data:', protocolData);
+				setDetails(protocolData);
+
+				const exerciseData = await fetchExerciseProtocolDetails(
+					participant.participation.id
+				);
+				console.log('Exercise Data:', exerciseData);
+				const completed = exerciseData.reduce((acc, item) => {
+					acc[item.exerciseId] = item.result;
+					return acc;
+				}, {});
+				setExerciseDetails(exerciseData);
+				setCompletedExercises(completed);
 
 				// Вычисляем общую оценку
-				const total = data.reduce(
-					(sum, detail) => sum + detail.score,
-					0
-				);
+				const total =
+					protocolData.reduce(
+						(sum, detail) => sum + detail.score,
+						0
+					) +
+					exerciseData.reduce((sum, item) => sum + item.result, 0);
 				setTotalScore(total);
 			}
 		};
@@ -47,15 +78,34 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 	}
 
 	const groupedDetails = details.reduce((acc, detail) => {
-		const protocolName = detail.detail.protocolType.name;
+		const protocolType = detail.detail?.protocolType;
+		const protocolName = protocolType?.name;
 		const judgeId = detail.judgeId;
+		console.log(
+			`protocolType: ${protocolType}, protocolName: ${protocolName}, judgeId: ${judgeId}`
+		);
 		const key = `${protocolName}-${judgeId}`;
-		if (!acc[key]) {
-			acc[key] = [];
+		if (protocolName && judgeId) {
+			if (!acc[key]) {
+				acc[key] = [];
+			}
+			acc[key].push(detail);
+		} else {
+			console.warn(
+				'Skipping detail due to missing protocolName or judgeId:',
+				detail
+			);
 		}
-		acc[key].push(detail);
 		return acc;
 	}, {});
+
+	console.log('Grouped Details:', groupedDetails);
+
+	const calculateTotalScore = () => {
+		return Object.values(completedExercises).filter(
+			(result) => result === 1
+		).length;
+	};
 
 	return (
 		<Modal
@@ -81,6 +131,10 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 				<p>Загальний рахунок: {totalScore} </p>
 				{Object.keys(groupedDetails).map((key, index) => {
 					const [protocolName, judgeId] = key.split('-');
+					console.log(
+						`Protocol Name: ${protocolName}, Judge ID: ${judgeId}`
+					);
+					console.log('Details for this group:', groupedDetails[key]);
 					return (
 						<div key={index}>
 							<h3>{protocolName}</h3>
@@ -98,8 +152,10 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 								<tbody>
 									{groupedDetails[key].map((detail, idx) => (
 										<tr key={idx}>
-											<td>{detail.detail.elementName}</td>
-											<td>{detail.detail.maxScore}</td>
+											<td>
+												{detail.detail?.elementName}
+											</td>
+											<td>{detail.detail?.maxScore}</td>
 											<td>{detail.score}</td>
 											<td>{detail.comment}</td>
 										</tr>
@@ -109,6 +165,48 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 						</div>
 					);
 				})}
+				<h3>Детали упражнений</h3>
+				<table className='protocol-table'>
+					<thead>
+						<tr>
+							<th>Упражнение</th>
+							<th>Описание</th>
+							<th>Изображение</th>
+							<th>Выполнено</th>
+						</tr>
+					</thead>
+					<tbody>
+						{exerciseDetails.map((detail) => (
+							<tr key={detail.exerciseId}>
+								<td>{detail.exercise?.name}</td>
+								<td>{detail.exercise?.descriptions}</td>
+								<td>
+									{detail.exercise?.image && (
+										<img
+											src={detail.exercise.image}
+											alt={detail.exercise.name}
+											className='exercise-image'
+										/>
+									)}
+								</td>
+								<td>
+									<input
+										type='checkbox'
+										checked={
+											completedExercises[
+												detail.exerciseId
+											] === 1
+										}
+										readOnly
+									/>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+				<div className='total-score'>
+					<h3>Общая сумма баллов: {totalScore}</h3>
+				</div>
 			</div>
 		</Modal>
 	);

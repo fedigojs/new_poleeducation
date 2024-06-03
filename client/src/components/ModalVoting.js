@@ -3,6 +3,7 @@ import Modal from './Modal';
 import api from '../api/api';
 import './ModalVoting.css';
 import ModalVotingProtocol from './ModalVotingProtocol';
+import ModalVotingExercise from './ModalVotingExercise';
 
 const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 	const [protocols, setProtocols] = useState([]);
@@ -10,6 +11,10 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 	const [selectedProtocol, setSelectedProtocol] = useState(null);
 	const [errorMessage, setErrorMessage] = useState('');
 	const [shouldUpdate, setShouldUpdate] = useState(false);
+	const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+	const [selectedExerciseProtocol, setSelectedExerciseProtocol] =
+		useState(null);
+	const [exerciseErrorMessage, setExerciseErrorMessage] = useState('');
 
 	useEffect(() => {
 		if (isOpen && participant?.participation?.AthleteTrend) {
@@ -114,10 +119,38 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 		}
 	};
 
+	const openExerciseModal = async (competitionParticipationId) => {
+		try {
+			const response = await api.get(
+				`/api/comp-part/${competitionParticipationId}`
+			);
+			if (response.data) {
+				setSelectedExerciseProtocol(response.data);
+				setIsExerciseModalOpen(true);
+				setExerciseErrorMessage('');
+			} else {
+				setExerciseErrorMessage(
+					`Данные с таким competitionParticipationId ${competitionParticipationId} не найдены.`
+				);
+				setIsExerciseModalOpen(true);
+			}
+		} catch (error) {
+			console.error('Error fetching exercise data:', error);
+			setExerciseErrorMessage('Ошибка получения данных упражнения.');
+			setIsExerciseModalOpen(true);
+		}
+	};
+
 	const closeProtocolModal = () => {
 		setIsProtocolModalOpen(false);
 		setSelectedProtocol(null);
 		setErrorMessage('');
+	};
+
+	const closeExerciseModal = () => {
+		setIsExerciseModalOpen(false);
+		setSelectedExerciseProtocol(null);
+		setExerciseErrorMessage('');
 	};
 
 	return (
@@ -159,9 +192,15 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 										protocol.filledByCurrentJudge ||
 										protocol.protocolType.id === 6
 									) {
-										openProtocolModal(
-											protocol.protocolType.id
-										);
+										if (protocol.protocolType.id === 7) {
+											openExerciseModal(
+												participant.competitionParticipationId
+											);
+										} else {
+											openProtocolModal(
+												protocol.protocolType.id
+											);
+										}
 									}
 								}}
 								disabled={
@@ -187,6 +226,15 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 					participant?.competitionParticipationId
 				}
 				protocolTypeId={selectedProtocol?.protocolTypeId}
+			/>
+			<ModalVotingExercise
+				isOpen={isExerciseModalOpen}
+				onClose={closeExerciseModal}
+				protocol={selectedExerciseProtocol}
+				errorMessage={exerciseErrorMessage}
+				competitionParticipationId={
+					participant?.competitionParticipationId
+				}
 			/>
 		</>
 	);

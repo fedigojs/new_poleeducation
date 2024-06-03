@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import api from '../../api/api';
 import ModalVotingDetails from '../ModalVotingDetails';
 import ModalVoting from '../ModalVoting';
 import './AthletesDraw.css';
+import { AuthContext } from '../../context/AuthContext';
 
 const AthletesDraw = () => {
 	const [participants, setParticipants] = useState([]);
@@ -21,6 +22,7 @@ const AthletesDraw = () => {
 	const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 	const [isVotingModalOpen, setIsVotingModalOpen] = useState(false);
 	const [selectedParticipant, setSelectedParticipant] = useState(null);
+	const { user } = useContext(AuthContext); // Получаем пользователя из контекста
 
 	useEffect(() => {
 		fetchData();
@@ -91,18 +93,6 @@ const AthletesDraw = () => {
 		}
 	};
 
-	// const fetchSumOfScores = async (competitionParticipationId) => {
-	// 	try {
-	// 		const response = await api.get(
-	// 			`/api/protocol-result/sum/${competitionParticipationId}`
-	// 		);
-	// 		return response.data.totalScore;
-	// 	} catch (error) {
-	// 		console.error('Ошибка при получении суммы протоколов:', error);
-	// 		return 0;
-	// 	}
-	// };
-
 	const fetchData = async () => {
 		try {
 			const responseDraw = await api.get('/api/draw-result');
@@ -117,13 +107,9 @@ const AthletesDraw = () => {
 						competitionParticipationId:
 							participant.competitionParticipationId,
 					});
-					// const totalScore = await fetchSumOfScores(
-					// 	participant.competitionParticipationId
-					// );
 					return {
 						...participant,
 						protocolStatuses,
-						// totalScore, // Добавляем общую сумму баллов
 					};
 				})
 			);
@@ -397,12 +383,15 @@ const AthletesDraw = () => {
 				participant={selectedParticipant}
 			/>
 
-			<ModalVoting
-				isOpen={isVotingModalOpen}
-				onClose={closeVotingModal}
-				participant={selectedParticipant}
-				onSubmit={handleVoteSubmit}
-			/>
+			{user && (
+				<ModalVoting
+					isOpen={isVotingModalOpen}
+					onClose={closeVotingModal}
+					participant={selectedParticipant}
+					onSubmit={handleVoteSubmit}
+					judgeId={user.userId} // Передаем judgeId в ModalVoting
+				/>
+			)}
 
 			<div className='container'>
 				<h1>Жеребкування спортсменів</h1>
@@ -581,7 +570,7 @@ const AthletesDraw = () => {
 					</button>
 				))}
 				<button
-					className='tab-link reset-button' // Дополнительный стиль можно добавить если нужно
+					className='tab-link reset-button'
 					onClick={resetFilter}>
 					Скинути фільтр
 				</button>

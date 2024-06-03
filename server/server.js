@@ -25,6 +25,7 @@ const adminRoute = require('./routes/adminRoute');
 const detailExerciseRoute = require('./routes/detailExerciseRoute');
 const drawResultsRoute = require('./routes/drawResultRoute');
 const protocolElementResultRoute = require('./routes/protocolElementResultRoute');
+const protocolExerciseResultRoute = require('./routes/protocolExerciseResultRoute');
 
 // Sync database
 sequelize
@@ -67,6 +68,7 @@ app.use('/api/level', levelRoute);
 app.use('/api/protocol', protocolRoute);
 app.use('/api/protocol-details', protocolDetailsRoute);
 app.use('/api/protocol-result', protocolElementResultRoute);
+app.use('/api/protocol-exercise-result', protocolExerciseResultRoute);
 app.use('/api/role', roleRoute);
 app.use('/api/score', scoreRoute);
 app.use('/api/auth', authRoute);
