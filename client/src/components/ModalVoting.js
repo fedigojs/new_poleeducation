@@ -3,6 +3,7 @@ import Modal from './Modal';
 import api from '../api/api';
 import './ModalVoting.css';
 import ModalVotingProtocol from './ModalVotingProtocol';
+import ModalVotingExercise from './ModalVotingExercise'; // Импорт нового модального окна
 
 const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 	const [protocols, setProtocols] = useState([]);
@@ -10,6 +11,9 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 	const [selectedProtocol, setSelectedProtocol] = useState(null);
 	const [errorMessage, setErrorMessage] = useState('');
 	const [shouldUpdate, setShouldUpdate] = useState(false);
+	const [isExerciseDetailsModalOpen, setIsExerciseDetailsModalOpen] =
+		useState(false); // Добавляем состояние для нового модального окна
+	const [selectedProtocolTypeId, setSelectedProtocolTypeId] = useState(null);
 
 	useEffect(() => {
 		if (isOpen && participant?.participation?.AthleteTrend) {
@@ -17,9 +21,7 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 		}
 	}, [isOpen, participant]);
 
-	useEffect(() => {
-		// Это состояние заставит компонент обновляться при изменении протоколов
-	}, [shouldUpdate]);
+	useEffect(() => {}, [shouldUpdate]);
 
 	const loadProtocols = async () => {
 		if (participant?.participation?.AthleteTrend) {
@@ -51,7 +53,7 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 					})
 				);
 				setProtocols(updatedProtocols);
-				setShouldUpdate(!shouldUpdate); // Переключение состояния
+				setShouldUpdate(!shouldUpdate);
 			} catch (error) {
 				console.error('Error fetching protocols:', error);
 				setProtocols([]);
@@ -93,24 +95,29 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 	if (!isOpen) return null;
 
 	const openProtocolModal = async (protocolTypeId) => {
-		try {
-			const response = await api.get(
-				`/api/protocol-details/${protocolTypeId}`
-			);
-			if (response.data) {
-				setSelectedProtocol(response.data);
-				setIsProtocolModalOpen(true);
-				setErrorMessage('');
-			} else {
-				setErrorMessage(
-					`Протокол с таким protocolTypeId ${protocolTypeId} не найден.`
+		if (protocolTypeId === 7) {
+			setSelectedProtocolTypeId(protocolTypeId);
+			setIsExerciseDetailsModalOpen(true);
+		} else {
+			try {
+				const response = await api.get(
+					`/api/protocol-details/${protocolTypeId}`
 				);
+				if (response.data) {
+					setSelectedProtocol(response.data);
+					setIsProtocolModalOpen(true);
+					setErrorMessage('');
+				} else {
+					setErrorMessage(
+						`Протокол с таким protocolTypeId ${protocolTypeId} не найден.`
+					);
+					setIsProtocolModalOpen(true);
+				}
+			} catch (error) {
+				console.error('Error fetching protocol data:', error);
+				setErrorMessage('Ошибка получения данных протокола.');
 				setIsProtocolModalOpen(true);
 			}
-		} catch (error) {
-			console.error('Error fetching protocol data:', error);
-			setErrorMessage('Ошибка получения данных протокола.');
-			setIsProtocolModalOpen(true);
 		}
 	};
 
@@ -118,6 +125,11 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 		setIsProtocolModalOpen(false);
 		setSelectedProtocol(null);
 		setErrorMessage('');
+	};
+
+	const closeExerciseDetailsModal = () => {
+		setIsExerciseDetailsModalOpen(false);
+		setSelectedProtocolTypeId(null);
 	};
 
 	return (
@@ -187,6 +199,15 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 					participant?.competitionParticipationId
 				}
 				protocolTypeId={selectedProtocol?.protocolTypeId}
+			/>
+			<ModalVotingExercise
+				isOpen={isExerciseDetailsModalOpen}
+				onClose={closeExerciseDetailsModal}
+				protocolTypeId={selectedProtocolTypeId}
+				athleteId={participant?.participation?.athleteId}
+				competitionParticipationId={
+					participant?.competitionParticipationId
+				}
 			/>
 		</>
 	);
