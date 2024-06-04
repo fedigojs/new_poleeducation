@@ -43,13 +43,13 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 					participant.participation.athleteId,
 					participant.participation.id // Используйте id участия, если он соответствует competitionParticipationId
 				);
-				console.log('Protocol Data:', protocolData);
+
 				setDetails(protocolData);
 
 				const exerciseData = await fetchExerciseProtocolDetails(
 					participant.participation.id
 				);
-				console.log('Exercise Data:', exerciseData);
+
 				const completed = exerciseData.reduce((acc, item) => {
 					acc[item.exerciseId] = item.result;
 					return acc;
@@ -81,9 +81,6 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 		const protocolType = detail.detail?.protocolType;
 		const protocolName = protocolType?.name;
 		const judgeId = detail.judgeId;
-		console.log(
-			`protocolType: ${protocolType}, protocolName: ${protocolName}, judgeId: ${judgeId}`
-		);
 		const key = `${protocolName}-${judgeId}`;
 		if (protocolName && judgeId) {
 			if (!acc[key]) {
@@ -98,8 +95,6 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 		}
 		return acc;
 	}, {});
-
-	console.log('Grouped Details:', groupedDetails);
 
 	const calculateTotalScore = () => {
 		return Object.values(completedExercises).filter(
@@ -129,12 +124,9 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 					{participant?.participation?.AthleteAge?.age}
 				</p>
 				<p>Загальний рахунок: {totalScore} </p>
+
 				{Object.keys(groupedDetails).map((key, index) => {
 					const [protocolName, judgeId] = key.split('-');
-					console.log(
-						`Protocol Name: ${protocolName}, Judge ID: ${judgeId}`
-					);
-					console.log('Details for this group:', groupedDetails[key]);
 					return (
 						<div key={index}>
 							<h3>{protocolName}</h3>
@@ -166,6 +158,7 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 					);
 				})}
 				<h3>Детали упражнений</h3>
+
 				<table className='protocol-table'>
 					<thead>
 						<tr>

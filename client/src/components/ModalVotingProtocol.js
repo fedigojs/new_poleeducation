@@ -46,6 +46,7 @@ const ModalVotingProtocol = ({
 				protocolDetailId: element.id,
 				elementName: element.elementName,
 				maxScore: element.maxScore,
+				step: element.step,
 				score: element.score || 0,
 				comment: element.comment || '',
 			}));
@@ -70,6 +71,7 @@ const ModalVotingProtocol = ({
 							...item,
 							elementName: item.detail.elementName,
 							maxScore: item.detail.maxScore,
+							step: item.detail.step,
 							comment: item.comment || '',
 						}));
 
@@ -231,6 +233,7 @@ const ModalVotingProtocol = ({
 								<tr>
 									<th>Элемент</th>
 									<th>Максимальный балл</th>
+									<th>Шаг</th>
 									<th>Оценка</th>
 									<th>Комментарий</th>
 								</tr>
@@ -241,6 +244,7 @@ const ModalVotingProtocol = ({
 										<tr key={index}>
 											<td>{element.elementName}</td>
 											<td>{element.maxScore}</td>
+											<td>{element.step}</td>
 											<td>
 												<input
 													type='number'
@@ -264,7 +268,7 @@ const ModalVotingProtocol = ({
 															) || 0
 														)
 													}
-													step='0.1'
+													step={element.step}
 												/>
 											</td>
 											<td>

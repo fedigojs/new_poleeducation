@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.FLOAT,
 				allowNull: false,
 			},
+			step: {
+				type: DataTypes.FLOAT,
+				allowNull: false,
+			},
 			comment: {
 				type: DataTypes.TEXT,
 				allowNull: true,
