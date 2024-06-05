@@ -37,11 +37,17 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 	const [totalScore, setTotalScore] = useState(0);
 
 	useEffect(() => {
+		if (isOpen) {
+			setTotalScore(calculateTotalScore());
+		}
+	}, [details, completedExercises, isOpen]);
+
+	useEffect(() => {
 		const loadProtocolDetails = async () => {
 			if (participant) {
 				const protocolData = await fetchProtocolDetails(
 					participant.participation.athleteId,
-					participant.participation.id // Используйте id участия, если он соответствует competitionParticipationId
+					participant.participation.id
 				);
 
 				setDetails(protocolData);
@@ -57,7 +63,6 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 				setExerciseDetails(exerciseData);
 				setCompletedExercises(completed);
 
-				// Вычисляем общую оценку
 				const total =
 					protocolData.reduce(
 						(sum, detail) => sum + detail.score,
@@ -97,9 +102,28 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 	}, {});
 
 	const calculateTotalScore = () => {
-		return Object.values(completedExercises).filter(
+		const protocolScores = details.reduce((acc, detail) => {
+			const protocolTypeId = detail.detail?.protocolTypeId;
+			if (!acc[protocolTypeId]) {
+				acc[protocolTypeId] = { score: 0, judges: new Set() };
+			}
+			acc[protocolTypeId].score += detail.score;
+			acc[protocolTypeId].judges.add(detail.judgeId);
+			return acc;
+		}, {});
+
+		const averageScores = Object.values(protocolScores).map(
+			({ score, judges }) => score / judges.size
+		);
+
+		const exerciseScores = Object.values(completedExercises).filter(
 			(result) => result === 1
 		).length;
+
+		const totalAverageScore =
+			averageScores.reduce((sum, avg) => sum + avg, 0) + exerciseScores;
+
+		return totalAverageScore;
 	};
 
 	return (
