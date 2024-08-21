@@ -4,7 +4,7 @@ services:
     db_auth:
         container_name: poleeducation_db
         ports:
-            - 5432:5432
+            - 5435:5432
         environment:
             - POSTGRES_PASSWORD=igor18052008
             - POSTGRES_USER=admin

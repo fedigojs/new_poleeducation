@@ -317,3 +317,32 @@ exports.getDrawResultsByCoach = async (req, res) => {
 		});
 	}
 };
+
+exports.updateTotalScore = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const { totalScore } = req.body;
+
+		// Обновляем значение totalScore для записи с заданным ID
+		const [updated] = await DrawResult.update(
+			{ totalScore },
+			{ where: { id } }
+		);
+
+		if (updated === 0) {
+			return res
+				.status(404)
+				.json({ message: 'No draw result found with this ID' });
+		}
+
+		// Получаем обновленную запись
+		const updatedDrawResult = await DrawResult.findByPk(id);
+		res.status(200).json(updatedDrawResult);
+	} catch (error) {
+		console.error('Error updating totalScore:', error);
+		res.status(400).json({
+			message: 'Error updating totalScore',
+			error: error.message,
+		});
+	}
+};

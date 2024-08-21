@@ -13,4 +13,6 @@ router.delete(
 	drawResultController.deleteDrawResultsByCompetitionId
 );
 
+router.put('/update-total-score/:id', drawResultController.updateTotalScore);
+
 module.exports = router;

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/api';
 import '../Modal.css';
 import Modal from '../Modal';
+import AddAthleteModal from '../modal/AddAthletes/AddAthleteModal';
 
 const AddAthletePage = () => {
 	const [athletes, setAthletes] = useState([]);
@@ -40,12 +41,6 @@ const AddAthletePage = () => {
 
 	const loadRoles = async () => {
 		try {
-			// const response = await api.get('/api/role');
-			// setRoles(response.data);
-
-			// const responseLevel = await api.get('/api/level');
-			// setLevels(responseLevel.data);
-
 			const responseCoaches = await api.get('/api/users');
 			setCoaches(responseCoaches.data);
 		} catch (err) {
@@ -54,9 +49,7 @@ const AddAthletePage = () => {
 		}
 	};
 
-	const handleAddAthlete = async (e) => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleAddAthleteSubmit = async ({ firstName, lastName, coachId }) => {
 		try {
 			await api.post('/api/athletes', {
 				firstName,
@@ -65,12 +58,8 @@ const AddAthletePage = () => {
 			});
 			console.log('Атлет успешно добавлен!');
 			loadAthletes();
-			setFirstName('');
-			setLastName('');
-			setCoachId('');
-			closeModals();
 		} catch (err) {
-			setError(err.response?.data.message || 'Произошла ошибка');
+			throw err;
 		}
 	};
 
@@ -156,68 +145,15 @@ const AddAthletePage = () => {
 				onClick={() => setAddAthleteModalVisible(true)}>
 				Создать атлета
 			</button>
-
 			{isAddAthleteModalVisible && (
-				<Modal onClose={closeModals}>
-					<form
-						onSubmit={handleAddAthlete}
-						className='athlete-form'>
-						<h3>Добавить атлета</h3>
-						<label htmlFor='firstName'>
-							Имя:
-							<input
-								type='text'
-								id='firstName'
-								value={firstName}
-								onChange={(e) => setFirstName(e.target.value)}
-								required
-							/>
-						</label>
-						<label htmlFor='lastName'>
-							Фамилия:
-							<input
-								type='text'
-								id='lastName'
-								value={lastName}
-								onChange={(e) => setLastName(e.target.value)}
-								required
-							/>
-						</label>
-
-						<label htmlFor='coachId'>
-							Тренер:
-							<select
-								id='coachId'
-								value={coachId}
-								onChange={(e) => setCoachId(e.target.value)}
-								required>
-								<option value=''>Выберите тренера</option>
-								{coaches
-									.filter(
-										(coach) => coach.roleId === coachRoleId
-									)
-									.map((coach) => (
-										<option
-											key={coach.id}
-											value={coach.id}>
-											{coach.firstName} {coach.lastName}
-										</option>
-									))}
-							</select>
-						</label>
-						<div className='form-actions'>
-							<button type='submit'>Добавить</button>
-							<button
-								type='button'
-								onClick={closeModals}>
-								Отмена
-							</button>
-						</div>
-						{error && <p className='error-message'>{error}</p>}
-					</form>
-				</Modal>
+				<AddAthleteModal
+					isVisible={isAddAthleteModalVisible}
+					onClose={closeModals}
+					onSubmit={handleAddAthleteSubmit}
+					coaches={coaches}
+					coachRoleId={coachRoleId}
+				/>
 			)}
-
 			{isEditAthleteModalVisible && (
 				<Modal onClose={closeModals}>
 					{/* Форма редактирования атлета */}

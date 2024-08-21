@@ -12,6 +12,11 @@ const SidebarCoach = () => {
 					<Link to='/coach'>Головна</Link>
 				</li>
 				<li>
+					<Link to='/coach/add-athletes'>
+						Зареэструвати спортсмена
+					</Link>
+				</li>
+				<li>
 					<Link to='/coach/athletes'>Атлети</Link>
 				</li>
 			</ul>

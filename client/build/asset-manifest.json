@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.06fab39c.css",
+    "main.js": "/static/js/main.97f0962d.js",
+    "static/media/home_baner_poleed.png": "/static/media/home_baner_poleed.f672b60f56eff05c41e4.png",
+    "index.html": "/index.html",
+    "main.06fab39c.css.map": "/static/css/main.06fab39c.css.map",
+    "main.97f0962d.js.map": "/static/js/main.97f0962d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.06fab39c.css",
+    "static/js/main.97f0962d.js"
+  ]
+}

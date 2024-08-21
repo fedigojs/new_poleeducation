@@ -4,6 +4,7 @@
 		"password": "igor18052008",
 		"database": "poleeducation_db",
 		"host": "127.0.0.1",
+		"port": "5435",
 		"dialect": "postgres"
 	},
 	"test": {

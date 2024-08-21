@@ -107,9 +107,14 @@ const AthletesDraw = () => {
 						competitionParticipationId:
 							participant.competitionParticipationId,
 					});
+					const totalScore = await calculateTotalScore(
+						participant.participation.athleteId,
+						participant.participation.id
+					);
 					return {
 						...participant,
 						protocolStatuses,
+						totalScore,
 					};
 				})
 			);
@@ -366,6 +371,132 @@ const AthletesDraw = () => {
 		}
 	};
 
+	const handleUpdateScore = (participantId, newTotalScore) => {
+		setParticipants((prevParticipants) =>
+			prevParticipants.map((participant) =>
+				participant.id === participantId
+					? { ...participant, totalScore: newTotalScore }
+					: participant
+			)
+		);
+	};
+
+	const handleUpdateAllScores = async () => {
+		try {
+			const updatedParticipants = await Promise.all(
+				participants.map(async (participant) => {
+					const totalScore = await calculateTotalScore(
+						participant.participation.athleteId,
+						participant.participation.id
+					);
+					await api.put(
+						`/api/draw-result/update-total-score/${participant.id}`,
+						{
+							totalScore,
+						}
+					);
+					return { ...participant, totalScore };
+				})
+			);
+			setParticipants(updatedParticipants);
+		} catch (error) {
+			console.error(
+				'Ошибка при обновлении totalScore для всех участников:',
+				error
+			);
+		}
+	};
+
+	const calculateTotalScore = async (
+		athleteId,
+		competitionParticipationId
+	) => {
+		try {
+			const [protocolData, exerciseData] = await Promise.all([
+				fetchProtocolDetails(athleteId, competitionParticipationId),
+				fetchExerciseProtocolDetails(competitionParticipationId),
+			]);
+
+			const protocolScores = protocolData.reduce((acc, detail) => {
+				const protocolTypeId = detail.detail?.protocolTypeId;
+				if (!acc[protocolTypeId]) {
+					acc[protocolTypeId] = { score: 0, judges: new Set() };
+				}
+				acc[protocolTypeId].score += detail.score;
+				acc[protocolTypeId].judges.add(detail.judgeId);
+				return acc;
+			}, {});
+
+			const averageScores = Object.values(protocolScores).map(
+				({ score, judges }) => score / judges.size
+			);
+
+			const exerciseScores = exerciseData.filter(
+				(item) => item.result === 1
+			).length;
+
+			const totalAverageScore =
+				averageScores.reduce((sum, avg) => sum + avg, 0) +
+				exerciseScores;
+
+			console.log('Вычисленный общий балл:', totalAverageScore);
+			return totalAverageScore;
+		} catch (error) {
+			console.error('Ошибка при расчете общего балла:', error);
+			return 0;
+		}
+	};
+
+	const fetchProtocolDetails = async (
+		athleteId,
+		competitionParticipationId
+	) => {
+		try {
+			const response = await api.get(
+				`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}`
+			);
+			return response.data;
+		} catch (error) {
+			console.error('Ошибка при получении данных протокола:', error);
+			return [];
+		}
+	};
+
+	const fetchExerciseProtocolDetails = async (competitionParticipationId) => {
+		try {
+			const response = await api.get(
+				`/api/protocol-exercise-result/participation/${competitionParticipationId}`
+			);
+			return response.data.exercises || [];
+		} catch (error) {
+			console.error(
+				'Ошибка при получении данных протокола упражнений:',
+				error
+			);
+			return [];
+		}
+	};
+
+	const updateParticipantTotalScore = async (participantId, totalScore) => {
+		try {
+			await api.put(
+				`/api/draw-result/update-total-score/${participantId}`,
+				{
+					totalScore,
+				}
+			);
+			setParticipants((prevParticipants) =>
+				prevParticipants.map((participant) =>
+					participant.participation.id === participantId
+						? { ...participant, totalScore }
+						: participant
+				)
+			);
+		} catch (error) {
+			console.error('Ошибка при обновлении общего балла:', error);
+		}
+	};
+
 	const dayColors = [
 		'#F0F8FF', // Alice Blue
 		'#FAEBD7', // Antique White
@@ -381,6 +512,8 @@ const AthletesDraw = () => {
 				isOpen={isDetailsModalOpen}
 				onClose={closeDetailsModal}
 				participant={selectedParticipant}
+				onUpdateTotalScore={updateParticipantTotalScore}
+				onUpdateScore={handleUpdateScore}
 			/>
 
 			{user && (
@@ -428,7 +561,6 @@ const AthletesDraw = () => {
 						Видалити жеребкування
 					</button>
 				</div>
-
 				<div className='trend-container'>
 					{tabTrends
 						.sort((a, b) => a.localeCompare(b)) // Сортировка строк в алфавитном порядке
@@ -576,6 +708,12 @@ const AthletesDraw = () => {
 				</button>
 			</div>
 
+			<button
+				className='update-all-scores-button'
+				onClick={handleUpdateAllScores}>
+				Обновить Общий Балл для всех
+			</button>
+
 			<div className='tab-content-container'>
 				<div className='table-container'>
 					<table>
@@ -618,7 +756,7 @@ const AthletesDraw = () => {
 										}
 									</td>
 									<td>
-										{/* {participant.totalScore}{' '} */}
+										{participant.totalScore}{' '}
 										{/* Отображаем общую сумму баллов */}
 									</td>
 									<td>

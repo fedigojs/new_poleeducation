@@ -14,14 +14,6 @@ const Modal = ({ children, onClose, className }) => {
 			<div
 				className={`modal ${className}`}
 				onClick={handleBackdropClick}>
-				{/* <button
-					className='modal-close-button'
-					onClick={(e) => {
-						e.stopPropagation();
-						onClose();
-					}}>
-					&times;
-				</button> */}
 				{children}
 			</div>
 		</div>,

@@ -30,7 +30,12 @@ const fetchExerciseProtocolDetails = async (competitionParticipationId) => {
 	}
 };
 
-const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
+const ModalVotingDetails = ({
+	isOpen,
+	onClose,
+	participant,
+	onUpdateTotalScore,
+}) => {
 	const [details, setDetails] = useState([]);
 	const [exerciseDetails, setExerciseDetails] = useState([]);
 	const [completedExercises, setCompletedExercises] = useState({});
@@ -70,6 +75,9 @@ const ModalVotingDetails = ({ isOpen, onClose, participant }) => {
 					) +
 					exerciseData.reduce((sum, item) => sum + item.result, 0);
 				setTotalScore(total);
+
+				// Обновляем общий балл в родительском компоненте
+				onUpdateTotalScore(participant.participation.id, total);
 			}
 		};
 
