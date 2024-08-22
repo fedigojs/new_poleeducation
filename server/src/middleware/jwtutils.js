@@ -14,7 +14,7 @@ exports.generateToken = (user) => {
 			roleName: user.Role.name,
 		},
 		process.env.JWT_SECRET,
-		{ expiresIn: '1h' }
+		{ expiresIn: '2h' }
 	);
 };
 
@@ -27,7 +27,7 @@ exports.generateToken = (user) => {
 		roleName: user.Role.name,
 	};
 	const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-		expiresIn: '1h',
+		expiresIn: '2h',
 	});
 
 	return token;

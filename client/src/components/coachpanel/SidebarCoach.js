@@ -17,7 +17,7 @@ const SidebarCoach = () => {
 					</Link>
 				</li>
 				<li>
-					<Link to='/coach/athletes'>Атлети</Link>
+					<Link to='/coach/athletes-competitions'>Змагання</Link>
 				</li>
 			</ul>
 		</div>

@@ -83,7 +83,58 @@ exports.getAllParticipations = async (req, res) => {
 				},
 				{
 					model: Athlete,
-					attributes: ['firstName', 'lastName'],
+					attributes: ['firstName', 'lastName', 'coachId'],
+				},
+				{
+					model: AthleteAge,
+					attributes: ['age'],
+				},
+				{
+					model: AthleteTrend,
+					attributes: ['trends'],
+				},
+				{
+					model: Level,
+					attributes: ['name'],
+				},
+				{
+					model: Exercise,
+					as: 'exercises',
+					through: { attributes: [] }, //'code', 'descriptions', 'image'
+				},
+				{
+					model: Discipline,
+					as: 'discipline',
+					attributes: ['name'],
+				},
+			],
+		});
+		return res.status(200).json(participations);
+	} catch (error) {
+		return res.status(400).json({ error: error.message });
+	}
+};
+
+exports.getAllParticipationsByCoach = async (req, res) => {
+	try {
+		const { userId } = req.params; // Получаем userId (идентификатор тренера) из параметров маршрута
+
+		if (!userId) {
+			return res.status(400).json({
+				message: 'UserId is required',
+			});
+		}
+
+		const participations = await CompetitionsParticipation.findAll({
+			include: [
+				{
+					model: Competition,
+					attributes: ['title'],
+				},
+				{
+					model: Athlete,
+					attributes: ['firstName', 'lastName', 'coachId'],
+					where: { coachId: userId },
 				},
 				{
 					model: AthleteAge,

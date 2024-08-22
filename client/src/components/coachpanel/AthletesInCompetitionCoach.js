@@ -5,7 +5,7 @@ import ModalVoting from '../ModalVoting';
 import { AuthContext } from '../../context/AuthContext'; // Убедитесь, что путь к AuthContext корректен
 import '../adminpanel/AthletesDraw.css';
 
-const AthletesCoach = () => {
+const AthletesInCompetitionCoach = () => {
 	const [participants, setParticipants] = useState([]);
 	const [tabTrends, setTabTrends] = useState([]);
 	const [allParticipants, setAllParticipants] = useState([]);
@@ -44,8 +44,6 @@ const AthletesCoach = () => {
 
 	const fetchData = async () => {
 		try {
-			console.log('User ID:', user.userId); // Логируем userId перед запросом
-
 			const responseDraw = await api.get(
 				`/api/draw-result/by-coach/${user.userId}`
 			);
@@ -145,7 +143,7 @@ const AthletesCoach = () => {
 					onClose={closeVotingModal}
 					participant={selectedParticipant}
 					onSubmit={handleVoteSubmit}
-					judgeId={user.userId} // Передаем judgeId в ModalVoting
+					judgeId={user.userId}
 				/>
 			)}
 
@@ -217,4 +215,4 @@ const AthletesCoach = () => {
 	);
 };
 
-export default AthletesCoach;
+export default AthletesInCompetitionCoach;

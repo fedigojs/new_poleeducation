@@ -1,6 +1,6 @@
 // src/components/AddAthleteModal.js
 import React, { useState } from 'react';
-import Modal from '../../Modal';
+import Modal from '../Modal';
 
 const AddAthleteModal = ({
 	isVisible,
@@ -13,6 +13,9 @@ const AddAthleteModal = ({
 	const [lastName, setLastName] = useState('');
 	const [coachId, setCoachId] = useState('');
 	const [error, setError] = useState('');
+
+	console.log('coaches:', coaches);
+	console.log('coachRoleId:', coachRoleId);
 
 	const handleAddAthlete = async (e) => {
 		e.preventDefault();
@@ -65,11 +68,11 @@ const AddAthleteModal = ({
 						required>
 						<option value=''>Выберите тренера</option>
 						{coaches
-							.filter((coach) => coach.roleId === coachRoleId)
+							.filter((coach) => coach.userId === coachRoleId)
 							.map((coach) => (
 								<option
-									key={coach.id}
-									value={coach.id}>
+									key={coach.userId}
+									value={coach.userId}>
 									{coach.firstName} {coach.lastName}
 								</option>
 							))}

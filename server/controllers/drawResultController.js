@@ -9,7 +9,6 @@ const {
 	AthleteAge,
 	AthleteTrend,
 	Level,
-	s,
 } = require('../models');
 
 exports.conductDraw = async (req, res) => {

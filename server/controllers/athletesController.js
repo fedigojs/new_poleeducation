@@ -20,13 +20,9 @@ exports.createAthlete = async (req, res) => {
 	}
 };
 
-// Просмотр атлетов для тренеров и админов
 exports.getAthletes = async (req, res) => {
-	// const { role, userId } = req; // предполагается, что role и userId получены из аутентификационного мидлвара
 	try {
 		let athletes;
-		// if (role === 'Admin' || role === 'Judge') {
-		// Администраторы и судьи видят всех атлетов
 		athletes = await Athlete.findAll({
 			include: [
 				{
@@ -36,23 +32,26 @@ exports.getAthletes = async (req, res) => {
 				}, // Убедитесь, что тренеры связаны как 'coach' в вашей модели Athlete
 			],
 		});
-		// } else if (role === 'Coach') {
-		// 	// Тренеры видят только своих атлетов
-		// 	athletes = await Athlete.findAll({
-		// 		where: { coachId: userId },
-		// 		include: [{ model: User, as: 'coach' }],
-		// 	});
-		// } else {
-		// 	return res.status(403).json({ error: 'Not authorized' });
-		// }
 
-		// // Трансформация данных для отправки клиенту
-		// const transformedAthletes = athletes.map((athlete) => {
-		// 	return {
-		// 		...athlete.toJSON(),
-		// 		coachName: `${athlete.coach.firstName} ${athlete.coach.lastName}`, // Соединение имени и фамилии тренера
-		// 	};
-		// });
+		return res.status(200).json(athletes);
+	} catch (error) {
+		return res.status(400).json({ error: error.message });
+	}
+};
+
+exports.getAthletesByCoach = async (req, res) => {
+	try {
+		const { userId } = req.params; // Получаем userId из параметров маршрута
+
+		if (!userId) {
+			return res.status(400).json({
+				message: 'UserId is required',
+			});
+		}
+
+		const athletes = await Athlete.findAll({
+			where: { coachId: userId }, // Фильтрация по coachId
+		});
 
 		return res.status(200).json(athletes);
 	} catch (error) {

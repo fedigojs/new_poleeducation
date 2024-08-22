@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/api';
 import '../Modal.css';
 import Modal from '../Modal';
-import AddAthleteModal from '../modal/AddAthletes/AddAthleteModal';
+import AddAthleteModal from '../modal/AddAthleteModal';
 
 const AddAthletePage = () => {
 	const [athletes, setAthletes] = useState([]);
