@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwtUtils = require('../src/middleware/jwtutils');
 
 exports.register = async (req, res) => {
-	const { firstName, lastName, email, password, roleId } = req.body;
+	const { firstName, lastName, email, password } = req.body;
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = await User.create({
@@ -12,20 +12,36 @@ exports.register = async (req, res) => {
 			lastName,
 			email,
 			password: hashedPassword,
-			roleId,
+			roleId: 4,
 		});
 
-		res.status(201).json({
-			id: newUser.id,
-			firstName: newUser.firstName,
-			lastName: newUser.lastName,
-			roleId: newUser.roleId,
-			email: newUser.email,
-			token: jwtUtils.generateToken(newUser),
-		});
+		const safeUser = newUser.toJSON();
+		delete safeUser.password;
+		return res.status(201).json(safeUser);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: error.message });
+	}
+};
+
+exports.createUserWithRole = async (req, res) => {
+	const { firstName, lastName, email, password, roleId } = req.body;
+	try {
+		const hashedPassword = await bcrypt.hash(password, 10); // хеширование пароля
+		// Создание пользователя и назначение роли одновременно
+		const user = await User.create({
+			firstName,
+			lastName,
+			email,
+			password: hashedPassword,
+			roleId,
+		});
+		// Прячем пароль перед отправкой клиенту
+		const safeUser = user.toJSON();
+		delete safeUser.password;
+		return res.status(201).json(safeUser);
+	} catch (error) {
+		return res.status(400).json({ error: error.message });
 	}
 };
 
@@ -54,5 +70,22 @@ exports.login = async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: error.message });
+	}
+};
+
+exports.checkEmail = async (req, res) => {
+	const { email } = req.body;
+
+	try {
+		const user = await User.findOne({ where: { email } });
+
+		if (user) {
+			return res.json({ exists: true });
+		} else {
+			return res.json({ exists: false });
+		}
+	} catch (error) {
+		console.error('Error checking email:', error);
+		return res.status(500).json({ message: 'Internal server error' });
 	}
 };
