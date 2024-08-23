@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/api';
 import '../auth/Login.css';
+import RegisterModal from './RegisterModal';
 
 const Login = () => {
 	const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const Login = () => {
 	const [error, setError] = useState('');
 	const navigate = useNavigate();
 	const { login } = useAuth();
+	const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
 	const handleLogin = async (e) => {
 		e.preventDefault();
@@ -39,6 +41,9 @@ const Login = () => {
 			console.error('Login error:', err);
 		}
 	};
+
+	const openRegisterModal = () => setIsRegisterModalOpen(true);
+	const closeRegisterModal = () => setIsRegisterModalOpen(false);
 
 	return (
 		<div className='login-form-container'>
@@ -74,7 +79,11 @@ const Login = () => {
 					<button type='submit'>Login</button>
 					{error && <p className='error-message'>{error}</p>}
 				</form>
+				<button onClick={openRegisterModal}>Регистрація</button>
 			</div>
+			{isRegisterModalOpen && (
+				<RegisterModal closeModal={closeRegisterModal} />
+			)}
 		</div>
 	);
 };
