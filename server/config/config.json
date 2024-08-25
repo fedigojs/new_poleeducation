@@ -1,10 +1,10 @@
 {
 	"development": {
-		"username": "admin",
-		"password": "igor18052008",
+		"username": "fedigo_admin",
+		"password": "Igor18052008",
 		"database": "poleeducation_db",
-		"host": "127.0.0.1",
-		"port": "5435",
+		"host": "db_auth",
+		"port": "5432",
 		"dialect": "postgres"
 	},
 	"test": {

@@ -1,11 +1,46 @@
-version: '3.5'
+version: '3.8'
 
 services:
+    backend:
+        build:
+            context: ./server
+        ports:
+            - '3002:3002'
+        env_file:
+            - .env
+        environment:
+            - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation
+        depends_on:
+            - db_auth
+
+    frontend:
+        build:
+            context: ./client
+        ports:
+            - '80:80'
+        environment:
+            - REACT_APP_API_URL=http://backend:3002
+        depends_on:
+            - backend
+
     db_auth:
         container_name: poleeducation_db
+        image: postgres:16-alpine
         ports:
-            - 5435:5432
+            - '5435:5432'
         environment:
-            - POSTGRES_PASSWORD=igor18052008
-            - POSTGRES_USER=admin
-        image: postgres
+            - POSTGRES_DB=poleeducation_db
+            - POSTGRES_USER=fedigo_admin
+            - POSTGRES_PASSWORD=Igor18052008
+        volumes:
+            - db_data:/var/lib/postgresql/data
+
+    seeder:
+        build:
+            context: ./server
+        command: npx sequelize db:seed:all
+        depends_on:
+            - db_auth
+
+volumes:
+    db_data:

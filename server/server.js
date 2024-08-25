@@ -43,7 +43,7 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true })); // Для разбора JSON-запросов
 const corsOptions = {
-	origin: 'http://localhost:3000', // Разрешает ваш домен
+	origin: '*', // Разрешает ваш домен
 	optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
@@ -74,14 +74,6 @@ app.use('/api/score', scoreRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/admin', adminRoute);
 app.use('/api/draw-result', drawResultsRoute);
-
-// // Serve static files from the React app's build folder
-// app.use(express.static(path.join(__dirname, 'build')));
-
-// // Serve index.html for all other routes to support client-side routing
-// app.get('*', (req, res) => {
-// 	res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
 
 // Start server
 const PORT = process.env.PORT;
