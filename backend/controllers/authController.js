@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
 			lastName,
 			email,
 			password: hashedPassword,
-			roleId: 4,
+			roleId: 2,
 		});
 
 		const safeUser = newUser.toJSON();
