@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
 
 		try {
 			const decodedUser = jwtDecode(token);
-			console.log('User decoded from token on login:', decodedUser);
 			setUser({
 				userId: decodedUser.userId,
 				firstName: decodedUser.userFirstName,

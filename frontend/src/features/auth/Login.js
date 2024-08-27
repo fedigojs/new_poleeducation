@@ -21,13 +21,8 @@ const Login = () => {
 				password,
 			});
 
-			console.log('Login response:', response.data);
 			login(response.data.token);
 			localStorage.setItem('role', response.data.roleName);
-			console.log(
-				'Role saved to localStorage:',
-				localStorage.getItem('role')
-			); // Логирование сохраненной роли
 			const role = response.data.roleName;
 			if (role === 'Admin') {
 				navigate('/admin');
