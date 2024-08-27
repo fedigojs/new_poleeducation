@@ -1,7 +1,7 @@
 // Sidebar.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../adminpanel/Sidebar.css';
+import './Sidebar.css';
 
 const Sidebar = () => {
 	return (

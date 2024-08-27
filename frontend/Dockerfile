@@ -2,7 +2,7 @@
 FROM node:20-alpine AS builder
 
 # Устанавливаем рабочую директорию внутри контейнера
-WORKDIR /client
+WORKDIR /frontend
 
 # Копируем файл package.json и package-lock.json для установки зависимостей
 COPY package*.json ./
@@ -20,10 +20,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Копируем сгенерированные файлы в директорию, обслуживаемую Nginx
-COPY --from=builder /client/build /usr/share/nginx/html
-
-# Копируем кастомный конфигурационный файл
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /frontend/build /usr/share/nginx/html
 
 # Открываем порт 80
 EXPOSE 80

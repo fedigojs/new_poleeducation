@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/api';
-import '../auth/Login.css';
+import './Login.css';
 import RegisterModal from './RegisterModal';
 
 const Login = () => {
