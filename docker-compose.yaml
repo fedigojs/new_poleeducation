@@ -5,7 +5,7 @@ services:
         build:
             context: ./server
         ports:
-            - '3002:3002'
+            - '3002:3002' # Этот порт пробрасывается только внутри Docker сети
         env_file:
             - .env
         environment:
@@ -16,31 +16,31 @@ services:
     frontend:
         build:
             context: ./client
-        ports:
-            - '80:80'
-        environment:
-            - REACT_APP_API_URL=http://backend:3002
+        # Порты для фронтенда не пробрасываются наружу, он доступен только для Nginx
         depends_on:
+            - backend
+
+    nginx:
+        image: nginx:alpine
+        ports:
+            - '80:80' # Nginx обслуживает наружные запросы на порт 80
+        volumes:
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf # Прокидывание конфигурационного файла
+        depends_on:
+            - frontend
             - backend
 
     db_auth:
         container_name: poleeducation_db
         image: postgres:16-alpine
         ports:
-            - '5435:5432'
+            - '5435:5432' # Пробрасывание порта для доступа к базе данных снаружи (если нужно)
         environment:
             - POSTGRES_DB=poleeducation_db
             - POSTGRES_USER=fedigo_admin
             - POSTGRES_PASSWORD=Igor18052008
         volumes:
             - db_data:/var/lib/postgresql/data
-
-    seeder:
-        build:
-            context: ./server
-        command: npx sequelize db:seed:all
-        depends_on:
-            - db_auth
 
 volumes:
     db_data:
