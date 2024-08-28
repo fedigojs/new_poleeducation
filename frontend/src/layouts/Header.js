@@ -31,7 +31,7 @@ const Header = () => {
 					Змагання
 				</Link>
 				<Link
-					to='#'
+					to='test-elements'
 					className='nav-item'>
 					Обовʼязкові елементи
 				</Link>

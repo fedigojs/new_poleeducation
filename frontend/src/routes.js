@@ -18,6 +18,7 @@ import HomeJudge from './components/judgepanel/HomeJudge';
 import HomeCoach from './components/coachpanel/HomeCoach';
 import AthletesInCompetitionCoach from './components/coachpanel/AthletesInCompetitionCoach';
 import RegisterAthletePageCoach from './components/coachpanel/RegisterAthletePageCoach';
+import TestExerciseHomePage from './pages/HomePage/TestExerciseHomePage';
 
 const AppRoutes = () => (
 	<Router>
@@ -30,6 +31,11 @@ const AppRoutes = () => (
 				path='/login'
 				element={<Login />}
 			/>
+			<Route
+				path='/test-elements'
+				element={<TestExerciseHomePage />}
+			/>
+
 			<Route
 				path='/admin/*'
 				element={
