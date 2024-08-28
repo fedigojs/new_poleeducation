@@ -33,7 +33,7 @@ const Header = () => {
 				<Link
 					to='#'
 					className='nav-item'>
-					Навчання
+					Обовʼязкові елементи
 				</Link>
 				<Link
 					to='#'
