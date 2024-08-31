@@ -15,8 +15,8 @@
 	background-color: white;
 	padding: 30px;
 	border-radius: 12px;
-	width: 500px; /* Фиксированная ширина */
-	height: 600px; /* Фиксированная высота */
+	width: 400px; /* Фиксированная ширина */
+	height: 650px; /* Фиксированная высота */
 	position: relative;
 	z-index: 1001;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Увеличенная тень для глубины */

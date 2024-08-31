@@ -9,6 +9,7 @@ const AddUserPage = () => {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
+	const [phoneNumber, setPhoneNumber] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [roleId, setRole] = useState('');
@@ -44,6 +45,7 @@ const AddUserPage = () => {
 			await api.post('/api/users', {
 				firstName,
 				lastName,
+				phoneNumber,
 				email,
 				password,
 				roleId,
@@ -52,6 +54,7 @@ const AddUserPage = () => {
 			loadUsers();
 			setFirstName('');
 			setLastName('');
+			setPhoneNumber('');
 			setEmail('');
 			setPassword('');
 			setRole('');
@@ -65,9 +68,10 @@ const AddUserPage = () => {
 		setSelectedUser(user);
 		setFirstName(user.firstName);
 		setLastName(user.lastName);
+		setPhoneNumber(user.phoneNumber);
 		setEmail(user.email);
 		setRole(user.roleId);
-		setEditUserModalVisible(true); // Показываем модальное окно для редактирования
+		setEditUserModalVisible(true);
 	};
 
 	const closeModals = () => {
@@ -85,6 +89,7 @@ const AddUserPage = () => {
 			const updateData = {
 				firstName,
 				lastName,
+				phoneNumber,
 				email,
 				roleId,
 				// Добавьте пароль в данные для обновления, если он был изменён
@@ -96,6 +101,7 @@ const AddUserPage = () => {
 			setEditUserModalVisible(false); // Закрываем модальное окно после обновления
 			setFirstName('');
 			setLastName('');
+			setPhoneNumber('');
 			setEmail('');
 			setRole('');
 			setSelectedUser(null);
@@ -154,6 +160,16 @@ const AddUserPage = () => {
 								id='lastName'
 								value={lastName}
 								onChange={(e) => setLastName(e.target.value)}
+								required
+							/>
+						</label>
+						<label htmlFor='phoneNumber'>
+							Номер Телефону:
+							<input
+								type='text'
+								id='phoneNumber'
+								value={phoneNumber}
+								onChange={(e) => setPhoneNumber(e.target.value)}
 								required
 							/>
 						</label>
@@ -226,6 +242,16 @@ const AddUserPage = () => {
 							onChange={(e) => setLastName(e.target.value)}
 							required
 						/>
+						<label htmlFor='edit-phoneNumber'>
+							Номер телефону:
+						</label>
+						<input
+							type='text'
+							id='edit-phoneNumber'
+							value={phoneNumber}
+							onChange={(e) => setPhoneNumber(e.target.value)}
+							required
+						/>
 						<label htmlFor='edit-email'>Email:</label>
 						<input
 							type='email'
@@ -279,6 +305,7 @@ const AddUserPage = () => {
 							<th>id</th>
 							<th>Имя</th>
 							<th>Фамилия</th>
+							<th>Номер Телефону</th>
 							<th>Email</th>
 							<th>Роль</th>
 							<th>Действия</th>
@@ -294,6 +321,7 @@ const AddUserPage = () => {
 								<td>{user.id}</td>
 								<td>{user.firstName}</td>
 								<td>{user.lastName}</td>
+								<td>{user.phoneNumber}</td>
 								<td>{user.email}</td>
 								<td>{user.Role.name}</td>
 								<td>

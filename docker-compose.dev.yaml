@@ -29,6 +29,7 @@ services:
             - .env.development
         volumes:
             - ./frontend:/frontend
+            - /frontend/node_modules
         depends_on:
             - backend
 

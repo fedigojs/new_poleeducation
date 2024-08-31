@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 
 // Создание пользователя с ролью
 exports.createUserWithRole = async (req, res) => {
-	const { firstName, lastName, email, password, roleId } = req.body;
+	const { firstName, lastName, phoneNumber, email, password, roleId } =
+		req.body;
 	console.log(req.body);
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10); // хеширование пароля
@@ -11,6 +12,7 @@ exports.createUserWithRole = async (req, res) => {
 		const user = await User.create({
 			firstName,
 			lastName,
+			phoneNumber,
 			email,
 			password: hashedPassword,
 			roleId,
@@ -57,7 +59,8 @@ exports.getUserById = async (req, res) => {
 // Обновление пользователя
 exports.updateUser = async (req, res) => {
 	const { id } = req.params;
-	const { firstName, lastName, email, password, roleId } = req.body;
+	const { firstName, lastName, phoneNumber, email, password, roleId } =
+		req.body;
 	try {
 		const user = await User.findByPk(id);
 		if (!user) {
@@ -70,6 +73,7 @@ exports.updateUser = async (req, res) => {
 		await user.update({
 			firstName,
 			lastName,
+			phoneNumber,
 			email,
 			password: hashedPassword,
 			roleId,

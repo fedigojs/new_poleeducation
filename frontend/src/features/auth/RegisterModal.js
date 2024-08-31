@@ -6,6 +6,7 @@ import './RegisterModal.css';
 const RegisterModal = ({ closeModal }) => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
+	const [phoneNumber, setPhoneNumber] = useState('+38');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
@@ -38,8 +39,23 @@ const RegisterModal = ({ closeModal }) => {
 		setPasswordStrength(strength);
 	};
 
+	const handlePhoneNumberChange = (e) => {
+		const input = e.target.value;
+		if (input.startsWith('+38') && input.length <= 13) {
+			setPhoneNumber(input);
+		}
+	};
+
 	const handleRegister = async (e) => {
 		e.preventDefault();
+
+		const digitsOnly = phoneNumber.replace(/\D/g, '');
+		if (digitsOnly.length !== 12) {
+			setError(
+				'Номер телефону повинен містити 12 цифр, включаючи код країни'
+			);
+			return;
+		}
 
 		if (password !== confirmPassword) {
 			setError('Паролі не однакові');
@@ -47,7 +63,6 @@ const RegisterModal = ({ closeModal }) => {
 		}
 
 		try {
-			// Проверка на наличие пользователя с таким email
 			const existingUser = await api.post('/api/auth/check-email', {
 				email,
 			});
@@ -56,17 +71,17 @@ const RegisterModal = ({ closeModal }) => {
 				return;
 			}
 
-			// Регистрация пользователя
 			const response = await api.post('/api/auth/register', {
 				firstName,
 				lastName,
+				phoneNumber,
 				email,
 				password,
 			});
 
-			setSuccess('Registration successful! Please login.');
+			alert('Реєстрація успішна! Будь ласка, увійдіть.');
 			setError('');
-			closeModal(); // Закрыть модальное окно после успешной регистрации
+			closeModal();
 		} catch (err) {
 			setError(err.response?.data.message || 'An error occurred');
 		}
@@ -97,6 +112,15 @@ const RegisterModal = ({ closeModal }) => {
 							type='text'
 							value={lastName}
 							onChange={(e) => setLastName(e.target.value)}
+							required
+						/>
+					</label>
+					<label>
+						Вкажіть номер телефону обовʼязково:
+						<input
+							type='text'
+							value={phoneNumber}
+							onChange={handlePhoneNumberChange}
 							required
 						/>
 					</label>

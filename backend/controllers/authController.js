@@ -4,12 +4,13 @@ const bcrypt = require('bcrypt');
 const jwtUtils = require('../src/middleware/jwtutils');
 
 exports.register = async (req, res) => {
-	const { firstName, lastName, email, password } = req.body;
+	const { firstName, lastName, phoneNumber, email, password } = req.body;
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = await User.create({
 			firstName,
 			lastName,
+			phoneNumber,
 			email,
 			password: hashedPassword,
 			roleId: 2,
@@ -25,13 +26,15 @@ exports.register = async (req, res) => {
 };
 
 exports.createUserWithRole = async (req, res) => {
-	const { firstName, lastName, email, password, roleId } = req.body;
+	const { firstName, lastName, email, phoneNumber, password, roleId } =
+		req.body;
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10); // хеширование пароля
 		// Создание пользователя и назначение роли одновременно
 		const user = await User.create({
 			firstName,
 			lastName,
+			phoneNumber,
 			email,
 			password: hashedPassword,
 			roleId,
