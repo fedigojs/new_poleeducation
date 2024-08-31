@@ -17,6 +17,7 @@ services:
     frontend:
         build:
             context: ./frontend
+            dockerfile: Dockerfile.prod
         container_name: frontend
         ports:
             - '3001:80'
@@ -36,21 +37,16 @@ services:
             - db_data:/var/lib/postgresql/data
 
     nginx:
-        build: ./nginx
+        build:
+            context: ./nginx
+            args:
+                ENV: prod
         container_name: nginx
         ports:
             - '80:80'
         depends_on:
             - frontend
             - backend
-
-    seeder:
-        build:
-            context: ./backend
-        container_name: seed
-        command: npx sequelize db:seed:all
-        depends_on:
-            - db_auth
 
 volumes:
     db_data:

@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.dev
+        container_name: backend
+        ports:
+            - '3002:3002'
+        env_file:
+            - .env
+        environment:
+            - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation
+        volumes:
+            - ./backend:/app
+            - /app/node_modules
+        depends_on:
+            - db_auth
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.dev
+        container_name: frontend
+        ports:
+            - '3001:3000'
+        volumes:
+            - ./frontend:/frontend
+        depends_on:
+            - backend
+
+    db_auth:
+        container_name: poleeducation_db
+        image: postgres:16-alpine
+        ports:
+            - '5435:5432'
+        environment:
+            - POSTGRES_DB=poleeducation_db
+            - POSTGRES_USER=fedigo_admin
+            - POSTGRES_PASSWORD=Igor18052008
+        volumes:
+            - db_data:/var/lib/postgresql/data
+
+    nginx:
+        build:
+            context: ./nginx
+            args:
+                ENV: dev
+        container_name: nginx
+        ports:
+            - '80:80'
+        depends_on:
+            - frontend
+            - backend
+
+volumes:
+    db_data:
