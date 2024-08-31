@@ -9,7 +9,7 @@ services:
         ports:
             - '3002:3002'
         env_file:
-            - .env
+            - .env.development
         environment:
             - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation
         volumes:
@@ -25,6 +25,8 @@ services:
         container_name: frontend
         ports:
             - '3001:3000'
+        env_file:
+            - .env.development
         volumes:
             - ./frontend:/frontend
         depends_on:

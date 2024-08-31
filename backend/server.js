@@ -42,7 +42,7 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true })); // Для разбора JSON-запросов
 const corsOptions = {
-	origin: '*', // Разрешает ваш домен
+	origin: process.env.CORS_ORIGIN || '*',
 	optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
