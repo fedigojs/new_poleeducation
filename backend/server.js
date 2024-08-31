@@ -75,8 +75,8 @@ app.use('/api/admin', adminRoute);
 app.use('/api/draw-result', drawResultsRoute);
 
 // Start server
-const PORT = process.env.PORT;
-const HOST = process.env.HOST;
+const PORT = process.env.PORT_BACKEND;
+const HOST = process.env.HOST_BACKEND;
 app.listen(PORT, HOST, () => {
 	console.log(`Server is running on http://${HOST}:${PORT}`);
 });
