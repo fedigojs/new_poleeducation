@@ -47,7 +47,7 @@ services:
             - frontend
             - backend
         volumes:
-            - ssl_certs:/etc/nginx/ssl
+            - ssl_certs:/etc/nginx/certs
 
 volumes:
     db_data:
