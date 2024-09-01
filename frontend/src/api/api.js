@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://poleeducation.in.ua';
+const API_URL = 'https://poleeducation.in.ua';
 
 const api = axios.create({
 	baseURL: API_URL,

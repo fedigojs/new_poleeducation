@@ -35,18 +35,5 @@ services:
         volumes:
             - db_data:/var/lib/postgresql/data
 
-    nginx:
-        build:
-            context: ./nginx
-        container_name: nginx
-        ports:
-            - '80:80'
-        depends_on:
-            - frontend
-            - backend
-        volumes:
-            - ssl_certs:/etc/nginx/certs
-
 volumes:
     db_data:
-    ssl_certs:
