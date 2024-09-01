@@ -49,6 +49,9 @@ services:
         depends_on:
             - frontend
             - backend
+        volumes:
+            - ssl_certs:/etc/nginx/ssl
 
 volumes:
     db_data:
+    ssl_certs:
