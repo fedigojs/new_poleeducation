@@ -20,8 +20,6 @@ services:
         container_name: frontend
         ports:
             - '3001:80'
-        env_file:
-            - .env.production
         depends_on:
             - backend
 
