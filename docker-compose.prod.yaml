@@ -12,6 +12,7 @@ services:
             - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation
         depends_on:
             - db_auth
+        restart: always
 
     frontend:
         build:
@@ -22,6 +23,7 @@ services:
             - '3001:80'
         depends_on:
             - backend
+        restart: always
 
     db_auth:
         container_name: poleeducation_db
@@ -34,6 +36,7 @@ services:
             - POSTGRES_PASSWORD=Igor18052008
         volumes:
             - db_data:/var/lib/postgresql/data
+        restart: always
 
 volumes:
     db_data:
