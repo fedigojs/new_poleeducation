@@ -4,8 +4,10 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../api/api';
 import './Login.css';
 import RegisterModal from './RegisterModal';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
+	const { t } = useTranslation();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
@@ -32,7 +34,7 @@ const Login = () => {
 				navigate('/coach');
 			}
 		} catch (err) {
-			setError(err.response?.data.message || 'Произошла ошибка');
+			setError(err.response?.data.message || 'An error has occurred');
 			console.error('Login error:', err);
 		}
 	};
@@ -71,10 +73,12 @@ const Login = () => {
 							required
 						/>
 					</label>
-					<button type='submit'>Login</button>
+					<button type='submit'>{t('button.login')}</button>
 					{error && <p className='error-message'>{error}</p>}
 				</form>
-				<button onClick={openRegisterModal}>Регистрація</button>
+				<button onClick={openRegisterModal}>
+					{t('button.registrationNoun')}
+				</button>
 			</div>
 			{isRegisterModalOpen && (
 				<RegisterModal closeModal={closeRegisterModal} />

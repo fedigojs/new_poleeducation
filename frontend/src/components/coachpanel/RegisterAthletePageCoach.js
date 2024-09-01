@@ -3,9 +3,11 @@ import Select from 'react-select';
 import api from '../../api/api';
 import Modal from '../Modal';
 import { AuthContext } from '../../context/AuthContext';
-import AddAthleteCoachModal from '../modal/AddAthleteCoachModal'
+import AddAthleteCoachModal from '../modal/AddAthleteCoachModal';
+import { useTranslation } from 'react-i18next';
 
 const RegisterAthletePageCoach = () => {
+	const { t } = useTranslation();
 	const [competitions, setCompetitions] = useState([]);
 	const [athletes, setAthletes] = useState([]);
 	const [athleteAge, setAthleteAge] = useState([]);
@@ -58,7 +60,7 @@ const RegisterAthletePageCoach = () => {
 				setAllExercises(options);
 				setFilteredExercises(options);
 			} catch (error) {
-				console.error('Ошибка при загрузке упражнений:', error);
+				console.error('Error loading exercises:', error);
 			}
 		};
 		loadExercises();
@@ -104,8 +106,8 @@ const RegisterAthletePageCoach = () => {
 			setAllExercises(exercisesResponse.data);
 			setDetailExercises(detailExercisesResponse.data);
 		} catch (err) {
-			console.error('Ошибка при загрузке данных All:', err);
-			setError('Не удалось загрузить начальные данные.');
+			console.error('Error loading All data:', err);
+			setError('Failed to load initial data.');
 		}
 	};
 
@@ -114,8 +116,8 @@ const RegisterAthletePageCoach = () => {
 			const oneCoach = [user];
 			setCoaches(oneCoach);
 		} catch (err) {
-			console.error('Ошибка при загрузке тренеров:', err);
-			setError('Не удалось загрузить тренеров.');
+			console.error('Error loading trainers:', err);
+			setError('Failed to load trainers.');
 		}
 	};
 
@@ -148,7 +150,7 @@ const RegisterAthletePageCoach = () => {
 				);
 			} else {
 				const response = await api.post('/api/comp-part', postData);
-				console.log('Регистрация спортсмена успешно выполнена!');
+				console.log('Athlete registration completed successfully!');
 				setParticipations((prevParticipations) => [
 					...prevParticipations,
 					response.data,
@@ -159,9 +161,10 @@ const RegisterAthletePageCoach = () => {
 			setParticipations([...participations, response.data]);
 			closeModal();
 		} catch (err) {
-			console.error('Ошибка при регистрации:', err);
+			console.error('Error during registration:', err);
 			setError(
-				err.response?.data.message || 'Произошла ошибка при регистрации'
+				err.response?.data.message ||
+					'An error occurred during registration'
 			);
 		}
 	};
@@ -177,25 +180,24 @@ const RegisterAthletePageCoach = () => {
 			);
 			setParticipations(response.data);
 		} catch (err) {
-			console.error('Ошибка при загрузке участников:', err);
-			setError('Не удалось загрузить участников.');
+			console.error('Error loading participants:', err);
+			setError('Failed to load members.');
 		}
 	};
 
 	const handleDeleteAthleteRegistration = async (participationId) => {
-		if (window.confirm('Вы уверены, что хотите удалить этого атлета?')) {
+		if (window.confirm('Are you sure you want to remove this athlete?')) {
 			try {
 				await api.delete(`/api/comp-part/${participationId}`);
-				console.log('Регистрация атлета успешно удалена!');
 				loadParticipations();
 			} catch (error) {
 				console.error(
-					'Ошибка при удалении участия в соревнованиях',
+					'Error when deleting competition participation',
 					error
 				);
 				setError(
 					error.response?.data.message ||
-						'Произошла ошибка при удалении'
+						'An error occurred during deletion'
 				);
 			}
 		}
@@ -235,8 +237,8 @@ const RegisterAthletePageCoach = () => {
 				);
 				setEditingParticipation(participation);
 			} catch (error) {
-				console.error('Ошибка при загрузке данных участника:', error);
-				setError('Не удалось загрузить данные участника.');
+				console.error('Error loading member data:', error);
+				setError('Failed to load member data.');
 			}
 		} else {
 			resetForm();
@@ -279,7 +281,7 @@ const RegisterAthletePageCoach = () => {
 				lastName,
 				coachId,
 			});
-			console.log('Атлет успешно добавлен!');
+			console.log('Athlete added successfully!');
 
 			setIsAthleteModalVisible(false);
 			const response = await api.get(
@@ -287,18 +289,18 @@ const RegisterAthletePageCoach = () => {
 			);
 			setAthletes(response.data);
 		} catch (error) {
-			console.error('Ошибка при добавлении атлета:', error);
-			setError('Не удалось добавить атлета.');
+			console.error('Error adding athlete:', error);
+			setError('Failed to add athlete.');
 		}
 	};
 
 	return (
 		<div>
-			<h1>Регистрация спортсмена на соревнование</h1>
+			<h1>{t('h1.athleteRegistration')}</h1>
 			<button
 				className='edit-button'
 				onClick={() => setIsRegistrationModalVisible(true)}>
-				Регистрация
+				{t('button.registrationNoun')}
 			</button>
 
 			{isRegistrationModalVisible && (
@@ -315,8 +317,8 @@ const RegisterAthletePageCoach = () => {
 						</button>
 						<h3>
 							{editingParticipation
-								? 'Редактировать участника'
-								: 'Регистрация участника'}
+								? t('h3.editParticipant')
+								: t('h3.registrationParticipant')}
 						</h3>
 						<button
 							style={{
@@ -325,17 +327,21 @@ const RegisterAthletePageCoach = () => {
 								right: '10px',
 							}}
 							onClick={() => setIsAthleteModalVisible(true)}>
-							Додати спортсмена
+							{t('button.addParticipant')}
 						</button>
 						<br />
-						<label htmlFor='athlete'>Атлет:</label>
+						<label htmlFor='athlete'>
+							{t('label.addParticipant')}:
+						</label>
 						<select
 							style={{ width: '260px' }}
 							id='athlete'
 							value={athleteId}
 							onChange={(e) => setAthleteId(e.target.value)}
 							required>
-							<option value=''>Выберите участника</option>
+							<option value=''>
+								{t('option.selectParticipant')}
+							</option>
 							{athletes
 								.sort((a, b) =>
 									a.lastName.localeCompare(b.lastName)
@@ -349,13 +355,17 @@ const RegisterAthletePageCoach = () => {
 								))}
 						</select>
 
-						<label htmlFor='competition'>Соревнование:</label>
+						<label htmlFor='competition'>
+							{t('label.competition')}:
+						</label>
 						<select
 							id='competition'
 							value={competitionId}
 							onChange={(e) => setCompetitionId(e.target.value)}
 							required>
-							<option value=''>Выберите соревнование</option>
+							<option value=''>
+								{t('option.selectCompetition')}
+							</option>
 							{competitions.map((competition) => (
 								<option
 									key={competition.id}
@@ -364,13 +374,15 @@ const RegisterAthletePageCoach = () => {
 								</option>
 							))}
 						</select>
-						<label htmlFor='trends'>Напрям:</label>
+						<label htmlFor='trends'>{t('label.direction')}:</label>
 						<select
 							id='trends'
 							value={athleteTrendId}
 							onChange={(e) => setAthleteTrendId(e.target.value)}
 							required>
-							<option value=''>Виберіть напрям</option>
+							<option value=''>
+								{t('option.selectDirection')}
+							</option>
 							{athleteTrend.map((trends) => (
 								<option
 									key={trends.id}
@@ -379,13 +391,13 @@ const RegisterAthletePageCoach = () => {
 								</option>
 							))}
 						</select>
-						<label htmlFor='ages'>Вік:</label>
+						<label htmlFor='ages'>{t('label.age')}:</label>
 						<select
 							id='ages'
 							value={athleteAgeId}
 							onChange={(e) => setAthleteAgeId(e.target.value)}
 							required>
-							<option value=''>Виберіть вік</option>
+							<option value=''>{t('option.selectAge')}</option>
 							{athleteAge.map((ages) => (
 								<option
 									key={ages.id}
@@ -395,14 +407,14 @@ const RegisterAthletePageCoach = () => {
 							))}
 						</select>
 
-						<label htmlFor='level'>Мастерство:</label>
+						<label htmlFor='level'>{t('label.mastery')}:</label>
 						<select
 							id='level'
 							value={levelId}
 							onChange={(e) => setLevelId(e.target.value)}
 							required>
 							<option value=''>
-								Выберите уровень мастерства
+								{t('option.selectMastery')}
 							</option>
 							{levels.map((level) => (
 								<option
@@ -413,13 +425,17 @@ const RegisterAthletePageCoach = () => {
 							))}
 						</select>
 
-						<label htmlFor='discipline'>Дисциплина:</label>
+						<label htmlFor='discipline'>
+							{t('label.discipline')}:
+						</label>
 						<select
 							id='discipline'
 							value={disciplineId}
 							onChange={(e) => setDisciplineId(e.target.value)}
 							required>
-							<option value=''>Выберите дисциплину</option>
+							<option value=''>
+								{t('option.selectDiscipline')}
+							</option>
 							{disciplines.map((discipline) => (
 								<option
 									key={discipline.id}
@@ -429,7 +445,7 @@ const RegisterAthletePageCoach = () => {
 							))}
 						</select>
 
-						<label htmlFor='exercise'>Упражнение:</label>
+						<label htmlFor='exercise'>{t('label.exercise')}:</label>
 						<Select
 							id='exercise'
 							isMulti
@@ -443,13 +459,13 @@ const RegisterAthletePageCoach = () => {
 						<div className='form-actions'>
 							<button type='submit'>
 								{editingParticipation
-									? 'Обновить'
-									: 'Зарегистрировать'}
+									? t('button.edit')
+									: t('button.registrationVerb')}
 							</button>
 							<button
 								type='button'
 								onClick={closeModal}>
-								Отмена
+								{t('button.cancel')}
 							</button>
 						</div>
 
@@ -476,14 +492,14 @@ const RegisterAthletePageCoach = () => {
 							onClick={() => setIsDetailsModalVisible(false)}>
 							&times;
 						</button>
-						<h3>Детали упражнений</h3>
-						<h2>Атлет:</h2>
+						<h3>{t('h3.exerciseDetails')}</h3>
+						<h2>{t('table.athlete')}:</h2>
 						<table className='details-table'>
 							<thead>
 								<tr>
-									<th>Упражнение</th>
-									<th>Описание</th>
-									<th>Изображение</th>
+									<th>{t('table.exercise')}</th>
+									<th>{t('table.descriptions')}</th>
+									<th>{t('table.image')}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -514,11 +530,11 @@ const RegisterAthletePageCoach = () => {
 				<table>
 					<thead>
 						<tr>
-							<th>Атлет</th>
-							<th>Соревнования</th>
-							<th>Направление</th>
-							<th>Возраст</th>
-							<th>Действие</th>
+							<th>{t('table.athlete')}</th>
+							<th>{t('table.competition')}</th>
+							<th>{t('table.direction')}</th>
+							<th>{t('table.age')}</th>
+							<th>{t('table.actions')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -539,14 +555,14 @@ const RegisterAthletePageCoach = () => {
 												participation.id
 											);
 										}}>
-										Детали
+										{t('button.details')}
 									</button>
 									<button
 										className='detail-button'
 										onClick={() =>
 											openModal(participation.id)
 										}>
-										Редактировать
+										{t('button.edit')}
 									</button>
 									<button
 										className='delete-button'
@@ -555,7 +571,7 @@ const RegisterAthletePageCoach = () => {
 												participation.id
 											)
 										}>
-										Удалить
+										{t('button.delete')}
 									</button>
 								</td>
 							</tr>

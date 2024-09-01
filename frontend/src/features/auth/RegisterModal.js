@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
 import './Login.css';
 import './RegisterModal.css';
+import { useTranslation } from 'react-i18next';
 
 const RegisterModal = ({ closeModal }) => {
+	const { t } = useTranslation();
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [phoneNumber, setPhoneNumber] = useState('+38');
@@ -95,10 +97,10 @@ const RegisterModal = ({ closeModal }) => {
 					onClick={closeModal}>
 					&times;
 				</span>
-				<h2>Регистрація</h2>
+				<h2>{t('button.registrationNoun')}</h2>
 				<form onSubmit={handleRegister}>
 					<label>
-						Імʼя
+						{t('label.firstName')}
 						<input
 							type='text'
 							value={firstName}
@@ -107,7 +109,7 @@ const RegisterModal = ({ closeModal }) => {
 						/>
 					</label>
 					<label>
-						Прізвищє
+						{t('label.lastName')}
 						<input
 							type='text'
 							value={lastName}
@@ -116,7 +118,7 @@ const RegisterModal = ({ closeModal }) => {
 						/>
 					</label>
 					<label>
-						Вкажіть номер телефону обовʼязково:
+						{t('label.phoneText')}:
 						<input
 							type='text'
 							value={phoneNumber}
@@ -125,7 +127,7 @@ const RegisterModal = ({ closeModal }) => {
 						/>
 					</label>
 					<label>
-						Email:
+						{t('label.email')}:
 						<input
 							type='email'
 							value={email}
@@ -134,7 +136,7 @@ const RegisterModal = ({ closeModal }) => {
 						/>
 					</label>
 					<label>
-						Password:
+						{t('label.password')}:
 						<input
 							type='password'
 							value={password}
@@ -143,10 +145,10 @@ const RegisterModal = ({ closeModal }) => {
 						/>
 					</label>
 					<p className='password-strength'>
-						Password Strength: {passwordStrength}
+						{t('label.passwordStrength')}: {passwordStrength}
 					</p>
 					<label>
-						Confirm Password:
+						{t('label.passwordConfirm')}:
 						<input
 							type='password'
 							value={confirmPassword}
@@ -154,7 +156,9 @@ const RegisterModal = ({ closeModal }) => {
 							required
 						/>
 					</label>
-					<button type='submit'>Регистрація</button>
+					<button type='submit'>
+						{t('button.registrationVerb')}
+					</button>
 					{error && <p className='error-message'>{error}</p>}
 					{success && <p className='success-message'>{success}</p>}
 				</form>
