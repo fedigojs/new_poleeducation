@@ -30,7 +30,7 @@ export const TestExercise = () => {
 				setAllExercises(options);
 				setFilteredExercises(options);
 			} catch (error) {
-				console.error('Ошибка при загрузке упражнений:', error);
+				console.error('Помилка під час завантаження вправ:', error);
 			}
 		};
 		loadExercises();
@@ -62,7 +62,7 @@ export const TestExercise = () => {
 		if (tableData.length > 0) {
 			setTableData((prevTableData) => prevTableData.slice(0, -1));
 		} else {
-			alert('В таблице нет строк для удаления.');
+			alert('У таблиці немає рядків для видалення.');
 		}
 	};
 
@@ -205,7 +205,7 @@ export const TestExercise = () => {
 								<td>
 									<img
 										src={row.image}
-										alt='Изображение'
+										alt='Зображення'
 										style={{ width: '150px' }}
 									/>
 								</td>
