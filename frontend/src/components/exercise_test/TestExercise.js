@@ -165,7 +165,7 @@ export const TestExercise = () => {
 							<label
 								htmlFor='exercise'
 								className='form-label'>
-								Упражнение:
+								Вправа:
 							</label>
 							<Select
 								id='exercise'
