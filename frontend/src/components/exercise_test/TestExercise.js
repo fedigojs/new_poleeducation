@@ -19,7 +19,6 @@ export const TestExercise = () => {
 		const loadExercises = async () => {
 			try {
 				const response = await api.get('/api/exercise');
-				console.log('Загруженные упражнения:', response.data);
 				const options = response.data.map((ex) => ({
 					value: ex.id,
 					label: `${ex.code} - ${ex.name}`,
@@ -133,10 +132,10 @@ export const TestExercise = () => {
 								onChange={(e) =>
 									setSelectedCategory(e.target.value)
 								}>
-								<option value=''>Все разряды</option>
-								<option value='1'>Дебютант</option>
+								<option value=''>Усі розряди</option>
+								<option value='1'>Дебют</option>
 								<option value='2'>Аматор</option>
-								<option value='3'>Новачок</option>
+								<option value='3'>Напівпрофі</option>
 								<option value='4'>Профі</option>
 								<option value='5'>Еліт</option>
 							</select>
@@ -155,7 +154,7 @@ export const TestExercise = () => {
 								onChange={(e) =>
 									setSelectedDirection(e.target.value)
 								}>
-								<option value=''>Все направления</option>
+								<option value=''>Усі напрямки</option>
 								<option value='1'>Пілон</option>
 								<option value='2'>Кільце</option>
 								<option value='3'>Полотна</option>
@@ -227,19 +226,19 @@ export const TestExercise = () => {
 					className='button primary'
 					type='button'
 					onClick={addAllSelectedExercisesToTable}>
-					Добавить все выбранные упражнения в таблицу
+					Додати всі обрані вправи в таблицю
 				</button>
 				<button
 					className='button secondary'
 					type='button'
 					onClick={removeLastRow}>
-					Удалить последнюю строку
+					Видалити останній рядок
 				</button>
 				<button
 					className='button success'
 					type='button'
 					onClick={saveAsPDF}>
-					Сохранить как PDF
+					Зберегти як PDF
 				</button>
 			</div>
 		</div>
