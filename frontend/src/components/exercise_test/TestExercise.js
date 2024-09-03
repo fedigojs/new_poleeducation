@@ -71,6 +71,11 @@ export const TestExercise = () => {
 	};
 
 	const saveAsPDF = () => {
+		const formElements = document.querySelectorAll('input, select');
+		formElements.forEach((element) => {
+			element.classList.add('pdf-input-style');
+		});
+
 		const element = document.getElementById('pdfprint');
 		const opt = {
 			margin: [0.5, 0.5],
@@ -79,7 +84,16 @@ export const TestExercise = () => {
 			html2canvas: { scale: 2, letterRendering: true, useCORS: true },
 			jsPDF: { unit: 'in', format: 'a3', orientation: 'portrait' },
 		};
-		html2pdf().set(opt).from(element).save();
+		html2pdf()
+			.set(opt)
+			.from(element)
+			.save()
+			.then(() => {
+				// Убедитесь, что стили для PDF больше не применяются
+				formElements.forEach((element) => {
+					element.classList.remove('pdf-input-style');
+				});
+			});
 	};
 
 	return (

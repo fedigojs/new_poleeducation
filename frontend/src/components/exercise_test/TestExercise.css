@@ -89,3 +89,10 @@
 .button:hover {
 	opacity: 0.9;
 }
+
+.pdf-input-style {
+	line-height: 1.5; /* Вы можете отрегулировать значение по необходимости */
+	padding: 0;
+	margin: 0;
+	height: auto;
+}
