@@ -1,95 +1,87 @@
-// src/components/AddAthleteModal.js
 import React, { useState } from 'react';
-import Modal from '../Modal';
+import { Modal, Form, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 
-const AddAthleteModal = ({
-	isVisible,
-	onClose,
-	onSubmit,
-	coaches,
-	coachRoleId,
-}) => {
+const AddAthleteCoachModal = ({ isVisible, onClose, onSubmit, coaches }) => {
+	const { t } = useTranslation();
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
-	const [coachId, setCoachId] = useState('');
 	const [error, setError] = useState('');
-
-	console.log('coaches:', coaches);
-	console.log('coachRoleId:', coachRoleId);
 
 	const handleAddAthlete = async (e) => {
 		e.preventDefault();
 		try {
-			await onSubmit({ firstName, lastName, coachId });
+			await onSubmit({ firstName, lastName, coachId: coaches.id });
 			setFirstName('');
 			setLastName('');
-			setCoachId('');
 			onClose();
 		} catch (err) {
-			setError(err.response?.data.message || 'Произошла ошибка');
+			setError(err.response?.data.message || 'An error has occurred');
 		}
 	};
 
 	return (
 		<Modal
-			onClose={onClose}
-			isVisible={isVisible}>
-			<form
-				onSubmit={handleAddAthlete}
-				className='athlete-form'>
-				<h3>Добавить атлета</h3>
-				<label htmlFor='firstName'>
-					Имя:
-					<input
-						type='text'
-						id='firstName'
-						value={firstName}
-						onChange={(e) => setFirstName(e.target.value)}
-						required
-					/>
-				</label>
-				<label htmlFor='lastName'>
-					Фамилия:
-					<input
-						type='text'
-						id='lastName'
-						value={lastName}
-						onChange={(e) => setLastName(e.target.value)}
-						required
-					/>
-				</label>
+			show={isVisible}
+			onHide={onClose}
+			centered>
+			<Modal.Header closeButton>
+				<Modal.Title>{t('modal.title.addAthlete')}</Modal.Title>
+			</Modal.Header>
+			<Modal.Body>
+				<Form onSubmit={handleAddAthlete}>
+					<Form.Group controlId='firstName'>
+						<Form.Label>{t('label.firstName')}</Form.Label>
+						<Form.Control
+							type='text'
+							value={firstName}
+							onChange={(e) => setFirstName(e.target.value)}
+							required
+						/>
+					</Form.Group>
 
-				<label htmlFor='coachId'>
-					Тренер:
-					<select
-						id='coachId'
-						value={coachId}
-						onChange={(e) => setCoachId(e.target.value)}
-						required>
-						<option value=''>Выберите тренера</option>
-						{coaches
-							.filter((coach) => coach.userId === coachRoleId)
-							.map((coach) => (
-								<option
-									key={coach.userId}
-									value={coach.userId}>
-									{coach.firstName} {coach.lastName}
-								</option>
-							))}
-					</select>
-				</label>
-				<div className='form-actions'>
-					<button type='submit'>Добавить</button>
-					<button
-						type='button'
-						onClick={onClose}>
-						Отмена
-					</button>
-				</div>
-				{error && <p className='error-message'>{error}</p>}
-			</form>
+					<Form.Group controlId='lastName'>
+						<Form.Label>{t('label.lastName')}</Form.Label>
+						<Form.Control
+							type='text'
+							value={lastName}
+							onChange={(e) => setLastName(e.target.value)}
+							required
+						/>
+					</Form.Group>
+
+					<Form.Group controlId='coachId'>
+						<Form.Label>{t('label.coach')}</Form.Label>
+						<Form.Control
+							as='select'
+							value={coaches.id}
+							disabled>
+							<option value={coaches.id}>
+								{coaches.firstName} {coaches.lastName}
+							</option>
+						</Form.Control>
+					</Form.Group>
+
+					{error && <p className='text-danger'>{error}</p>}
+
+					<div className='d-flex justify-content-end'>
+						<Button
+							variant='secondary'
+							onClick={onClose}
+							className='m-3'>
+							{t('button.cancel')}
+						</Button>
+						<Button
+							type='submit'
+							variant='primary'
+							className='m-3'>
+							{t('button.add')}
+						</Button>
+					</div>
+				</Form>
+			</Modal.Body>
 		</Modal>
 	);
 };
 
-export default AddAthleteModal;
+export default AddAthleteCoachModal;

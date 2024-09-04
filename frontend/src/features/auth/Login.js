@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/api';
-import './Login.css';
-import RegisterModal from './RegisterModal';
 import { useTranslation } from 'react-i18next';
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
+import RegisterModal from './RegisterModal';
 
 const Login = () => {
 	const { t } = useTranslation();
@@ -43,47 +43,81 @@ const Login = () => {
 	const closeRegisterModal = () => setIsRegisterModalOpen(false);
 
 	return (
-		<div className='login-form-container'>
-			<div className='login-form'>
-				<div className='logo-container'>
-					<img
-						src={`${process.env.PUBLIC_URL}/images/logo_poleeducation.png`}
-						alt='Company Logo'
-						className='company-logo'
-						width='100'
-						height='100'
-					/>
-				</div>
-				<form onSubmit={handleLogin}>
-					<label>
-						Email:
-						<input
-							type='email'
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
+		<Container className='d-flex justify-content-center align-items-center min-vh-100'>
+			<Row className='w-100'>
+				<Col
+					xs={12}
+					md={6}
+					lg={4}
+					className='mx-auto'>
+					<div className='text-center mb-4'>
+						<img
+							src={`${process.env.PUBLIC_URL}/images/logo_poleeducation.png`}
+							alt='Company Logo'
+							width='100'
+							height='100'
+							className='mb-3'
 						/>
-					</label>
-					<label>
-						Password:
-						<input
-							type='password'
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
-					</label>
-					<button type='submit'>{t('button.login')}</button>
-					{error && <p className='error-message'>{error}</p>}
-				</form>
-				<button onClick={openRegisterModal}>
-					{t('button.registrationNoun')}
-				</button>
-			</div>
-			{isRegisterModalOpen && (
-				<RegisterModal closeModal={closeRegisterModal} />
-			)}
-		</div>
+					</div>
+					<Form onSubmit={handleLogin}>
+						<Form.Group
+							controlId='formEmail'
+							className='mb-3'>
+							<Form.Label>Email</Form.Label>
+							<Form.Control
+								type='email'
+								placeholder='Enter email'
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								required
+							/>
+						</Form.Group>
+
+						<Form.Group
+							controlId='formPassword'
+							className='mb-3'>
+							<Form.Label>Password</Form.Label>
+							<Form.Control
+								type='password'
+								placeholder='Enter password'
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								required
+							/>
+						</Form.Group>
+
+						<Button
+							variant='primary'
+							type='submit'
+							className='w-100'>
+							{t('button.login')}
+						</Button>
+					</Form>
+
+					{error && (
+						<Alert
+							variant='danger'
+							className='mt-3'>
+							{error}
+						</Alert>
+					)}
+
+					<div className='text-center mt-4'>
+						<Button
+							variant='link'
+							onClick={openRegisterModal}>
+							{t('button.registrationNoun')}
+						</Button>
+					</div>
+				</Col>
+			</Row>
+
+			{/* Modal for Registration */}
+			<RegisterModal
+				show={isRegisterModalOpen}
+				closeModal={closeRegisterModal}
+				centered></RegisterModal>
+		</Container>
 	);
 };
 

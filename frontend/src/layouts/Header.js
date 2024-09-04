@@ -1,62 +1,72 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-import './Header.css';
+import { Navbar, Nav, Container } from 'react-bootstrap';
 
 const Header = () => {
 	return (
-		<header className='header'>
-			<div
-				style={{
-					display: 'inline-flex',
-					alignItems: 'center',
-				}}>
-				<img
-					src='/images/logo_poleeducation.png'
-					alt='PoleEducation'
-					className='logo-img'
-					width='40'
-					height='40'
-				/>
-				<Link
+		<Navbar
+			bg='black'
+			variant='dark'
+			expand='lg'
+			collapseOnSelect
+			className='w-100'>
+			<Container>
+				<Navbar.Brand
+					as={Link}
 					to='/'
-					className='nav-logo'>
+					className='text-white'>
+					<img
+						src='/images/logo_poleeducation.png'
+						alt='PoleEducation'
+						width='40'
+						height='40'
+						className='d-inline-block align-top'
+					/>{' '}
 					POLEEducation
-				</Link>
-			</div>
-			<nav className='nav-links'>
-				<Link
-					to='#'
-					className='nav-item'>
-					Змагання
-				</Link>
-				<Link
-					to='test-elements'
-					className='nav-item'>
-					Обовʼязкові елементи
-				</Link>
-				<Link
-					to='#'
-					className='nav-item'>
-					Правила
-				</Link>
-				<Link
-					to='#'
-					className='nav-item'>
-					Події
-				</Link>
-				<Link
-					to='#'
-					className='nav-item'>
-					Контакти
-				</Link>
-				<Link
-					to='/login'
-					className='button button-log-in'>
-					Log In
-				</Link>
-			</nav>
-		</header>
+				</Navbar.Brand>
+				<Navbar.Toggle aria-controls='basic-navbar-nav' />
+				<Navbar.Collapse id='basic-navbar-nav'>
+					<Nav className='ms-auto'>
+						<Nav.Link
+							as={Link}
+							to='#'
+							className='text-white'>
+							Змагання
+						</Nav.Link>
+						<Nav.Link
+							as={Link}
+							to='/test-elements'
+							className='text-white'>
+							Обовʼязкові елементи
+						</Nav.Link>
+						<Nav.Link
+							as={Link}
+							to='#'
+							className='text-white'>
+							Правила
+						</Nav.Link>
+						<Nav.Link
+							as={Link}
+							to='#'
+							className='text-white'>
+							Події
+						</Nav.Link>
+						<Nav.Link
+							as={Link}
+							to='#'
+							className='text-white'>
+							Контакти
+						</Nav.Link>
+						<Nav.Link
+							as={Link}
+							to='/login'
+							className='bg-white text-black py-2 px-4 rounded-md'>
+							Log In
+						</Nav.Link>
+					</Nav>
+				</Navbar.Collapse>
+			</Container>
+		</Navbar>
 	);
 };
 

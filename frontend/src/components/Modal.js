@@ -1,22 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Modal as BootstrapModal } from 'react-bootstrap';
 import './Modal.css';
 
-const Modal = ({ children, onClose, className }) => {
+const Modal = ({ children, onClose, className, ...props }) => {
 	const handleBackdropClick = (e) => {
-		e.stopPropagation(); // Предотвращаем всплытие, чтобы не закрыть окно при клике внутри
+		e.stopPropagation();
 	};
 
 	return ReactDOM.createPortal(
-		<div
-			className='modal-backdrop'
-			onClick={onClose}>
-			<div
-				className={`modal ${className}`}
-				onClick={handleBackdropClick}>
+		<BootstrapModal
+			show
+			onHide={onClose}
+			centered
+			dialogClassName={`modal-fullscreen-sm-down ${className}`}
+			{...props}>
+			<BootstrapModal.Body
+				onClick={handleBackdropClick}
+				className='w-100 d-flex flex-column'>
 				{children}
-			</div>
-		</div>,
+			</BootstrapModal.Body>
+		</BootstrapModal>,
 		document.getElementById('modal-root')
 	);
 };

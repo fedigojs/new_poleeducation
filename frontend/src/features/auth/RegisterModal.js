@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../api/api';
-import './Login.css';
-import './RegisterModal.css';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import api from '../../api/api';
 
-const RegisterModal = ({ closeModal }) => {
+const RegisterModal = ({ show, closeModal }) => {
 	const { t } = useTranslation();
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
@@ -29,14 +28,14 @@ const RegisterModal = ({ closeModal }) => {
 				/\d/.test(password) &&
 				/[!@#$%^&*]/.test(password)
 			) {
-				strength = 'Хороший';
+				strength = t('strength.good');
 			} else if (/[a-zA-Z]/.test(password) && /\d/.test(password)) {
-				strength = 'Середній';
+				strength = t('strength.medium');
 			} else {
-				strength = 'Слабкий';
+				strength = t('strength.weak');
 			}
 		} else {
-			strength = 'За слабкий';
+			strength = t('strength.tooWeak');
 		}
 		setPasswordStrength(strength);
 	};
@@ -53,14 +52,12 @@ const RegisterModal = ({ closeModal }) => {
 
 		const digitsOnly = phoneNumber.replace(/\D/g, '');
 		if (digitsOnly.length !== 12) {
-			setError(
-				'Номер телефону повинен містити 12 цифр, включаючи код країни'
-			);
+			setError(t('error.phoneLength'));
 			return;
 		}
 
 		if (password !== confirmPassword) {
-			setError('Паролі не однакові');
+			setError(t('error.passwordMismatch'));
 			return;
 		}
 
@@ -69,11 +66,11 @@ const RegisterModal = ({ closeModal }) => {
 				email,
 			});
 			if (existingUser.data.exists) {
-				setError('Email вже використовується');
+				setError(t('error.emailExists'));
 				return;
 			}
 
-			const response = await api.post('/api/auth/register', {
+			await api.post('/api/auth/register', {
 				firstName,
 				lastName,
 				phoneNumber,
@@ -81,89 +78,116 @@ const RegisterModal = ({ closeModal }) => {
 				password,
 			});
 
-			alert('Реєстрація успішна! Будь ласка, увійдіть.');
+			setSuccess(t('success.registration'));
 			setError('');
 			closeModal();
 		} catch (err) {
-			setError(err.response?.data.message || 'An error occurred');
+			setError(err.response?.data.message || t('error.generic'));
 		}
 	};
 
 	return (
-		<div className='modal2'>
-			<div className='modal-content2'>
-				<span
-					className='close'
-					onClick={closeModal}>
-					&times;
-				</span>
-				<h2>{t('button.registrationNoun')}</h2>
-				<form onSubmit={handleRegister}>
-					<label>
-						{t('label.firstName')}
-						<input
+		<Modal
+			show={show}
+			onHide={closeModal}
+			centered>
+			<Modal.Header closeButton>
+				<Modal.Title>{t('button.registrationNoun')}</Modal.Title>
+			</Modal.Header>
+			<Modal.Body>
+				<Form onSubmit={handleRegister}>
+					<Form.Group
+						className='mb-3'
+						controlId='formFirstName'>
+						<Form.Label>{t('label.firstName')}</Form.Label>
+						<Form.Control
 							type='text'
 							value={firstName}
 							onChange={(e) => setFirstName(e.target.value)}
 							required
 						/>
-					</label>
-					<label>
-						{t('label.lastName')}
-						<input
+					</Form.Group>
+					<Form.Group
+						className='mb-3'
+						controlId='formLastName'>
+						<Form.Label>{t('label.lastName')}</Form.Label>
+						<Form.Control
 							type='text'
 							value={lastName}
 							onChange={(e) => setLastName(e.target.value)}
 							required
 						/>
-					</label>
-					<label>
-						{t('label.phoneText')}:
-						<input
+					</Form.Group>
+					<Form.Group
+						className='mb-3'
+						controlId='formPhoneNumber'>
+						<Form.Label>{t('label.phoneText')}</Form.Label>
+						<Form.Control
 							type='text'
 							value={phoneNumber}
 							onChange={handlePhoneNumberChange}
 							required
 						/>
-					</label>
-					<label>
-						{t('label.email')}:
-						<input
+					</Form.Group>
+					<Form.Group
+						className='mb-3'
+						controlId='formEmail'>
+						<Form.Label>{t('label.email')}</Form.Label>
+						<Form.Control
 							type='email'
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
 						/>
-					</label>
-					<label>
-						{t('label.password')}:
-						<input
+					</Form.Group>
+					<Form.Group
+						className='mb-3'
+						controlId='formPassword'>
+						<Form.Label>{t('label.password')}</Form.Label>
+						<Form.Control
 							type='password'
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
 						/>
-					</label>
+					</Form.Group>
 					<p className='password-strength'>
 						{t('label.passwordStrength')}: {passwordStrength}
 					</p>
-					<label>
-						{t('label.passwordConfirm')}:
-						<input
+					<Form.Group
+						className='mb-3'
+						controlId='formConfirmPassword'>
+						<Form.Label>{t('label.passwordConfirm')}</Form.Label>
+						<Form.Control
 							type='password'
 							value={confirmPassword}
 							onChange={(e) => setConfirmPassword(e.target.value)}
 							required
 						/>
-					</label>
-					<button type='submit'>
+					</Form.Group>
+					<Button
+						variant='primary'
+						type='submit'
+						className='w-100'>
 						{t('button.registrationVerb')}
-					</button>
-					{error && <p className='error-message'>{error}</p>}
-					{success && <p className='success-message'>{success}</p>}
-				</form>
-			</div>
-		</div>
+					</Button>
+				</Form>
+				{error && (
+					<Alert
+						variant='danger'
+						className='mt-3'>
+						{error}
+					</Alert>
+				)}
+				{success && (
+					<Alert
+						variant='success'
+						className='mt-3'>
+						{success}
+					</Alert>
+				)}
+			</Modal.Body>
+		</Modal>
 	);
 };
 

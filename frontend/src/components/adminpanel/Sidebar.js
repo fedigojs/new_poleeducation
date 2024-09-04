@@ -1,7 +1,6 @@
 // Sidebar.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Sidebar.css';
 
 const Sidebar = () => {
 	return (
@@ -22,7 +21,7 @@ const Sidebar = () => {
 				</li>
 				<li>
 					<Link to='/admin/register-athletes'>
-						Зареєструвати спротсмена на змаганнях
+						Реєстрація на змаганнях
 					</Link>
 				</li>
 				<li>

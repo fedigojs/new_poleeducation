@@ -1,25 +1,29 @@
-// AdminPage.js
-import { useAuth } from '../../context/AuthContext'; // Убедитесь, что путь верный
+import React from 'react';
 import { Outlet } from 'react-router-dom';
-import './AdminPage.css'; // Предполагается, что стили вынесены в отдельный файл
-import Sidebar from '../../components/adminpanel/Sidebar';
+import Menu from '../../components/Menu/Menu';
 
 const AdminPage = () => {
-	const { logout } = useAuth();
+	const menuItems = [
+		{ path: '/admin', label: 'Головна' },
+		{ path: '/admin/add-user', label: 'Додати користувача' },
+		{ path: '/admin/add-athletes', label: 'Додати спортсмена' },
+		{ path: '/admin/add-competition', label: 'Створити змагання' },
+		{
+			path: '/admin/register-athletes',
+			label: 'Реєстрація на змаганнях',
+		},
+		{
+			path: '/admin/athletes-draw',
+			label: 'Змагання',
+		},
+	];
 
 	return (
 		<>
-			<div className='header'>
-				<div className='logo'>Админ-панель</div>
-				<button
-					className='logout-btn'
-					onClick={logout}>
-					Logout
-				</button>
-			</div>
-
-			<Sidebar />
-
+			<Menu
+				menuItems={menuItems}
+				brandLink='/admin'
+			/>
 			<div className='content'>
 				<Outlet />
 			</div>

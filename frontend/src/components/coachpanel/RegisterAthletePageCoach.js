@@ -3,8 +3,16 @@ import Select from 'react-select';
 import api from '../../api/api';
 import Modal from '../Modal';
 import { AuthContext } from '../../context/AuthContext';
-import AddAthleteCoachModal from '../modal/AddAthleteCoachModal';
 import { useTranslation } from 'react-i18next';
+import {
+	Form,
+	Button,
+	Table,
+	Col,
+	Container,
+	Row,
+	Modal as BootstrapModal,
+} from 'react-bootstrap';
 
 const RegisterAthletePageCoach = () => {
 	const { t } = useTranslation();
@@ -295,13 +303,17 @@ const RegisterAthletePageCoach = () => {
 	};
 
 	return (
-		<div>
-			<h1>{t('h1.athleteRegistration')}</h1>
-			<button
-				className='edit-button'
-				onClick={() => setIsRegistrationModalVisible(true)}>
-				{t('button.registrationNoun')}
-			</button>
+		<Container>
+			<Col>
+				<h1 className='my-4'>{t('h1.athleteRegistration')}</h1>
+			</Col>
+			<Col className='text-center'>
+				<Button
+					variant='success'
+					onClick={() => setIsRegistrationModalVisible(true)}>
+					{t('button.registrationNoun')}
+				</Button>
+			</Col>
 
 			{isRegistrationModalVisible && (
 				<Modal
@@ -320,16 +332,6 @@ const RegisterAthletePageCoach = () => {
 								? t('h3.editParticipant')
 								: t('h3.registrationParticipant')}
 						</h3>
-						<button
-							style={{
-								position: 'absolute',
-								top: '95px',
-								right: '10px',
-							}}
-							onClick={() => setIsAthleteModalVisible(true)}>
-							{t('button.addParticipant')}
-						</button>
-						<br />
 						<label htmlFor='athlete'>
 							{t('label.addParticipant')}:
 						</label>
@@ -474,16 +476,6 @@ const RegisterAthletePageCoach = () => {
 				</Modal>
 			)}
 
-			{isAddAthleteModalVisible && (
-				<AddAthleteCoachModal
-					isVisible={isAddAthleteModalVisible}
-					onClose={() => setIsAthleteModalVisible(false)}
-					onSubmit={handleAddAthleteSubmit}
-					coaches={coaches}
-					coachRoleId={coachId}
-				/>
-			)}
-
 			{isDetailsModalVisible && selectedParticipationDetails && (
 				<Modal onClose={() => setIsDetailsModalVisible(false)}>
 					<div className='modal-content'>
@@ -530,6 +522,7 @@ const RegisterAthletePageCoach = () => {
 				<table>
 					<thead>
 						<tr>
+							<th>№</th>
 							<th>{t('table.athlete')}</th>
 							<th>{t('table.competition')}</th>
 							<th>{t('table.direction')}</th>
@@ -538,8 +531,9 @@ const RegisterAthletePageCoach = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{sortedParticipations.map((participation) => (
+						{sortedParticipations.map((participation, index) => (
 							<tr key={participation.id}>
+								<td>{index + 1}</td>
 								<td>
 									{participation.Athlete?.lastName}{' '}
 									{participation.Athlete?.firstName}
@@ -548,38 +542,43 @@ const RegisterAthletePageCoach = () => {
 								<td>{participation.AthleteTrend?.trends}</td>
 								<td>{participation.AthleteAge?.age}</td>
 								<td>
-									<button
-										className='deteil-button'
+									<Button
+										className='m-1'
+										variant='info'
 										onClick={() => {
 											handleDetailsClick(
 												participation.id
 											);
 										}}>
-										{t('button.details')}
-									</button>
-									<button
-										className='detail-button'
+										<i className='bi bi-file-earmark-text'></i>{' '}
+									</Button>
+									<Button
+										className='m-1'
+										variant='warning'
 										onClick={() =>
 											openModal(participation.id)
 										}>
-										{t('button.edit')}
-									</button>
-									<button
-										className='delete-button'
+										<i className='bi bi-pencil'></i>{' '}
+										{/* Иконка редактирования */}
+									</Button>
+									<Button
+										className='m-1'
+										variant='danger'
 										onClick={() =>
 											handleDeleteAthleteRegistration(
 												participation.id
 											)
 										}>
-										{t('button.delete')}
-									</button>
+										<i className='bi bi-trash'></i>{' '}
+										{/* Иконка удаления */}
+									</Button>
 								</td>
 							</tr>
 						))}
 					</tbody>
 				</table>
 			</div>
-		</div>
+		</Container>
 	);
 };
 
