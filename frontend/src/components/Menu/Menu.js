@@ -18,8 +18,7 @@ const Menu = ({ menuItems, brandLink }) => {
 			bg='dark'
 			variant='dark'
 			expand='lg'
-			expanded={isMenuOpen}
-			className='w-100'>
+			expanded={isMenuOpen}>
 			<Container>
 				<Navbar.Brand
 					as={Link}
@@ -33,9 +32,7 @@ const Menu = ({ menuItems, brandLink }) => {
 					onClick={toggleMenu}
 				/>
 
-				<Navbar.Collapse
-					id='basic-navbar-nav'
-					className='w-100'>
+				<Navbar.Collapse id='basic-navbar-nav'>
 					<Nav className='ml-auto d-flex align-items-center'>
 						{menuItems.map((item, index) => (
 							<Nav.Link
