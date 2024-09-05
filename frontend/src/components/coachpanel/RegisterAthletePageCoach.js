@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import api from '../../api/api';
-import Modal from '../Modal';
 import { AuthContext } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
+import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
 import { Button, Col, Container } from 'react-bootstrap';
 
 const RegisterAthletePageCoach = () => {
@@ -29,8 +29,6 @@ const RegisterAthletePageCoach = () => {
 	const [selectedParticipationDetails, setSelectedParticipationDetails] =
 		useState(null);
 	const [isRegistrationModalVisible, setIsRegistrationModalVisible] =
-		useState(false);
-	const [isAddAthleteModalVisible, setIsAthleteModalVisible] =
 		useState(false);
 	const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
 	const [editingParticipation, setEditingParticipation] = useState(null);
@@ -232,37 +230,6 @@ const RegisterAthletePageCoach = () => {
 		setIsRegistrationModalVisible(true); // Открываем модальное окно
 	};
 
-	// const openModal = async (participationId = null) => {
-	// 	if (participationId) {
-	// 		try {
-	// 			const response = await api.get(
-	// 				`/api/comp-part/${participationId}`
-	// 			);
-	// 			const participation = response.data;
-	// 			console.log(participation);
-	// 			setAthleteId(participation.athleteId);
-	// 			setCompetitionId(participation.competitionId);
-	// 			setAthleteAgeId(participation.athleteAgeId);
-	// 			setAthleteTrendId(participation.athleteTrendId);
-	// 			setLevelId(participation.levelId);
-	// 			setDisciplineId(participation.disciplineId);
-	// 			setSelectedExercises(
-	// 				participation.exercises.map((ex) => ({
-	// 					value: ex.id,
-	// 					label: `${ex.name}`,
-	// 				}))
-	// 			);
-	// 			setEditingParticipation(participation);
-	// 		} catch (error) {
-	// 			console.error('Error loading member data:', error);
-	// 			setError('Failed to load member data.');
-	// 		}
-	// 	} else {
-	// 		resetForm();
-	// 	}
-	// 	setIsRegistrationModalVisible(true);
-	// };
-
 	const closeModal = () => {
 		setIsRegistrationModalVisible(false);
 		resetForm();
@@ -322,45 +289,12 @@ const RegisterAthletePageCoach = () => {
 			)}
 
 			{isDetailsModalVisible && selectedParticipationDetails && (
-				<Modal onClose={() => setIsDetailsModalVisible(false)}>
-					<div className='modal-content'>
-						<button
-							className='modal-close-button'
-							onClick={() => setIsDetailsModalVisible(false)}>
-							&times;
-						</button>
-						<h3>{t('h3.exerciseDetails')}</h3>
-						<h2>{t('table.athlete')}:</h2>
-						<table className='details-table'>
-							<thead>
-								<tr>
-									<th>{t('table.exercise')}</th>
-									<th>{t('table.descriptions')}</th>
-									<th>{t('table.image')}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{selectedParticipationDetails.map(
-									(detail, index) => (
-										<tr key={index}>
-											<td>{detail.exercise.name}</td>
-											<td>
-												{detail.exercise.descriptions}
-											</td>
-											<td>
-												<img
-													src={detail.exercise.image}
-													alt={detail.exercise.name}
-													className='exercise-image'
-												/>
-											</td>
-										</tr>
-									)
-								)}
-							</tbody>
-						</table>
-					</div>
-				</Modal>
+				<ExerciseDetailsModal
+					isVisible={isDetailsModalVisible}
+					onClose={() => setIsDetailsModalVisible(false)}
+					selectedParticipationDetails={selectedParticipationDetails}
+					t={t}
+				/>
 			)}
 
 			<div className='table-container'>
