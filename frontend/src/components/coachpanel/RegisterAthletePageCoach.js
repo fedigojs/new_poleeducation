@@ -1,18 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Select from 'react-select';
 import api from '../../api/api';
 import Modal from '../Modal';
 import { AuthContext } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import {
-	Form,
-	Button,
-	Table,
-	Col,
-	Container,
-	Row,
-	Modal as BootstrapModal,
-} from 'react-bootstrap';
+import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
+import { Button, Col, Container } from 'react-bootstrap';
 
 const RegisterAthletePageCoach = () => {
 	const { t } = useTranslation();
@@ -42,7 +34,17 @@ const RegisterAthletePageCoach = () => {
 		useState(false);
 	const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
 	const [editingParticipation, setEditingParticipation] = useState(null);
-	const [coaches, setCoaches] = useState([]); // Добавляем состояние для тренеров
+	const [coaches, setCoaches] = useState([]);
+	const [initialValues, setInitialValues] = useState({
+		athleteId: '',
+		competitionId: '',
+		athleteAgeId: '',
+		athleteTrendId: '',
+		levelId: '',
+		selectedExercises: [],
+		disciplineId: '',
+	});
+
 	const { user } = useContext(AuthContext);
 	const coachId = user.userId;
 
@@ -129,19 +131,7 @@ const RegisterAthletePageCoach = () => {
 		}
 	};
 
-	const handleRegister = async (e) => {
-		e.preventDefault();
-
-		const postData = {
-			athleteId,
-			competitionId,
-			athleteAgeId,
-			athleteTrendId,
-			levelId,
-			exerciseIds: selectedExercises.map((ex) => ex.value),
-			disciplineId,
-		};
-
+	const handleRegister = async (postData) => {
 		try {
 			let response;
 			if (editingParticipation) {
@@ -165,7 +155,6 @@ const RegisterAthletePageCoach = () => {
 				]);
 			}
 
-			setIsRegistrationModalVisible(false);
 			setParticipations([...participations, response.data]);
 			closeModal();
 		} catch (err) {
@@ -223,36 +212,56 @@ const RegisterAthletePageCoach = () => {
 		});
 	};
 
-	const openModal = async (participationId = null) => {
-		if (participationId) {
-			try {
-				const response = await api.get(
-					`/api/comp-part/${participationId}`
-				);
-				const participation = response.data;
-				console.log(participation);
-				setAthleteId(participation.athleteId);
-				setCompetitionId(participation.competitionId);
-				setAthleteAgeId(participation.athleteAgeId);
-				setAthleteTrendId(participation.athleteTrendId);
-				setLevelId(participation.levelId);
-				setDisciplineId(participation.disciplineId);
-				setSelectedExercises(
-					participation.exercises.map((ex) => ({
-						value: ex.id,
-						label: `${ex.name}`,
-					}))
-				);
-				setEditingParticipation(participation);
-			} catch (error) {
-				console.error('Error loading member data:', error);
-				setError('Failed to load member data.');
-			}
-		} else {
-			resetForm();
-		}
-		setIsRegistrationModalVisible(true);
+	const openEditModal = (participation) => {
+		setEditingParticipation(participation); // Устанавливаем участие для редактирования
+
+		setInitialValues({
+			athleteId: participation.athleteId || '',
+			competitionId: participation.competitionId || '',
+			athleteAgeId: participation.athleteAgeId || '',
+			athleteTrendId: participation.athleteTrendId || '',
+			levelId: participation.levelId || '',
+			selectedExercises:
+				participation.exercises?.map((ex) => ({
+					value: ex.id,
+					label: ex.name,
+				})) || [],
+			disciplineId: participation.disciplineId || '',
+		});
+
+		setIsRegistrationModalVisible(true); // Открываем модальное окно
 	};
+
+	// const openModal = async (participationId = null) => {
+	// 	if (participationId) {
+	// 		try {
+	// 			const response = await api.get(
+	// 				`/api/comp-part/${participationId}`
+	// 			);
+	// 			const participation = response.data;
+	// 			console.log(participation);
+	// 			setAthleteId(participation.athleteId);
+	// 			setCompetitionId(participation.competitionId);
+	// 			setAthleteAgeId(participation.athleteAgeId);
+	// 			setAthleteTrendId(participation.athleteTrendId);
+	// 			setLevelId(participation.levelId);
+	// 			setDisciplineId(participation.disciplineId);
+	// 			setSelectedExercises(
+	// 				participation.exercises.map((ex) => ({
+	// 					value: ex.id,
+	// 					label: `${ex.name}`,
+	// 				}))
+	// 			);
+	// 			setEditingParticipation(participation);
+	// 		} catch (error) {
+	// 			console.error('Error loading member data:', error);
+	// 			setError('Failed to load member data.');
+	// 		}
+	// 	} else {
+	// 		resetForm();
+	// 	}
+	// 	setIsRegistrationModalVisible(true);
+	// };
 
 	const closeModal = () => {
 		setIsRegistrationModalVisible(false);
@@ -282,26 +291,6 @@ const RegisterAthletePageCoach = () => {
 
 	const sortedParticipations = sortParticipations(participations);
 
-	const handleAddAthleteSubmit = async ({ firstName, lastName, coachId }) => {
-		try {
-			await api.post('/api/athletes', {
-				firstName,
-				lastName,
-				coachId,
-			});
-			console.log('Athlete added successfully!');
-
-			setIsAthleteModalVisible(false);
-			const response = await api.get(
-				`/api/athletes/by-coach/${user.userId}`
-			);
-			setAthletes(response.data);
-		} catch (error) {
-			console.error('Error adding athlete:', error);
-			setError('Failed to add athlete.');
-		}
-	};
-
 	return (
 		<Container>
 			<Col>
@@ -316,164 +305,20 @@ const RegisterAthletePageCoach = () => {
 			</Col>
 
 			{isRegistrationModalVisible && (
-				<Modal
+				<AthleteRegistrationModal
+					isVisible={isRegistrationModalVisible}
 					onClose={() => setIsRegistrationModalVisible(false)}
-					className='narrow-modal'>
-					<form
-						onSubmit={handleRegister}
-						className='register-form'>
-						<button
-							className='modal-close-button'
-							onClick={closeModal}>
-							&times;
-						</button>
-						<h3>
-							{editingParticipation
-								? t('h3.editParticipant')
-								: t('h3.registrationParticipant')}
-						</h3>
-						<label htmlFor='athlete'>
-							{t('label.addParticipant')}:
-						</label>
-						<select
-							style={{ width: '260px' }}
-							id='athlete'
-							value={athleteId}
-							onChange={(e) => setAthleteId(e.target.value)}
-							required>
-							<option value=''>
-								{t('option.selectParticipant')}
-							</option>
-							{athletes
-								.sort((a, b) =>
-									a.lastName.localeCompare(b.lastName)
-								)
-								.map((athlete) => (
-									<option
-										key={athlete.id}
-										value={athlete.id}>
-										{athlete.lastName} {athlete.firstName}
-									</option>
-								))}
-						</select>
-
-						<label htmlFor='competition'>
-							{t('label.competition')}:
-						</label>
-						<select
-							id='competition'
-							value={competitionId}
-							onChange={(e) => setCompetitionId(e.target.value)}
-							required>
-							<option value=''>
-								{t('option.selectCompetition')}
-							</option>
-							{competitions.map((competition) => (
-								<option
-									key={competition.id}
-									value={competition.id}>
-									{competition.title}
-								</option>
-							))}
-						</select>
-						<label htmlFor='trends'>{t('label.direction')}:</label>
-						<select
-							id='trends'
-							value={athleteTrendId}
-							onChange={(e) => setAthleteTrendId(e.target.value)}
-							required>
-							<option value=''>
-								{t('option.selectDirection')}
-							</option>
-							{athleteTrend.map((trends) => (
-								<option
-									key={trends.id}
-									value={trends.id}>
-									{trends.trends}
-								</option>
-							))}
-						</select>
-						<label htmlFor='ages'>{t('label.age')}:</label>
-						<select
-							id='ages'
-							value={athleteAgeId}
-							onChange={(e) => setAthleteAgeId(e.target.value)}
-							required>
-							<option value=''>{t('option.selectAge')}</option>
-							{athleteAge.map((ages) => (
-								<option
-									key={ages.id}
-									value={ages.id}>
-									{ages.age}
-								</option>
-							))}
-						</select>
-
-						<label htmlFor='level'>{t('label.mastery')}:</label>
-						<select
-							id='level'
-							value={levelId}
-							onChange={(e) => setLevelId(e.target.value)}
-							required>
-							<option value=''>
-								{t('option.selectMastery')}
-							</option>
-							{levels.map((level) => (
-								<option
-									key={level.id}
-									value={level.id}>
-									{level.name}
-								</option>
-							))}
-						</select>
-
-						<label htmlFor='discipline'>
-							{t('label.discipline')}:
-						</label>
-						<select
-							id='discipline'
-							value={disciplineId}
-							onChange={(e) => setDisciplineId(e.target.value)}
-							required>
-							<option value=''>
-								{t('option.selectDiscipline')}
-							</option>
-							{disciplines.map((discipline) => (
-								<option
-									key={discipline.id}
-									value={discipline.id}>
-									{discipline.name}
-								</option>
-							))}
-						</select>
-
-						<label htmlFor='exercise'>{t('label.exercise')}:</label>
-						<Select
-							id='exercise'
-							isMulti
-							options={filteredExercises}
-							value={selectedExercises}
-							onChange={handleExerciseChange}
-							className='basic-multi-select'
-							classNamePrefix='select'
-						/>
-
-						<div className='form-actions'>
-							<button type='submit'>
-								{editingParticipation
-									? t('button.edit')
-									: t('button.registrationVerb')}
-							</button>
-							<button
-								type='button'
-								onClick={closeModal}>
-								{t('button.cancel')}
-							</button>
-						</div>
-
-						{error && <p className='error-message'>{error}</p>}
-					</form>
-				</Modal>
+					onSubmit={handleRegister}
+					athletes={athletes}
+					competitions={competitions}
+					athleteTrend={athleteTrend}
+					athleteAge={athleteAge}
+					levels={levels}
+					disciplines={disciplines}
+					allExercises={allExercises}
+					editingParticipation={Boolean(editingParticipation)}
+					initialValues={initialValues}
+				/>
 			)}
 
 			{isDetailsModalVisible && selectedParticipationDetails && (
@@ -556,7 +401,7 @@ const RegisterAthletePageCoach = () => {
 										className='m-1'
 										variant='warning'
 										onClick={() =>
-											openModal(participation.id)
+											openEditModal(participation)
 										}>
 										<i className='bi bi-pencil'></i>{' '}
 										{/* Иконка редактирования */}

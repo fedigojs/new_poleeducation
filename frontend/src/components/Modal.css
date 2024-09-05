@@ -1,8 +1,8 @@
 .modal {
 	position: relative;
 	padding: 20px;
-	width: 90%; /* Занимает 90% ширины экрана */
-	max-width: 1800px; /* Максимальная ширина для очень больших экранов */
+	width: 100%;
+	max-width: 2500px;
 	background: rgb(255, 255, 255);
-	overflow: visible; /* Скрывает всё, что выходит за границы контейнера */
+	overflow: visible;
 }
