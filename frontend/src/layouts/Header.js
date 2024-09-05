@@ -5,7 +5,7 @@ import { Navbar, Nav, Container } from 'react-bootstrap';
 const Header = () => {
 	return (
 		<Navbar
-			bg='black'
+			bg='dark'
 			variant='dark'
 			expand='lg'
 			collapseOnSelect
@@ -60,7 +60,7 @@ const Header = () => {
 						<Nav.Link
 							as={Link}
 							to='/login'
-							className='bg-white text-black py-2 px-4 rounded-md'>
+							className='bg-white text-black py-2 px-4 rounded'>
 							Log In
 						</Nav.Link>
 					</Nav>

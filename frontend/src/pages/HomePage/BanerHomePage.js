@@ -6,7 +6,7 @@ const BanerHomePage = () => {
 		<>
 			<div className='home-baner'>
 				<img
-					src={`${process.env.PUBLIC_URL}/images/home_baner_poleed.png`}
+					src={`${process.env.PUBLIC_URL}/images/baner_poleeducation.png`}
 					alt='Baner POLEEDucation'
 				/>
 			</div>

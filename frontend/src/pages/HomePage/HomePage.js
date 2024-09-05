@@ -1,17 +1,14 @@
 import React from 'react';
 import Header from '../../layouts/Header';
-import BanerHomePage from './BanerHomePage';
 import TimingHomePage from './TimingHomePage';
-import Footer from '../../layouts/Footer';
+import Layout from '../../layouts/Layout';
 
 const HomePage = () => {
 	return (
-		<>
+		<Layout>
 			<Header />
-			<BanerHomePage />
 			<TimingHomePage />
-			<Footer />
-		</>
+		</Layout>
 	);
 };
 
