@@ -16,6 +16,7 @@ const AthleteRegistrationModal = ({
 	allExercises,
 	editingParticipation,
 	initialValues,
+	t,
 }) => {
 	const [athleteId, setAthleteId] = useState(initialValues.athleteId || '');
 	const [competitionId, setCompetitionId] = useState(
@@ -69,7 +70,7 @@ const AthleteRegistrationModal = ({
 			console.error('Error during registration:', err);
 			setError(
 				err.response?.data.message ||
-					'Произошла ошибка при регистрации!!!'
+					'There was an error during registration!'
 			);
 		}
 	};
@@ -98,20 +99,22 @@ const AthleteRegistrationModal = ({
 				</Button>
 				<h3 className='text-center mb-4'>
 					{editingParticipation
-						? 'Редактировать участника'
-						: 'Регистрация участника'}
+						? t('h3.editParticipant')
+						: t('h3.registrationParticipant')}
 				</h3>
 
 				<Form.Group
 					as={Col}
 					controlId='athlete'>
-					<Form.Label>Атлет</Form.Label>
+					<Form.Label>{t('label.addParticipant')}</Form.Label>
 					<Form.Control
 						as='select'
 						value={athleteId}
 						onChange={(e) => setAthleteId(e.target.value)}
 						required>
-						<option value=''>Выберите участника</option>
+						<option value=''>
+							{t('option.selectParticipant')}
+						</option>
 						{athletes
 							.sort((a, b) =>
 								a.lastName.localeCompare(b.lastName)
@@ -129,13 +132,15 @@ const AthleteRegistrationModal = ({
 				<Form.Group
 					as={Col}
 					controlId='competition'>
-					<Form.Label>Соревнование</Form.Label>
+					<Form.Label>{t('label.competition')}</Form.Label>
 					<Form.Control
 						as='select'
 						value={competitionId}
 						onChange={(e) => setCompetitionId(e.target.value)}
 						required>
-						<option value=''>Выберите соревнование</option>
+						<option value=''>
+							{t('option.selectCompetition')}
+						</option>
 						{competitions.map((competition) => (
 							<option
 								key={competition.id}
@@ -149,13 +154,13 @@ const AthleteRegistrationModal = ({
 				<Form.Group
 					as={Col}
 					controlId='trends'>
-					<Form.Label>Направление</Form.Label>
+					<Form.Label>{t('label.direction')}</Form.Label>
 					<Form.Control
 						as='select'
 						value={athleteTrendId}
 						onChange={(e) => setAthleteTrendId(e.target.value)}
 						required>
-						<option value=''>Выберите направление</option>
+						<option value=''>{t('option.selectDirection')}</option>
 						{athleteTrend.map((trend) => (
 							<option
 								key={trend.id}
@@ -169,13 +174,13 @@ const AthleteRegistrationModal = ({
 				<Form.Group
 					as={Col}
 					controlId='ages'>
-					<Form.Label>Возраст</Form.Label>
+					<Form.Label>{t('label.age')}</Form.Label>
 					<Form.Control
 						as='select'
 						value={athleteAgeId}
 						onChange={(e) => setAthleteAgeId(e.target.value)}
 						required>
-						<option value=''>Выберите возраст</option>
+						<option value=''>{t('option.selectAge')}</option>
 						{athleteAge.map((age) => (
 							<option
 								key={age.id}
@@ -189,13 +194,13 @@ const AthleteRegistrationModal = ({
 				<Form.Group
 					as={Col}
 					controlId='level'>
-					<Form.Label>Мастерство</Form.Label>
+					<Form.Label>{t('label.mastery')}</Form.Label>
 					<Form.Control
 						as='select'
 						value={levelId}
 						onChange={(e) => setLevelId(e.target.value)}
 						required>
-						<option value=''>Выберите уровень мастерства</option>
+						<option value=''>{t('option.selectMastery')}</option>
 						{levels.map((level) => (
 							<option
 								key={level.id}
@@ -209,13 +214,13 @@ const AthleteRegistrationModal = ({
 				<Form.Group
 					as={Col}
 					controlId='discipline'>
-					<Form.Label>Дисциплина</Form.Label>
+					<Form.Label>{t('label.discipline')}</Form.Label>
 					<Form.Control
 						as='select'
 						value={disciplineId}
 						onChange={(e) => setDisciplineId(e.target.value)}
 						required>
-						<option value=''>Выберите дисциплину</option>
+						<option value=''>{t('option.selectDiscipline')}</option>
 						{disciplines.map((discipline) => (
 							<option
 								key={discipline.id}
@@ -229,7 +234,7 @@ const AthleteRegistrationModal = ({
 				<Form.Group
 					as={Col}
 					controlId='exercise'>
-					<Form.Label>Упражнение</Form.Label>
+					<Form.Label>{t('label.exercise')}</Form.Label>
 					<Select
 						id='exercise'
 						isMulti
@@ -246,13 +251,15 @@ const AthleteRegistrationModal = ({
 						className='m-4'
 						type='submit'
 						variant='primary'>
-						{editingParticipation ? 'Обновить' : 'Зарегистрировать'}
+						{editingParticipation
+							? t('button.edit')
+							: t('button.registrationVerb')}
 					</Button>
 					<Button
 						className='m-4'
 						variant='secondary'
 						onClick={onClose}>
-						Отмена
+						{t('button.cancel')}
 					</Button>
 				</div>
 

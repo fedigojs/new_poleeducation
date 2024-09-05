@@ -285,6 +285,7 @@ const RegisterAthletePageCoach = () => {
 					allExercises={allExercises}
 					editingParticipation={Boolean(editingParticipation)}
 					initialValues={initialValues}
+					t={t}
 				/>
 			)}
 
