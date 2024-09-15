@@ -14,10 +14,22 @@ const RegisterModal = ({ show, closeModal }) => {
 	const [error, setError] = useState('');
 	const [success, setSuccess] = useState('');
 	const [passwordStrength, setPasswordStrength] = useState('');
+	const [role, setRole] = useState('');
+	const [isRegistrationDisabled, setIsRegistrationDisabled] = useState(false);
 
 	useEffect(() => {
 		evaluatePasswordStrength(password);
 	}, [password]);
+
+	useEffect(() => {
+		if (role === 'athlete') {
+			setError(t('Реєстрацію має право проходити лише ТРЕНЕР!'));
+			setIsRegistrationDisabled(true);
+		} else {
+			setError('');
+			setIsRegistrationDisabled(false);
+		}
+	}, [role]);
 
 	const evaluatePasswordStrength = (password) => {
 		let strength = '';
@@ -98,6 +110,23 @@ const RegisterModal = ({ show, closeModal }) => {
 				<Form onSubmit={handleRegister}>
 					<Form.Group
 						className='mb-3'
+						controlId='formRole'>
+						<Form.Label>{t('label.role')}</Form.Label>
+						<Form.Control
+							as='select'
+							value={role}
+							onChange={(e) => setRole(e.target.value)}
+							required>
+							<option value=''>{t('select.chooseRole')}</option>
+							<option value='athlete'>
+								{t('select.athlete')}
+							</option>
+							<option value='coach'>{t('select.coach')}</option>
+						</Form.Control>
+					</Form.Group>
+
+					<Form.Group
+						className='mb-3'
 						controlId='formFirstName'>
 						<Form.Label>{t('label.firstName')}</Form.Label>
 						<Form.Control
@@ -168,7 +197,8 @@ const RegisterModal = ({ show, closeModal }) => {
 					<Button
 						variant='primary'
 						type='submit'
-						className='w-100'>
+						className='w-100'
+						disabled={isRegistrationDisabled}>
 						{t('button.registrationVerb')}
 					</Button>
 				</Form>

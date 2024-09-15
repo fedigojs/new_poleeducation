@@ -44,6 +44,10 @@
 	"label.competition": "Змагання",
 	"label.direction": "Напрям",
 	"label.age": "Вік",
+	"label.role": "Ваша роль",
 	"modal.title.editAthlete": "Редагувати спортсмена",
-	"modal.title.addAthlete": "Додати спортсмена"
+	"modal.title.addAthlete": "Додати спортсмена",
+	"select.chooseRole": "Виберіть вашу роль",
+	"select.athlete": "Сопртсмен",
+	"select.coach": "Тренер"
 }
