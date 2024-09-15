@@ -11,7 +11,7 @@ services:
         env_file:
             - .env.development
         environment:
-            - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation
+            - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation_db
         volumes:
             - ./backend:/app
             - /app/node_modules

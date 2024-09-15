@@ -9,7 +9,7 @@ services:
         env_file:
             - .env.production
         environment:
-            - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation
+            - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation_db
         depends_on:
             - db_auth
 
