@@ -302,7 +302,7 @@ const AddUserPage = () => {
 				<table>
 					<thead>
 						<tr>
-							<th>id</th>
+							<th>№</th>
 							<th>Имя</th>
 							<th>Фамилия</th>
 							<th>Номер Телефону</th>
@@ -312,13 +312,13 @@ const AddUserPage = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{users.map((user) => (
+						{users.map((user, index) => (
 							<tr
 								key={user.id}
 								className={
 									selectedUser === user ? 'selected' : ''
 								}>
-								<td>{user.id}</td>
+								<td>{index + 1}</td>
 								<td>{user.firstName}</td>
 								<td>{user.lastName}</td>
 								<td>{user.phoneNumber}</td>

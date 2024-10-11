@@ -156,7 +156,6 @@ const AddAthletePage = () => {
 			)}
 			{isEditAthleteModalVisible && (
 				<Modal onClose={closeModals}>
-					{/* Форма редактирования атлета */}
 					<form onSubmit={(e) => handleUpdateAthlete(e)}>
 						<h3>Редактировать атлета</h3>
 						<label htmlFor='firstName'>
@@ -224,7 +223,7 @@ const AddAthletePage = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{sortedAthletes.map((athlete) => {
+						{sortedAthletes.map((athlete, index) => {
 							const coach = coaches.find(
 								(cch) => cch.id === athlete.coachId
 							);
@@ -232,7 +231,7 @@ const AddAthletePage = () => {
 
 							return (
 								<tr key={athlete.id}>
-									<td>{athlete.id}</td>
+									<td>{index + 1}</td>
 									<td>
 										{athlete.lastName} {athlete.firstName}
 									</td>

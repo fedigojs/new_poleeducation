@@ -458,6 +458,7 @@ const RegisterAthletePage = () => {
 				<table>
 					<thead>
 						<tr>
+							<th>№</th>
 							<th>Атлет</th>
 							<th>Соревнования</th>
 							<th>Направление</th>
@@ -466,8 +467,9 @@ const RegisterAthletePage = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{sortedParticipations.map((participation) => (
+						{sortedParticipations.map((participation, index) => (
 							<tr key={participation.id}>
+								<td>{index + 1}</td>
 								<td>
 									{participation.Athlete?.lastName}{' '}
 									{participation.Athlete?.firstName}
