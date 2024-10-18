@@ -113,7 +113,7 @@ const RegisterAthletePage = () => {
 
 			setIsRegistrationModalVisible(false); // Закрываем модальное окно после успешной регистрации
 			resetForm();
-			window.location.reload();
+			// window.location.reload();
 		} catch (err) {
 			console.error('Ошибка при регистрации:', err);
 			setError(
