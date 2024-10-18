@@ -1,6 +1,6 @@
 // src/components/AddAthleteModal.js
 import React, { useState } from 'react';
-import Modal from '../Modal';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
 
 const AddAthleteModal = ({
 	isVisible,
@@ -29,62 +29,78 @@ const AddAthleteModal = ({
 
 	return (
 		<Modal
-			onClose={onClose}
-			isVisible={isVisible}>
-			<form
-				onSubmit={handleAddAthlete}
-				className='athlete-form'>
-				<h3>Добавить атлета</h3>
-				<label htmlFor='firstName'>
-					Имя:
-					<input
-						type='text'
-						id='firstName'
-						value={firstName}
-						onChange={(e) => setFirstName(e.target.value)}
-						required
-					/>
-				</label>
-				<label htmlFor='lastName'>
-					Фамилия:
-					<input
-						type='text'
-						id='lastName'
-						value={lastName}
-						onChange={(e) => setLastName(e.target.value)}
-						required
-					/>
-				</label>
+			show={isVisible}
+			onHide={onClose}>
+			<Modal.Header closeButton>
+				<Modal.Title>Добавить атлета</Modal.Title>
+			</Modal.Header>
+			<Modal.Body>
+				<Form onSubmit={handleAddAthlete}>
+					<Form.Group controlId='firstName'>
+						<Form.Label>Имя</Form.Label>
+						<Form.Control
+							type='text'
+							value={firstName}
+							onChange={(e) => setFirstName(e.target.value)}
+							required
+						/>
+					</Form.Group>
 
-				<label htmlFor='coachId'>
-					Тренер:
-					<select
-						id='coachId'
-						value={coachId}
-						onChange={(e) => setCoachId(e.target.value)}
-						required>
-						<option value=''>Выберите тренера</option>
-						{coaches
-							.filter((coach) => coach.roleId === coachRoleId)
-							.map((coach) => (
-								<option
-									key={coach.id}
-									value={coach.id}>
-									{coach.firstName} {coach.lastName}
-								</option>
-							))}
-					</select>
-				</label>
-				<div className='form-actions'>
-					<button type='submit'>Добавить</button>
-					<button
-						type='button'
-						onClick={onClose}>
-						Отмена
-					</button>
-				</div>
-				{error && <p className='error-message'>{error}</p>}
-			</form>
+					<Form.Group controlId='lastName'>
+						<Form.Label>Фамилия</Form.Label>
+						<Form.Control
+							type='text'
+							value={lastName}
+							onChange={(e) => setLastName(e.target.value)}
+							required
+						/>
+					</Form.Group>
+
+					<Form.Group controlId='coachId'>
+						<Form.Label>Тренер</Form.Label>
+						<Form.Control
+							as='select'
+							value={coachId}
+							onChange={(e) => setCoachId(e.target.value)}
+							required>
+							<option value=''>Выберите тренера</option>
+							{coaches
+								.filter((coach) => coach.roleId === coachRoleId)
+								.map((coach) => (
+									<option
+										key={coach.id}
+										value={coach.id}>
+										{coach.firstName} {coach.lastName}
+									</option>
+								))}
+						</Form.Control>
+					</Form.Group>
+
+					<div className='form-actions'>
+						<Button
+							className='m-3'
+							variant='primary'
+							type='submit'>
+							Добавить
+						</Button>
+						<Button
+							className='m-3'
+							variant='secondary'
+							onClick={onClose}
+							type='button'>
+							Отмена
+						</Button>
+					</div>
+
+					{error && (
+						<Alert
+							variant='danger'
+							className='mt-3'>
+							{error}
+						</Alert>
+					)}
+				</Form>
+			</Modal.Body>
 		</Modal>
 	);
 };

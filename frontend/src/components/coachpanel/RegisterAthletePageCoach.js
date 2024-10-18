@@ -48,7 +48,7 @@ const RegisterAthletePageCoach = () => {
 
 	useEffect(() => {
 		loadInitialData();
-		loadCoaches(); // Загружаем тренеров
+		loadCoaches();
 	}, []);
 
 	useEffect(() => {
@@ -155,6 +155,7 @@ const RegisterAthletePageCoach = () => {
 
 			setParticipations([...participations, response.data]);
 			closeModal();
+			window.location.reload();
 		} catch (err) {
 			console.error('Error during registration:', err);
 			setError(
@@ -162,10 +163,6 @@ const RegisterAthletePageCoach = () => {
 					'An error occurred during registration'
 			);
 		}
-	};
-
-	const handleExerciseChange = (selectedOptions) => {
-		setSelectedExercises(selectedOptions || []);
 	};
 
 	const loadParticipations = async () => {
@@ -227,7 +224,7 @@ const RegisterAthletePageCoach = () => {
 			disciplineId: participation.disciplineId || '',
 		});
 
-		setIsRegistrationModalVisible(true); // Открываем модальное окно
+		setIsRegistrationModalVisible(true);
 	};
 
 	const closeModal = () => {
@@ -236,13 +233,15 @@ const RegisterAthletePageCoach = () => {
 	};
 
 	const resetForm = () => {
-		setAthleteId('');
-		setCompetitionId('');
-		setAthleteAgeId('');
-		setAthleteTrendId('');
-		setLevelId('');
-		setSelectedExercises([]);
-		setDisciplineId('');
+		setInitialValues({
+			athleteId: '',
+			competitionId: '',
+			athleteAgeId: '',
+			athleteTrendId: '',
+			levelId: '',
+			selectedExercises: [],
+			disciplineId: '',
+		});
 		setEditingParticipation(null);
 	};
 

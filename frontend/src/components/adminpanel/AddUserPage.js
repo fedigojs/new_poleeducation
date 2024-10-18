@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
 import './AddUserPage.css';
 import Modal from '../Modal';
+import { Container } from 'react-bootstrap';
 
 const AddUserPage = () => {
 	const [users, setUsers] = useState([]);
@@ -58,7 +59,7 @@ const AddUserPage = () => {
 			setEmail('');
 			setPassword('');
 			setRole('');
-			setAddUserModalVisible(false); // Закрытие модального окна
+			setAddUserModalVisible(false);
 		} catch (err) {
 			setError(err.response?.data.message || 'Произошла ошибка');
 		}
@@ -129,7 +130,7 @@ const AddUserPage = () => {
 	};
 
 	return (
-		<div>
+		<Container>
 			<h1>Управление пользователями</h1>
 			<button
 				className='edit-button'
@@ -347,7 +348,7 @@ const AddUserPage = () => {
 					</tbody>
 				</table>
 			</div>
-		</div>
+		</Container>
 	);
 };
 

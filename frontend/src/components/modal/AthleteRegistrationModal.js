@@ -79,11 +79,19 @@ const AthleteRegistrationModal = ({
 		setSelectedExercises(selectedOptions || []);
 	};
 
-	const filteredExercises = allExercises.filter(
-		(ex) =>
-			(levelId === '' || ex.level === parseInt(levelId)) &&
-			(disciplineId === '' || ex.discipline === parseInt(disciplineId))
-	);
+	const filteredExercises = allExercises
+		.map((exercise) => ({
+			value: exercise.id,
+			label: `${exercise.code} - ${exercise.name}`,
+			level: exercise.levelId,
+			discipline: exercise.disciplineId,
+		}))
+		.filter(
+			(ex) =>
+				(levelId === '' || ex.level === parseInt(levelId)) &&
+				(disciplineId === '' ||
+					ex.discipline === parseInt(disciplineId))
+		);
 
 	return (
 		<Modal

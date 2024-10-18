@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:3002';
 const api = axios.create({
 	baseURL: API_URL,
 	headers: {
-		'Custom-Header': 'value', // Убедитесь, что этот заголовок действительно вам нужен
+		'Custom-Header': 'value',
 	},
 });
 export const setAuthToken = (token) => {

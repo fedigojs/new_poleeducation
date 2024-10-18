@@ -4,6 +4,7 @@ import ModalVotingDetails from '../ModalVotingDetails';
 import ModalVoting from '../ModalVoting';
 import './AthletesDraw.css';
 import { AuthContext } from '../../context/AuthContext';
+import { Container } from 'react-bootstrap';
 
 const AthletesDraw = () => {
 	const [participants, setParticipants] = useState([]);
@@ -507,7 +508,7 @@ const AthletesDraw = () => {
 	];
 
 	return (
-		<div>
+		<Container>
 			<ModalVotingDetails
 				isOpen={isDetailsModalOpen}
 				onClose={closeDetailsModal}
@@ -797,7 +798,7 @@ const AthletesDraw = () => {
 					</table>
 				</div>
 			</div>
-		</div>
+		</Container>
 	);
 };
 

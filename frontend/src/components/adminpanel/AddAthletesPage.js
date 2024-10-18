@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import {
+	Button,
+	Table,
+	Form,
+	Modal,
+	Container,
+	Row,
+	Col,
+} from 'react-bootstrap';
 import api from '../../api/api';
 import '../Modal.css';
-import Modal from '../Modal';
+// import Modal from '../Modal';
 import AddAthleteModal from '../modal/AddAthleteModal';
 
 const AddAthletePage = () => {
@@ -138,7 +147,7 @@ const AddAthletePage = () => {
 	};
 
 	return (
-		<div>
+		<Container>
 			<h1>Управление атлетами</h1>
 			<button
 				className='edit-button'
@@ -259,7 +268,7 @@ const AddAthletePage = () => {
 					</tbody>
 				</table>
 			</div>
-		</div>
+		</Container>
 	);
 };
 

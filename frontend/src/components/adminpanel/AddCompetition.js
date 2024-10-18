@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
 import Modal from '../Modal'; // Проверьте, что путь к модальному окну верный
+import { Container } from 'react-bootstrap';
 
 const AddCompetitionPage = () => {
 	const [competitions, setCompetitions] = useState([]);
@@ -99,7 +100,7 @@ const AddCompetitionPage = () => {
 	};
 
 	return (
-		<div>
+		<Container>
 			<h1>Управление соревнованиями</h1>
 			<button
 				className='edit-button'
@@ -220,7 +221,7 @@ const AddCompetitionPage = () => {
 					</tbody>
 				</table>
 			</div>
-		</div>
+		</Container>
 	);
 };
 
