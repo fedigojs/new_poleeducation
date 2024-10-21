@@ -1,6 +1,9 @@
 # Строим проект с использованием Node.js
 FROM node:20-alpine AS builder
 
+# Устанавливаем pnpm глобально
+RUN npm install -g pnpm
+
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /frontend
 
@@ -8,13 +11,13 @@ WORKDIR /frontend
 COPY package*.json ./
 
 # Устанавливаем зависимости
-RUN npm install
+RUN pnpm install
 
 # Копируем все файлы проекта в контейнер
 COPY . .
 
 # Собираем приложение для продакшена
-RUN npm run build
+RUN pnpm run build
 
 # Используем Nginx для отдачи статики
 FROM nginx:alpine
