@@ -22,7 +22,10 @@ const Header = ({ className = '' }) => {
 						className='d-inline-block align-top'
 					/>
 				</Navbar.Brand>
-				<Navbar.Toggle aria-controls='basic-navbar-nav' />
+				<Navbar.Toggle
+					aria-controls='basic-navbar-nav'
+					className='bg-white'
+				/>
 				<Navbar.Collapse id='basic-navbar-nav'>
 					<Nav className='ms-auto'>
 						<Nav.Link
