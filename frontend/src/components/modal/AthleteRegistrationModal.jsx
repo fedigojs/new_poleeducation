@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Select from 'react-select';
 import Modal from '../Modal';
 import { Form, Button, Col } from 'react-bootstrap';
@@ -275,6 +276,29 @@ const AthleteRegistrationModal = ({
 			</Form>
 		</Modal>
 	);
+};
+AthleteRegistrationModal.propTypes = {
+	isVisible: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	onSubmit: PropTypes.func.isRequired,
+	athletes: PropTypes.array.isRequired,
+	competitions: PropTypes.array.isRequired,
+	athleteTrend: PropTypes.array.isRequired,
+	athleteAge: PropTypes.array.isRequired,
+	levels: PropTypes.array.isRequired,
+	disciplines: PropTypes.array.isRequired,
+	allExercises: PropTypes.array.isRequired,
+	editingParticipation: PropTypes.bool.isRequired,
+	initialValues: PropTypes.shape({
+		athleteId: PropTypes.string,
+		competitionId: PropTypes.string,
+		athleteAgeId: PropTypes.string,
+		athleteTrendId: PropTypes.string,
+		levelId: PropTypes.string,
+		selectedExercises: PropTypes.array,
+		disciplineId: PropTypes.string,
+	}).isRequired,
+	t: PropTypes.func.isRequired,
 };
 
 export default AthleteRegistrationModal;

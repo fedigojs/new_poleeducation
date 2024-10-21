@@ -9,7 +9,6 @@ export const TestExercise = () => {
 	const [filteredExercises, setFilteredExercises] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
 	const [selectedDirection, setSelectedDirection] = useState('');
-	const [selectedName, setSelectedName] = useState('');
 	const [selectedExercises, setSelectedExercises] = useState([]);
 	const [tableData, setTableData] = useState([]);
 	const [name, setName] = useState('');

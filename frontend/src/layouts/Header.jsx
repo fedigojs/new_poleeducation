@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import './Header.scss';
+import PropTypes from 'prop-types';
 import '../index.scss';
 
 const Header = ({ className = '' }) => {
@@ -86,6 +87,9 @@ const Header = ({ className = '' }) => {
 			</Container>
 		</Navbar>
 	);
+};
+Header.propTypes = {
+	className: PropTypes.string,
 };
 
 export default Header;

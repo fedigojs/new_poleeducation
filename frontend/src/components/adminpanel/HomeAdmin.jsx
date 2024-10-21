@@ -6,6 +6,7 @@ const HomeAdmin = () => {
 
 	return (
 		<div className='home-admin'>
+			\
 			{user ? (
 				<div>
 					<h1>

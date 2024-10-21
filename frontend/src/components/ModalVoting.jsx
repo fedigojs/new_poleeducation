@@ -5,7 +5,9 @@ import './ModalVoting.css';
 import ModalVotingProtocol from './ModalVotingProtocol';
 import ModalVotingExercise from './ModalVotingExercise';
 
-const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
+import PropTypes from 'prop-types';
+
+const ModalVoting = ({ isOpen, onClose, participant, judgeId }) => {
 	const [protocols, setProtocols] = useState([]);
 	const [isProtocolModalOpen, setIsProtocolModalOpen] = useState(false);
 	const [selectedProtocol, setSelectedProtocol] = useState(null);
@@ -238,6 +240,26 @@ const ModalVoting = ({ isOpen, onClose, participant, judgeId, onSubmit }) => {
 			/>
 		</>
 	);
+};
+
+ModalVoting.propTypes = {
+	isOpen: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	participant: PropTypes.shape({
+		participation: PropTypes.shape({
+			AthleteTrend: PropTypes.shape({
+				id: PropTypes.number.isRequired,
+			}),
+			athleteId: PropTypes.number.isRequired,
+			competitionId: PropTypes.number.isRequired,
+			Athlete: PropTypes.shape({
+				firstName: PropTypes.string,
+				lastName: PropTypes.string,
+			}),
+		}),
+		competitionParticipationId: PropTypes.number.isRequired,
+	}),
+	judgeId: PropTypes.number.isRequired,
 };
 
 export default ModalVoting;

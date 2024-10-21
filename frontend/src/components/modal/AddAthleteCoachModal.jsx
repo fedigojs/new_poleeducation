@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Form, Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 
@@ -82,6 +83,16 @@ const AddAthleteCoachModal = ({ isVisible, onClose, onSubmit, coaches }) => {
 			</Modal.Body>
 		</Modal>
 	);
+};
+AddAthleteCoachModal.propTypes = {
+	isVisible: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	onSubmit: PropTypes.func.isRequired,
+	coaches: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+		firstName: PropTypes.string.isRequired,
+		lastName: PropTypes.string.isRequired,
+	}).isRequired,
 };
 
 export default AddAthleteCoachModal;

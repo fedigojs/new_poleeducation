@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import PropTypes from 'prop-types';
 import Modal from './Modal';
 import './ModalVotingProtocol.css';
 import api from '../api/api';
@@ -11,17 +12,18 @@ const ModalVotingProtocol = ({
 	errorMessage,
 	competitionParticipationId: initialCompetitionParticipationId,
 	protocolTypeId: initialProtocolTypeId,
-	athleteId,
-	competitionId,
+	// competitionId,
 	protocolId,
+	athleteId,
 }) => {
 	const { user } = useContext(AuthContext);
-	const [scores, setScores] = useState([]);
-	const [competitionParticipationId, setCompetitionParticipationId] =
-		useState(initialCompetitionParticipationId);
+	const [competitionParticipationId] = useState(
+		initialCompetitionParticipationId
+	);
 	const [protocolTypeId, setProtocolTypeId] = useState(initialProtocolTypeId);
 	const [isExistingProtocol, setIsExistingProtocol] = useState(false);
 	const [judgeId, setJudgeId] = useState(null);
+	const [scores, setScores] = useState([]);
 
 	useEffect(() => {
 		if (protocol && protocol.length > 0) {
@@ -39,6 +41,7 @@ const ModalVotingProtocol = ({
 				competitionParticipationId,
 				protocolTypeId: protocol[0]?.protocolTypeId,
 				athleteId,
+				setScores,
 			};
 
 			const newScores = protocol.map((element) => ({
@@ -56,7 +59,7 @@ const ModalVotingProtocol = ({
 		} else {
 			setScores([]);
 		}
-	}, [protocol, user, competitionParticipationId, athleteId]);
+	}, [protocol, user, competitionParticipationId, athleteId, setScores]);
 
 	useEffect(() => {
 		const loadExistingProtocol = async () => {
@@ -319,6 +322,31 @@ const ModalVotingProtocol = ({
 			</div>
 		</Modal>
 	);
+};
+
+ModalVotingProtocol.propTypes = {
+	isOpen: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	protocol: PropTypes.arrayOf(
+		PropTypes.shape({
+			id: PropTypes.number.isRequired,
+			protocolTypeId: PropTypes.number,
+			elementName: PropTypes.string,
+			maxScore: PropTypes.number,
+			step: PropTypes.number,
+			score: PropTypes.number,
+			comment: PropTypes.string,
+			protocolType: PropTypes.shape({
+				name: PropTypes.string,
+			}),
+		})
+	),
+	errorMessage: PropTypes.string,
+	competitionParticipationId: PropTypes.number.isRequired,
+	protocolTypeId: PropTypes.number.isRequired,
+	athleteId: PropTypes.number.isRequired,
+	// competitionId: PropTypes.number,
+	protocolId: PropTypes.number.isRequired,
 };
 
 export default ModalVotingProtocol;

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Button, Table } from 'react-bootstrap';
 
 const ExerciseDetailsModal = ({
@@ -57,6 +58,20 @@ const ExerciseDetailsModal = ({
 			</Modal.Footer>
 		</Modal>
 	);
+};
+ExerciseDetailsModal.propTypes = {
+	isVisible: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	selectedParticipationDetails: PropTypes.arrayOf(
+		PropTypes.shape({
+			exercise: PropTypes.shape({
+				name: PropTypes.string.isRequired,
+				descriptions: PropTypes.string.isRequired,
+				image: PropTypes.string.isRequired,
+			}).isRequired,
+		})
+	).isRequired,
+	t: PropTypes.func.isRequired,
 };
 
 export default ExerciseDetailsModal;

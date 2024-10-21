@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import api from '../../api/api';
+import PropTypes from 'prop-types';
 
 const RegisterModal = ({ show, closeModal }) => {
 	const { t } = useTranslation();
@@ -219,6 +220,10 @@ const RegisterModal = ({ show, closeModal }) => {
 			</Modal.Body>
 		</Modal>
 	);
+};
+RegisterModal.propTypes = {
+	show: PropTypes.bool.isRequired,
+	closeModal: PropTypes.func.isRequired,
 };
 
 export default RegisterModal;

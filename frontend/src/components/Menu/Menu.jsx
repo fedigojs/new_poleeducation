@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
@@ -53,6 +54,16 @@ const Menu = ({ menuItems, brandLink }) => {
 			</Container>
 		</Navbar>
 	);
+};
+
+Menu.propTypes = {
+	menuItems: PropTypes.arrayOf(
+		PropTypes.shape({
+			path: PropTypes.string.isRequired,
+			label: PropTypes.string.isRequired,
+		})
+	).isRequired,
+	brandLink: PropTypes.string.isRequired,
 };
 
 export default Menu;

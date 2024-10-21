@@ -1,6 +1,7 @@
 // src/components/AddAthleteModal.js
 import React, { useState } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 
 const AddAthleteModal = ({
 	isVisible,
@@ -103,6 +104,20 @@ const AddAthleteModal = ({
 			</Modal.Body>
 		</Modal>
 	);
+};
+AddAthleteModal.propTypes = {
+	isVisible: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	onSubmit: PropTypes.func.isRequired,
+	coaches: PropTypes.arrayOf(
+		PropTypes.shape({
+			id: PropTypes.string.isRequired,
+			firstName: PropTypes.string.isRequired,
+			lastName: PropTypes.string.isRequired,
+			roleId: PropTypes.string.isRequired,
+		})
+	).isRequired,
+	coachRoleId: PropTypes.string.isRequired,
 };
 
 export default AddAthleteModal;

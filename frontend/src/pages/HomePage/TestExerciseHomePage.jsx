@@ -1,3 +1,4 @@
+import React from 'react';
 import Header from '../../layouts/Header';
 import { TestExercise } from '../../components/exercise_test/TestExercise';
 import Layout from '../../layouts/Layout';

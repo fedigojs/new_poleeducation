@@ -15,12 +15,7 @@ const RegisterAthletePageCoach = () => {
 	const [participations, setParticipations] = useState([]);
 	const [levels, setLevels] = useState([]);
 	const [disciplines, setDisciplines] = useState([]);
-	const [athleteId, setAthleteId] = useState('');
-	const [athleteAgeId, setAthleteAgeId] = useState('');
-	const [athleteTrendId, setAthleteTrendId] = useState('');
-	const [competitionId, setCompetitionId] = useState('');
 	const [levelId, setLevelId] = useState('');
-	const [selectedExercises, setSelectedExercises] = useState([]);
 	const [disciplineId, setDisciplineId] = useState('');
 	const [error, setError] = useState('');
 	const [allExercises, setAllExercises] = useState([]);

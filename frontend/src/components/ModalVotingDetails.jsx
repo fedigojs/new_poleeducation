@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Modal from './Modal';
 import './ModalVotingDetails.css';
 import api from '../api/api';
@@ -235,6 +236,24 @@ const ModalVotingDetails = ({
 			</div>
 		</Modal>
 	);
+};
+ModalVotingDetails.propTypes = {
+	isOpen: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	participant: PropTypes.shape({
+		participation: PropTypes.shape({
+			athleteId: PropTypes.number.isRequired,
+			id: PropTypes.number.isRequired,
+			Athlete: PropTypes.shape({
+				firstName: PropTypes.string.isRequired,
+				lastName: PropTypes.string.isRequired,
+			}),
+			AthleteAge: PropTypes.shape({
+				age: PropTypes.number.isRequired,
+			}),
+		}),
+	}),
+	onUpdateTotalScore: PropTypes.func.isRequired,
 };
 
 export default ModalVotingDetails;

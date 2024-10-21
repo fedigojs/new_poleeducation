@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import PropTypes from 'prop-types';
 import Modal from './Modal';
 import api from '../api/api';
 import './ModalVotingExercise.css';
@@ -261,6 +262,12 @@ const ModalVotingExercise = ({
 			</div>
 		</Modal>
 	);
+};
+ModalVotingExercise.propTypes = {
+	isOpen: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	errorMessage: PropTypes.string,
+	competitionParticipationId: PropTypes.string.isRequired,
 };
 
 export default ModalVotingExercise;

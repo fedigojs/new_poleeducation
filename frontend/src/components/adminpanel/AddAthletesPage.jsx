@@ -1,16 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-	Button,
-	Table,
-	Form,
-	Modal,
-	Container,
-	Row,
-	Col,
-} from 'react-bootstrap';
+import { Modal, Container } from 'react-bootstrap';
 import api from '../../api/api';
 import '../Modal.css';
-// import Modal from '../Modal';
+
 import AddAthleteModal from '../modal/AddAthleteModal';
 
 const AddAthletePage = () => {
@@ -59,17 +51,12 @@ const AddAthletePage = () => {
 	};
 
 	const handleAddAthleteSubmit = async ({ firstName, lastName, coachId }) => {
-		try {
-			await api.post('/api/athletes', {
-				firstName,
-				lastName,
-				coachId,
-			});
-			console.log('Атлет успешно добавлен!');
-			loadAthletes();
-		} catch (err) {
-			throw err;
-		}
+		await api.post('/api/athletes', {
+			firstName,
+			lastName,
+			coachId,
+		});
+		loadAthletes();
 	};
 
 	const handleUpdateAthlete = async (e) => {
