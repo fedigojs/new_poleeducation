@@ -80,7 +80,7 @@ const Header = ({ className = '' }) => {
 							to='/login'
 							variant='light'
 							className={`ms-3 font_montserrat_menu`}>
-							Log In
+							Вхід
 						</Button>
 					</Nav>
 				</Navbar.Collapse>

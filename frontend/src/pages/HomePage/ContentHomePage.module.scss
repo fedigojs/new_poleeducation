@@ -17,10 +17,67 @@
 
 	.oswald_main_h1 {
 		text-align: center;
-		font-family: 'Oswald';
-		font-size: 80px;
+		font-family: 'Oswald', sans-serif;
+		font-size: 85px;
 		font-weight: 500;
 		font-weight: bold;
 		margin-top: -20px;
+	}
+}
+
+/* Для устройств с шириной экрана до 1024px */
+@media (max-width: 1024px) {
+	.home_page .oswald_main_h1 {
+		font-size: 75px; /* Уменьшили размер шрифта */
+		margin-top: -15px; /* Немного уменьшили отступ сверху */
+	}
+
+	.home_page .container_h1 {
+		margin-top: 35vh; /* Уменьшили отступ сверху для контейнера */
+	}
+}
+
+/* Для устройств с шириной экрана до 768px (планшеты) */
+@media (max-width: 768px) {
+	.home_page .oswald_main_h1 {
+		font-size: 55px; /* Еще меньше размер шрифта */
+		margin-top: -10px; /* Уменьшили отступ сверху */
+	}
+
+	.home_page .container_h1 {
+		margin-top: 35vh; /* Еще меньше отступ сверху для контейнера */
+	}
+}
+
+/* Для маленьких экранов (мобильные устройства до 480px) */
+@media (max-width: 480px) {
+	.home_page .oswald_main_h1 {
+		font-size: 30px; /* Еще меньше размер шрифта для мобильных */
+		margin-top: -5px; /* Минимальный отступ сверху */
+	}
+
+	.home_page .container_h1 {
+		margin-top: 25vh; /* Меньший отступ сверху для мобильных */
+	}
+}
+
+.button_home_page {
+	font-size: 16px;
+	line-height: 1;
+	padding: 10px 20px;
+	margin-top: 4%;
+	display: inline-block;
+	vertical-align: middle;
+	background-color: #fe2b70;
+	color: #fff;
+	border-radius: 5px;
+
+	&:hover {
+		background-color: #ff4f9a;
+	}
+
+	&:active {
+		background-color: #fff;
+		color: #fe2b70;
 	}
 }
