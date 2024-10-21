@@ -1,68 +1,86 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Navbar, Nav, Container } from 'react-bootstrap';
+import { Link, useLocation } from 'react-router-dom';
+import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import './Header.scss';
+import '../index.scss';
 
-const Header = () => {
+const Header = ({ className = '' }) => {
+	const location = useLocation();
 	return (
 		<Navbar
-			bg='dark'
-			variant='dark'
-			expand='lg'
-			collapseOnSelect
-			className='w-100'>
+			className={`p-4 font_montserrat_menu ${className}`}
+			expand='lg'>
 			<Container>
 				<Navbar.Brand
 					as={Link}
-					to='/'
-					className='text-white'>
+					to='/'>
 					<img
 						src='/images/logo_poleeducation.png'
 						alt='PoleEducation'
-						width='40'
-						height='40'
+						width='200px'
 						className='d-inline-block align-top'
-					/>{' '}
-					POLEEducation
+					/>
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls='basic-navbar-nav' />
 				<Navbar.Collapse id='basic-navbar-nav'>
 					<Nav className='ms-auto'>
 						<Nav.Link
 							as={Link}
+							to='/'
+							className={`text-white ${
+								location.pathname === '/' ? 'active' : ''
+							}`}>
+							Головна
+						</Nav.Link>
+						<Nav.Link
+							as={Link}
 							to='#'
-							className='text-white'>
+							className={`text-white ${
+								location.pathname === '#' ? 'active' : ''
+							}`}>
 							Змагання
 						</Nav.Link>
 						<Nav.Link
 							as={Link}
 							to='/test-elements'
-							className='text-white'>
+							className={`text-white ${
+								location.pathname === '/test-elements'
+									? 'active'
+									: ''
+							}`}>
 							Обовʼязкові елементи
 						</Nav.Link>
 						<Nav.Link
 							as={Link}
 							to='#'
-							className='text-white'>
+							className={`text-white ${
+								location.pathname === '#' ? 'active' : ''
+							}`}>
 							Правила
 						</Nav.Link>
 						<Nav.Link
 							as={Link}
 							to='#'
-							className='text-white'>
+							className={`text-white ${
+								location.pathname === '#' ? 'active' : ''
+							}`}>
 							Події
 						</Nav.Link>
 						<Nav.Link
 							as={Link}
 							to='#'
-							className='text-white'>
+							className={`text-white ${
+								location.pathname === '#' ? 'active' : ''
+							}`}>
 							Контакти
 						</Nav.Link>
-						<Nav.Link
+						<Button
 							as={Link}
 							to='/login'
-							className='bg-white text-black py-2 px-4 rounded'>
+							variant='light'
+							className={`ms-3 font_montserrat_menu`}>
 							Log In
-						</Nav.Link>
+						</Button>
 					</Nav>
 				</Navbar.Collapse>
 			</Container>

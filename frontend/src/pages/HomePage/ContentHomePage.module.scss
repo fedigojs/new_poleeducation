@@ -1,0 +1,26 @@
+@import '../../index.scss';
+
+.home_page {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	color: #fff;
+
+	.container_h1 {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		margin-top: 35vh;
+	}
+
+	.oswald_main_h1 {
+		text-align: center;
+		font-family: 'Oswald';
+		font-size: 80px;
+		font-weight: 500;
+		font-weight: bold;
+		margin-top: -20px;
+	}
+}
