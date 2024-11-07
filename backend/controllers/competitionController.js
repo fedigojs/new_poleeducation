@@ -8,6 +8,7 @@ exports.createCompetition = async (req, res) => {
 			date_open,
 			date_close,
 			location,
+			display: true,
 		});
 		return res.status(201).json(competition);
 	} catch (error) {
@@ -16,7 +17,7 @@ exports.createCompetition = async (req, res) => {
 };
 
 exports.getAllCompetitions = async (req, res) => {
-	const { title, date_open, date_close, location } = req.body;
+	// const { title, date_open, date_close, location } = req.body;
 	try {
 		const competitions = await Competition.findAll();
 		return res.status(200).json(competitions);
@@ -40,7 +41,7 @@ exports.getCompetition = async (req, res) => {
 
 exports.updateCompetition = async (req, res) => {
 	const { id } = req.params;
-	const { title, date_open, date_close, location } = req.body;
+	const { title, date_open, date_close, location, display } = req.body;
 	try {
 		const competition = await Competition.findByPk(id);
 		if (!competition) {
@@ -51,6 +52,7 @@ exports.updateCompetition = async (req, res) => {
 			date_open,
 			date_close,
 			location,
+			display,
 		});
 		return res.status(200).json(competition);
 	} catch (error) {

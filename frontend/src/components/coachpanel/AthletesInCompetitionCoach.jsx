@@ -13,7 +13,7 @@ const AthletesInCompetitionCoach = () => {
 	const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 	const [isVotingModalOpen, setIsVotingModalOpen] = useState(false);
 	const [selectedParticipant, setSelectedParticipant] = useState(null);
-	const { user } = useContext(AuthContext); // Получаем пользователя из контекста
+	const { user } = useContext(AuthContext);
 
 	useEffect(() => {
 		fetchData();

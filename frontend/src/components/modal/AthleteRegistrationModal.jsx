@@ -150,13 +150,17 @@ const AthleteRegistrationModal = ({
 						<option value=''>
 							{t('option.selectCompetition')}
 						</option>
-						{competitions.map((competition) => (
-							<option
-								key={competition.id}
-								value={competition.id}>
-								{competition.title}
-							</option>
-						))}
+						{competitions
+							.filter(
+								(competition) => competition.display !== false
+							)
+							.map((competition) => (
+								<option
+									key={competition.id}
+									value={competition.id}>
+									{competition.title}
+								</option>
+							))}
 					</Form.Control>
 				</Form.Group>
 

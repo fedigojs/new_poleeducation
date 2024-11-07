@@ -7,21 +7,26 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			title: DataTypes.STRING,
 			date_open: {
-				type: DataTypes.DATEONLY, // Sequelize.DATEONLY для хранения без времени
+				type: DataTypes.DATEONLY,
 				allowNull: false,
 				validate: {
-					isDate: true, // Валидация на предмет корректности даты
+					isDate: true,
 				},
 			},
 
 			date_close: {
-				type: DataTypes.DATEONLY, // Sequelize.DATEONLY для хранения без времени
+				type: DataTypes.DATEONLY,
 				allowNull: false,
 				validate: {
-					isDate: true, // Валидация на предмет корректности даты
+					isDate: true,
 				},
 			},
 			location: DataTypes.STRING,
+			display: {
+				type: DataTypes.BOOLEAN,
+				allowNull: false,
+				defaultValue: true,
+			},
 		},
 		{}
 	);

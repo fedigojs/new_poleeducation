@@ -9,6 +9,7 @@ const AddCompetitionPage = () => {
 	const [dateOpen, setDateOpen] = useState('');
 	const [dateClose, setDateClose] = useState('');
 	const [location, setLocation] = useState('');
+	const [endRegistration, setEndRegistration] = useState('');
 	const [error, setError] = useState('');
 	const [editingCompetition, setEditingCompetition] = useState(null);
 
@@ -36,6 +37,7 @@ const AddCompetitionPage = () => {
 				date_open: dateOpen,
 				date_close: dateClose,
 				location,
+				display: endRegistration,
 			};
 
 			let response;
@@ -67,6 +69,7 @@ const AddCompetitionPage = () => {
 		setDateOpen(competition.date_open);
 		setDateClose(competition.date_close);
 		setLocation(competition.location);
+		setEndRegistration(competition.display);
 	};
 
 	const handleDeleteCompetition = async (competitionId) => {
@@ -160,6 +163,21 @@ const AddCompetitionPage = () => {
 								required
 							/>
 						</label>
+						<label htmlFor='endRegistration'>
+							Запрет регистрации:
+							<select
+								id='endRegistration'
+								value={endRegistration}
+								onChange={(e) =>
+									setEndRegistration(
+										e.target.value === 'true'
+									)
+								}
+								required>
+								<option value='true'>Нет</option>
+								<option value='false'>Да</option>
+							</select>
+						</label>
 						<div className='form-actions'>
 							<button type='submit'>
 								{editingCompetition ? 'Сохранить' : 'Добавить'}
@@ -186,6 +204,7 @@ const AddCompetitionPage = () => {
 							<th>Дата начала регистрации</th>
 							<th>Дата окончания регистрации</th>
 							<th>Местоположение</th>
+							<th>Запрет регистрации</th>
 							<th>Действия</th>
 						</tr>
 					</thead>
@@ -197,8 +216,8 @@ const AddCompetitionPage = () => {
 								<td>{competition.date_open}</td>
 								<td>{competition.date_close}</td>
 								<td>{competition.location}</td>
+								<td>{competition.display ? 'нет' : 'да'}</td>
 								<td>
-									{/* Кнопки для редактирования и удаления соревнования */}
 									<button
 										className='edit-button'
 										onClick={() =>
