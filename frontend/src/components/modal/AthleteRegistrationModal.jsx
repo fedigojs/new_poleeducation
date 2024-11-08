@@ -152,7 +152,9 @@ const AthleteRegistrationModal = ({
 						</option>
 						{competitions
 							.filter(
-								(competition) => competition.display !== false
+								(competition) =>
+									editingParticipation ||
+									competition.display !== false
 							)
 							.map((competition) => (
 								<option
