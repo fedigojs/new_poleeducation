@@ -313,13 +313,16 @@ const RegisterAthletePage = () => {
 							{athletes
 								.map((athlete) => ({
 									coachId: athlete.coachId,
-									coachName: `${athlete.coach.firstName} ${athlete.coach.lastName}`,
+									coachName: `${athlete.coach.lastName} ${athlete.coach.firstName}`, // Используем фамилию сначала
 								}))
 								.filter(
 									(v, i, a) =>
 										a.findIndex(
 											(t) => t.coachId === v.coachId
 										) === i
+								)
+								.sort((a, b) =>
+									a.coachName.localeCompare(b.coachName)
 								)
 								.map((coach) => (
 									<Dropdown.Item
