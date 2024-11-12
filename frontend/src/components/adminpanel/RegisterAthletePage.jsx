@@ -270,7 +270,7 @@ const RegisterAthletePage = () => {
 		});
 	};
 
-	const sortedParticipations = sortParticipations(participations);
+	// const sortedParticipations = sortParticipations(participations);
 
 	const togglePayCompetition = async (participationId, currentIsPaid) => {
 		// Подтверждение перед изменением
@@ -319,7 +319,7 @@ const RegisterAthletePage = () => {
 									(v, i, a) =>
 										a.findIndex(
 											(t) => t.coachId === v.coachId
-										) === i // Убираем дубликаты тренеров
+										) === i
 								)
 								.map((coach) => (
 									<Dropdown.Item

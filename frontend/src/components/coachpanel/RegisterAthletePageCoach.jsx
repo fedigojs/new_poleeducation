@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
 import { Button, Col, Container } from 'react-bootstrap';
+import './RegisterAthletePageCoach.css';
 
 const RegisterAthletePageCoach = () => {
 	const { t } = useTranslation();
@@ -37,6 +38,8 @@ const RegisterAthletePageCoach = () => {
 		selectedExercises: [],
 		disciplineId: '',
 	});
+
+	const [payCompetitions, setPayCompetitions] = useState({});
 
 	const { user } = useContext(AuthContext);
 	const coachId = user.userId;
@@ -165,6 +168,11 @@ const RegisterAthletePageCoach = () => {
 			const response = await api.get(
 				`/api/comp-part/by-coach/${user.userId}`
 			);
+			const initialPayStatus = response.data.reduce((acc, part) => {
+				acc[part.id] = part.isPaid;
+				return acc;
+			}, {});
+			setPayCompetitions(initialPayStatus);
 			setParticipations(response.data);
 		} catch (err) {
 			console.error('Error loading participants:', err);
@@ -306,7 +314,13 @@ const RegisterAthletePageCoach = () => {
 					</thead>
 					<tbody>
 						{sortedParticipations.map((participation, index) => (
-							<tr key={participation.id}>
+							<tr
+								className={
+									payCompetitions[participation.id]
+										? 'paid-row'
+										: ''
+								}
+								key={participation.id}>
 								<td>{index + 1}</td>
 								<td>
 									{participation.Athlete?.lastName}{' '}

@@ -125,7 +125,7 @@ exports.getAllParticipations = async (req, res) => {
 				{
 					model: Exercise,
 					as: 'exercises',
-					through: { attributes: [] }, //'code', 'descriptions', 'image'
+					through: { attributes: [] },
 				},
 				{
 					model: Discipline,
@@ -184,9 +184,6 @@ exports.getAllParticipationsByCoach = async (req, res) => {
 					attributes: ['name'],
 				},
 			],
-			attributes: {
-				include: ['isPaid'],
-			},
 		});
 		return res.status(200).json(participations);
 	} catch (error) {
