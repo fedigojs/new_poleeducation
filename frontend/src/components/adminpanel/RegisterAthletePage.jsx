@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
-import { Button, Container } from 'react-bootstrap';
+import { Button, Container, ButtonGroup, Dropdown } from 'react-bootstrap';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
 import { useTranslation } from 'react-i18next';
@@ -35,15 +35,24 @@ const RegisterAthletePage = () => {
 		isPaid: false,
 	});
 	const [error, setError] = useState('');
+	const [filter, setFilter] = useState({
+		coachId: '',
+		athleteId: '',
+		trend: '',
+		age: '',
+	});
+	const [filteredParticipations, setFilteredParticipations] = useState([]);
+
 	const role = localStorage.getItem('role');
 
 	useEffect(() => {
 		loadInitialData();
+		loadParticipations();
 	}, []);
 
 	useEffect(() => {
-		loadParticipations();
-	}, [participations.length]);
+		applyFilters();
+	}, [filter, participations]);
 
 	const loadInitialData = async () => {
 		try {
@@ -94,6 +103,50 @@ const RegisterAthletePage = () => {
 			console.error('Ошибка при загрузке участников:', err);
 			setError('Не удалось загрузить участников.');
 		}
+	};
+
+	const applyFilters = () => {
+		let filtered = participations;
+
+		if (filter.coachId) {
+			filtered = filtered.filter(
+				(participation) =>
+					participation.Athlete.coachId === filter.coachId
+			);
+		}
+		if (filter.athleteId) {
+			filtered = filtered.filter(
+				(participation) => participation.athleteId === filter.athleteId
+			);
+		}
+		if (filter.trend) {
+			filtered = filtered.filter(
+				(participation) =>
+					participation.AthleteTrend.trends === filter.trend
+			);
+		}
+		if (filter.age) {
+			filtered = filtered.filter(
+				(participation) => participation.AthleteAge.age === filter.age
+			);
+		}
+
+		setFilteredParticipations(filtered);
+	};
+
+	const handleFilterChange = (key, value) => {
+		setFilter((prev) => ({ ...prev, [key]: value }));
+	};
+
+	const resetFilters = () => {
+		setFilter({
+			coachId: '',
+			athleteId: '',
+			trend: '',
+			age: '',
+		});
+		setFilteredParticipations(participations); // Возвращаем все данные
+		console.log('Filters reset');
 	};
 
 	const handleRegister = async (formData) => {
@@ -246,10 +299,73 @@ const RegisterAthletePage = () => {
 		<Container>
 			<h1>Регистрация спортсмена на соревнование</h1>
 			<Button
+				className='m-4'
 				variant='success'
 				onClick={() => openModal(null)}>
 				Регистрация
 			</Button>
+
+			<div className='filters'>
+				<ButtonGroup>
+					<Dropdown className='ms-2'>
+						<Dropdown.Toggle>Тренер</Dropdown.Toggle>
+						<Dropdown.Menu>
+							{athletes.map((athlete) => (
+								<Dropdown.Item
+									key={athlete.coachId}
+									onClick={() =>
+										handleFilterChange(
+											'coachId',
+											athlete.coachId
+										)
+									}>
+									{athlete.coachName}
+								</Dropdown.Item>
+							))}
+						</Dropdown.Menu>
+					</Dropdown>
+
+					<Dropdown className='ms-2'>
+						<Dropdown.Toggle>Направление</Dropdown.Toggle>
+						<Dropdown.Menu>
+							{athleteTrend.map((trend) => (
+								<Dropdown.Item
+									key={trend.id}
+									onClick={() =>
+										handleFilterChange(
+											'trend',
+											trend.trends
+										)
+									}>
+									{trend.trends}
+								</Dropdown.Item>
+							))}
+						</Dropdown.Menu>
+					</Dropdown>
+
+					<Dropdown className='ms-2'>
+						<Dropdown.Toggle>Возраст</Dropdown.Toggle>
+						<Dropdown.Menu>
+							{athleteAge.map((age) => (
+								<Dropdown.Item
+									key={age.id}
+									onClick={() =>
+										handleFilterChange('age', age.age)
+									}>
+									{age.age}
+								</Dropdown.Item>
+							))}
+						</Dropdown.Menu>
+					</Dropdown>
+				</ButtonGroup>
+				{/* Кнопка сброса фильтров */}
+				<Button
+					variant='secondary'
+					onClick={resetFilters}
+					className='ms-2'>
+					Сбросить фильтры
+				</Button>
+			</div>
 
 			{isRegistrationModalVisible && (
 				<AthleteRegistrationModal
@@ -291,7 +407,7 @@ const RegisterAthletePage = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{sortedParticipations.map((participation, index) => (
+						{filteredParticipations.map((participation, index) => (
 							<tr
 								className={
 									payCompetitions[participation.id]
