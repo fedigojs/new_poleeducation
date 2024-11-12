@@ -16,6 +16,7 @@ const RegisterAthletePage = () => {
 	const [disciplines, setDisciplines] = useState([]);
 	const [allExercises, setAllExercises] = useState([]);
 	const [detailExercises, setDetailExercises] = useState([]);
+	const [payCompetitions, setPayCompetitions] = useState({});
 	const [selectedParticipationDetails, setSelectedParticipationDetails] =
 		useState(null);
 	const [isRegistrationModalVisible, setIsRegistrationModalVisible] =
@@ -30,8 +31,10 @@ const RegisterAthletePage = () => {
 		levelId: '',
 		selectedExercises: [],
 		disciplineId: '',
+		isPaid: false,
 	});
 	const [error, setError] = useState('');
+	const role = localStorage.getItem('role');
 
 	useEffect(() => {
 		loadInitialData();
@@ -75,11 +78,17 @@ const RegisterAthletePage = () => {
 			setError('Не удалось загрузить данные.');
 		}
 	};
-
 	const loadParticipations = async () => {
 		try {
 			const response = await api.get('/api/comp-part');
 			setParticipations(response.data);
+
+			// Устанавливаем начальные значения для payCompetitions на основе данных из базы
+			const payStatus = response.data.reduce((acc, participation) => {
+				acc[participation.id] = participation.isPaid;
+				return acc;
+			}, {});
+			setPayCompetitions(payStatus);
 		} catch (err) {
 			console.error('Ошибка при загрузке участников:', err);
 			setError('Не удалось загрузить участников.');
@@ -209,6 +218,29 @@ const RegisterAthletePage = () => {
 
 	const sortedParticipations = sortParticipations(participations);
 
+	const togglePayCompetition = async (participationId, currentIsPaid) => {
+		// Подтверждение перед изменением
+		if (!window.confirm('Вы уверены, что хотите изменить статус оплаты?')) {
+			return;
+		}
+
+		try {
+			// Отправляем запрос на сервер для обновления isPaid
+			const response = await api.patch(
+				`/api/comp-part/${participationId}/ispaid`,
+				{ isPaid: !currentIsPaid } // Переключаем значение
+			);
+
+			// Обновляем локальное состояние, если запрос прошёл успешно
+			setPayCompetitions((prevState) => ({
+				...prevState,
+				[participationId]: response.data.isPaid, // Устанавливаем обновленное значение isPaid
+			}));
+		} catch (error) {
+			console.error('Ошибка при обновлении статуса оплаты:', error);
+		}
+	};
+
 	return (
 		<Container>
 			<h1>Регистрация спортсмена на соревнование</h1>
@@ -259,7 +291,16 @@ const RegisterAthletePage = () => {
 					</thead>
 					<tbody>
 						{sortedParticipations.map((participation, index) => (
-							<tr key={participation.id}>
+							<tr
+								style={
+									payCompetitions[participation.id]
+										? {
+												background: 'green',
+												color: 'white',
+										  }
+										: {}
+								}
+								key={participation.id}>
 								<td>{index + 1}</td>
 								<td>
 									{participation.Athlete?.lastName}{' '}
@@ -296,6 +337,21 @@ const RegisterAthletePage = () => {
 										}>
 										<i className='bi bi-trash'></i>
 									</Button>
+									{role === 'Admin' ? (
+										<Button
+											className='m-1'
+											variant='success'
+											onClick={() =>
+												togglePayCompetition(
+													participation.id,
+													payCompetitions[
+														participation.id
+													]
+												)
+											}>
+											<i class='bi bi-cash-coin'></i>
+										</Button>
+									) : null}
 								</td>
 							</tr>
 						))}

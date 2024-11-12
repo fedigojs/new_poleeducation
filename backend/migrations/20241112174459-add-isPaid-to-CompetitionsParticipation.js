@@ -2,14 +2,17 @@
 
 module.exports = {
 	up: async (queryInterface, Sequelize) => {
-		await queryInterface.addColumn('Competitions', 'display', {
+		await queryInterface.addColumn('CompetitionsParticipations', 'isPaid', {
 			type: Sequelize.BOOLEAN,
+			defaultValue: false,
 			allowNull: false,
-			defaultValue: true,
 		});
 	},
 
 	down: async (queryInterface, Sequelize) => {
-		await queryInterface.removeColumn('Competitions', 'display');
+		await queryInterface.removeColumn(
+			'CompetitionsParticipations',
+			'isPaid'
+		);
 	},
 };

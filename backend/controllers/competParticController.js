@@ -11,7 +11,23 @@ const {
 	Discipline,
 } = require('../models');
 
-// Создание участия
+exports.updateIsPaid = async (req, res) => {
+	const { participationId } = req.params;
+	const { isPaid } = req.body;
+	try {
+		const participation = await CompetitionsParticipation.findByPk(
+			participationId
+		);
+		if (!participation) {
+			return res.status(404).json({ error: 'Participation not found' });
+		}
+		await participation.update({ isPaid });
+		return res.status(200).json(participation);
+	} catch (error) {
+		return res.status(400).json({ error: error.message });
+	}
+};
+
 exports.createParticipation = async (req, res) => {
 	const {
 		athleteId,
@@ -21,6 +37,7 @@ exports.createParticipation = async (req, res) => {
 		levelId,
 		disciplineId,
 		exerciseIds,
+		isPaid,
 	} = req.body;
 	try {
 		const existingParticipation = await CompetitionsParticipation.findOne({
@@ -46,6 +63,7 @@ exports.createParticipation = async (req, res) => {
 			athleteTrendId,
 			levelId,
 			disciplineId,
+			isPaid,
 		});
 
 		// Добавление упражнений, если предоставлены
@@ -159,6 +177,9 @@ exports.getAllParticipationsByCoach = async (req, res) => {
 					attributes: ['name'],
 				},
 			],
+			attributes: {
+				include: ['isPaid'],
+			},
 		});
 		return res.status(200).json(participations);
 	} catch (error) {
@@ -166,7 +187,6 @@ exports.getAllParticipationsByCoach = async (req, res) => {
 	}
 };
 
-// Получение участия по ID
 exports.getParticipationById = async (req, res) => {
 	const { id } = req.params;
 	try {
@@ -188,6 +208,9 @@ exports.getParticipationById = async (req, res) => {
 					attributes: ['name'],
 				},
 			],
+			attributes: {
+				include: ['isPaid'],
+			},
 		});
 		if (!participation) {
 			return res.status(404).json({ error: 'Participation not found' });
@@ -219,7 +242,7 @@ exports.updateParticipation = async (req, res) => {
 		}
 
 		await participation.update({
-			athleteId, // Убедитесь, что эти поля теперь включены
+			athleteId,
 			competitionId,
 			athleteAgeId,
 			athleteTrendId,

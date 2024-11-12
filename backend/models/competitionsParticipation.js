@@ -38,6 +38,11 @@ module.exports = (sequelize, DataTypes) => {
 					key: 'id',
 				},
 			},
+			isPaid: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
+				allowNull: false,
+			},
 		},
 		{
 			indexes: [
