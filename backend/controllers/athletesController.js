@@ -29,7 +29,7 @@ exports.getAthletes = async (req, res) => {
 					model: User,
 					as: 'coach',
 					attributes: ['id', 'firstName', 'lastName'],
-				}, // Убедитесь, что тренеры связаны как 'coach' в вашей модели Athlete
+				},
 			],
 		});
 

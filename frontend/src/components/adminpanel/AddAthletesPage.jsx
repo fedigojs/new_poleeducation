@@ -2,10 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, Container } from 'react-bootstrap';
 import api from '../../api/api';
 import '../Modal.css';
+import { useTranslation } from 'react-i18next';
 
 import AddAthleteModal from '../modal/AddAthleteModal';
 
 const AddAthletePage = () => {
+	const { t } = useTranslation();
 	const [athletes, setAthletes] = useState([]);
 
 	const [coaches, setCoaches] = useState([]);

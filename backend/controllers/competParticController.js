@@ -102,6 +102,13 @@ exports.getAllParticipations = async (req, res) => {
 				{
 					model: Athlete,
 					attributes: ['firstName', 'lastName', 'coachId'],
+					include: [
+						{
+							model: require('../models').User,
+							as: 'coach',
+							attributes: ['firstName', 'lastName'],
+						},
+					],
 				},
 				{
 					model: AthleteAge,

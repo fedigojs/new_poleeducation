@@ -297,31 +297,42 @@ const RegisterAthletePage = () => {
 
 	return (
 		<Container>
-			<h1>Регистрация спортсмена на соревнование</h1>
+			<h1>{t('h1.athleteRegistration')}</h1>
 			<Button
 				className='m-4'
 				variant='success'
 				onClick={() => openModal(null)}>
-				Регистрация
+				{t('button.registrationNoun')}
 			</Button>
 
 			<div className='filters'>
 				<ButtonGroup>
 					<Dropdown className='ms-2'>
-						<Dropdown.Toggle>Тренер</Dropdown.Toggle>
+						<Dropdown.Toggle>{t('label.coach')}</Dropdown.Toggle>
 						<Dropdown.Menu>
-							{athletes.map((athlete) => (
-								<Dropdown.Item
-									key={athlete.coachId}
-									onClick={() =>
-										handleFilterChange(
-											'coachId',
-											athlete.coachId
-										)
-									}>
-									{athlete.coachName}
-								</Dropdown.Item>
-							))}
+							{athletes
+								.map((athlete) => ({
+									coachId: athlete.coachId,
+									coachName: `${athlete.coach.firstName} ${athlete.coach.lastName}`,
+								}))
+								.filter(
+									(v, i, a) =>
+										a.findIndex(
+											(t) => t.coachId === v.coachId
+										) === i // Убираем дубликаты тренеров
+								)
+								.map((coach) => (
+									<Dropdown.Item
+										key={coach.coachId}
+										onClick={() =>
+											handleFilterChange(
+												'coachId',
+												coach.coachId
+											)
+										}>
+										{coach.coachName}
+									</Dropdown.Item>
+								))}
 						</Dropdown.Menu>
 					</Dropdown>
 
