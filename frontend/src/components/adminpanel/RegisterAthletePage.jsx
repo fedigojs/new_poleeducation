@@ -347,7 +347,7 @@ const RegisterAthletePage = () => {
 													]
 												)
 											}>
-											<i class='bi bi-cash-coin'></i>
+											<i className='bi bi-cash-coin'></i>
 										</Button>
 									) : null}
 								</td>
