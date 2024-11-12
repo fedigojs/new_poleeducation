@@ -4,6 +4,7 @@ import { Button, Container } from 'react-bootstrap';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
 import { useTranslation } from 'react-i18next';
+import './RegisterAthletePage.css';
 
 const RegisterAthletePage = () => {
 	const { t } = useTranslation();
@@ -292,13 +293,10 @@ const RegisterAthletePage = () => {
 					<tbody>
 						{sortedParticipations.map((participation, index) => (
 							<tr
-								style={
+								className={
 									payCompetitions[participation.id]
-										? {
-												background: 'green',
-												color: 'white',
-										  }
-										: {}
+										? 'paid-row'
+										: ''
 								}
 								key={participation.id}>
 								<td>{index + 1}</td>
