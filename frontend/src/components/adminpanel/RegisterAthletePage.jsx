@@ -5,6 +5,7 @@ import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
 import { useTranslation } from 'react-i18next';
 import './RegisterAthletePage.css';
+import { Spin } from 'antd';
 
 const RegisterAthletePage = () => {
 	const { t } = useTranslation();
@@ -42,12 +43,22 @@ const RegisterAthletePage = () => {
 		age: '',
 	});
 	const [filteredParticipations, setFilteredParticipations] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	const role = localStorage.getItem('role');
 
 	useEffect(() => {
-		loadInitialData();
-		loadParticipations();
+		const fetchData = async () => {
+			setIsLoading(true); // Начало загрузки
+			try {
+				await Promise.all([loadInitialData(), loadParticipations()]);
+			} catch (err) {
+				console.error('Ошибка при загрузке данных:', err);
+			} finally {
+				setIsLoading(false); // Конец загрузки
+			}
+		};
+		fetchData();
 	}, []);
 
 	useEffect(() => {
@@ -298,88 +309,104 @@ const RegisterAthletePage = () => {
 	return (
 		<Container>
 			<h1>{t('h1.athleteRegistration')}</h1>
-			<Button
-				className='m-4'
-				variant='success'
-				onClick={() => openModal(null)}>
-				{t('button.registrationNoun')}
-			</Button>
+			{isLoading ? (
+				<div className='spinner-container'>
+					<Spin size='large' />
+				</div>
+			) : (
+				<>
+					<Button
+						className='m-4'
+						variant='success'
+						onClick={() => openModal(null)}>
+						{t('button.registrationNoun')}
+					</Button>
 
-			<div className='filters'>
-				<ButtonGroup>
-					<Dropdown className='ms-2'>
-						<Dropdown.Toggle>{t('label.coach')}</Dropdown.Toggle>
-						<Dropdown.Menu>
-							{athletes
-								.map((athlete) => ({
-									coachId: athlete.coachId,
-									coachName: `${athlete.coach.lastName} ${athlete.coach.firstName}`, // Используем фамилию сначала
-								}))
-								.filter(
-									(v, i, a) =>
-										a.findIndex(
-											(t) => t.coachId === v.coachId
-										) === i
-								)
-								.sort((a, b) =>
-									a.coachName.localeCompare(b.coachName)
-								)
-								.map((coach) => (
-									<Dropdown.Item
-										key={coach.coachId}
-										onClick={() =>
-											handleFilterChange(
-												'coachId',
-												coach.coachId
-											)
-										}>
-										{coach.coachName}
-									</Dropdown.Item>
-								))}
-						</Dropdown.Menu>
-					</Dropdown>
-
-					<Dropdown className='ms-2'>
-						<Dropdown.Toggle>Направление</Dropdown.Toggle>
-						<Dropdown.Menu>
-							{athleteTrend.map((trend) => (
-								<Dropdown.Item
-									key={trend.id}
-									onClick={() =>
-										handleFilterChange(
-											'trend',
-											trend.trends
+					<div className='filters'>
+						<ButtonGroup>
+							<Dropdown className='ms-2'>
+								<Dropdown.Toggle>
+									{t('label.coach')}
+								</Dropdown.Toggle>
+								<Dropdown.Menu>
+									{athletes
+										.map((athlete) => ({
+											coachId: athlete.coachId,
+											coachName: `${athlete.coach.lastName} ${athlete.coach.firstName}`, // Используем фамилию сначала
+										}))
+										.filter(
+											(v, i, a) =>
+												a.findIndex(
+													(t) =>
+														t.coachId === v.coachId
+												) === i
 										)
-									}>
-									{trend.trends}
-								</Dropdown.Item>
-							))}
-						</Dropdown.Menu>
-					</Dropdown>
+										.sort((a, b) =>
+											a.coachName.localeCompare(
+												b.coachName
+											)
+										)
+										.map((coach) => (
+											<Dropdown.Item
+												key={coach.coachId}
+												onClick={() =>
+													handleFilterChange(
+														'coachId',
+														coach.coachId
+													)
+												}>
+												{coach.coachName}
+											</Dropdown.Item>
+										))}
+								</Dropdown.Menu>
+							</Dropdown>
 
-					<Dropdown className='ms-2'>
-						<Dropdown.Toggle>Возраст</Dropdown.Toggle>
-						<Dropdown.Menu>
-							{athleteAge.map((age) => (
-								<Dropdown.Item
-									key={age.id}
-									onClick={() =>
-										handleFilterChange('age', age.age)
-									}>
-									{age.age}
-								</Dropdown.Item>
-							))}
-						</Dropdown.Menu>
-					</Dropdown>
-				</ButtonGroup>
-				{/* Кнопка сброса фильтров */}
-				<Button
-					variant='secondary'
-					onClick={resetFilters}
-					className='ms-2'>
-					Сбросить фильтры
-				</Button>
-			</div>
+							<Dropdown className='ms-2'>
+								<Dropdown.Toggle>Направление</Dropdown.Toggle>
+								<Dropdown.Menu>
+									{athleteTrend.map((trend) => (
+										<Dropdown.Item
+											key={trend.id}
+											onClick={() =>
+												handleFilterChange(
+													'trend',
+													trend.trends
+												)
+											}>
+											{trend.trends}
+										</Dropdown.Item>
+									))}
+								</Dropdown.Menu>
+							</Dropdown>
+
+							<Dropdown className='ms-2'>
+								<Dropdown.Toggle>Возраст</Dropdown.Toggle>
+								<Dropdown.Menu>
+									{athleteAge.map((age) => (
+										<Dropdown.Item
+											key={age.id}
+											onClick={() =>
+												handleFilterChange(
+													'age',
+													age.age
+												)
+											}>
+											{age.age}
+										</Dropdown.Item>
+									))}
+								</Dropdown.Menu>
+							</Dropdown>
+						</ButtonGroup>
+						{/* Кнопка сброса фильтров */}
+						<Button
+							variant='secondary'
+							onClick={resetFilters}
+							className='ms-2'>
+							Сбросить фильтры
+						</Button>
+					</div>
+				</>
+			)}
 
 			{isRegistrationModalVisible && (
 				<AthleteRegistrationModal
