@@ -84,8 +84,6 @@ const AthleteRegistrationModal = ({
 		setFilteredExercises(filtered);
 	}, [levelId, disciplineId, allExercises]);
 
-	console.log('initialValues:', initialValues);
-
 	if (!allExercises || allExercises.length === 0) {
 		return (
 			<Modal

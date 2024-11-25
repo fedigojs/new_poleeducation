@@ -9,7 +9,6 @@ const AthletesInCompetitionCoach = () => {
 	const [participants, setParticipants] = useState([]);
 	const [tabTrends, setTabTrends] = useState([]);
 	const [allParticipants, setAllParticipants] = useState([]);
-	const [selectedCompetition, setSelectedCompetition] = useState('');
 	const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 	const [isVotingModalOpen, setIsVotingModalOpen] = useState(false);
 	const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -18,12 +17,6 @@ const AthletesInCompetitionCoach = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
-
-	useEffect(() => {
-		if (selectedCompetition) {
-			fetchDataTabs();
-		}
-	}, [selectedCompetition]);
 
 	const openDetailsModal = (participant) => {
 		setSelectedParticipant(participant);
@@ -47,7 +40,7 @@ const AthletesInCompetitionCoach = () => {
 			const responseDraw = await api.get(
 				`/api/draw-result/by-coach/${user.userId}`
 			);
-			console.log(responseDraw.data);
+			// console.log(responseDraw.data);
 			const sortedData = responseDraw.data.sort(
 				(a, b) => a.performanceOrder - b.performanceOrder
 			);
@@ -58,7 +51,7 @@ const AthletesInCompetitionCoach = () => {
 						!participant.participation ||
 						!participant.participation.athleteId
 					) {
-						console.error('Missing participant data:', participant);
+						// console.error('Missing participant data:', participant);
 						return null; // Пропускаем этот элемент
 					}
 
