@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
 			indexes: [
 				{
 					unique: true,
-					fields: ['athleteId', 'competitionId', 'athleteTrendId'], // Составной уникальный индекс
+					fields: ['athleteId', 'competitionId', 'athleteTrendId'],
 				},
 			],
 		}
@@ -71,9 +71,9 @@ module.exports = (sequelize, DataTypes) => {
 		});
 		CompetitionsParticipation.belongsTo(models.Discipline, {
 			foreignKey: 'disciplineId',
-			as: 'discipline', // Убедитесь, что этот псевдоним совпадает с тем, что используется в запросах
+			as: 'discipline',
 		});
-		// Множественная связь с упражнениями через промежуточную таблицу
+
 		CompetitionsParticipation.belongsToMany(models.Exercise, {
 			through: 'DetailExercises',
 			foreignKey: 'competitionParticipationId',
@@ -82,7 +82,11 @@ module.exports = (sequelize, DataTypes) => {
 		});
 		CompetitionsParticipation.hasMany(models.DrawResult, {
 			foreignKey: 'competitionParticipationId',
-			as: 'drawResults', // Это псевдоним, который вы будете использовать для доступа к данным
+			as: 'drawResults',
+		});
+		CompetitionsParticipation.hasMany(models.UploadFile, {
+			foreignKey: 'competitionParticipationId',
+			as: 'uploadedFiles',
 		});
 	};
 	return CompetitionsParticipation;

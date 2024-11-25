@@ -9,6 +9,7 @@ const {
 	Level,
 	Exercise,
 	Discipline,
+	UploadFile,
 } = require('../models');
 
 exports.updateIsPaid = async (req, res) => {
@@ -39,6 +40,9 @@ exports.createParticipation = async (req, res) => {
 		exerciseIds,
 		isPaid,
 	} = req.body;
+
+	const files = req.files;
+
 	try {
 		const existingParticipation = await CompetitionsParticipation.findOne({
 			where: {
@@ -70,6 +74,17 @@ exports.createParticipation = async (req, res) => {
 		if (exerciseIds && exerciseIds.length > 0) {
 			await participation.setExercises(exerciseIds);
 		}
+		// Сохранение файлов
+		if (files && files.length > 0) {
+			const fileRecords = files.map((file) => ({
+				competitionParticipationId: participation.id,
+				fileName: file.originalname,
+				filePath: file.path,
+			}));
+
+			await UploadFile.bulkCreate(fileRecords);
+		}
+
 		// Возвращаем созданное участие с упражнениями
 		const result = await CompetitionsParticipation.findByPk(
 			participation.id,
@@ -80,11 +95,16 @@ exports.createParticipation = async (req, res) => {
 						as: 'exercises',
 						through: { attributes: [] },
 					},
+					{
+						model: UploadFile,
+						as: 'uploadedFiles',
+						attributes: ['fileName', 'filePath'],
+					},
 				],
 			}
 		);
 
-		return res.status(201).json(participation);
+		return res.status(201).json(result);
 	} catch (error) {
 		return res.status(400).json({ error: error.message });
 	}
@@ -176,7 +196,7 @@ exports.getAllParticipationsByCoach = async (req, res) => {
 				{
 					model: Exercise,
 					as: 'exercises',
-					through: { attributes: [] }, //'code', 'descriptions', 'image'
+					through: { attributes: [] },
 				},
 				{
 					model: Discipline,

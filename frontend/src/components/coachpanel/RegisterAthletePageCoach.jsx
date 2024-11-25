@@ -16,12 +16,9 @@ const RegisterAthletePageCoach = () => {
 	const [participations, setParticipations] = useState([]);
 	const [levels, setLevels] = useState([]);
 	const [disciplines, setDisciplines] = useState([]);
-	const [levelId, setLevelId] = useState('');
-	const [disciplineId, setDisciplineId] = useState('');
 	const [error, setError] = useState('');
 	const [allExercises, setAllExercises] = useState([]);
 	const [detailExercises, setDetailExercises] = useState([]);
-	const [filteredExercises, setFilteredExercises] = useState([]);
 	const [selectedParticipationDetails, setSelectedParticipationDetails] =
 		useState(null);
 	const [isRegistrationModalVisible, setIsRegistrationModalVisible] =
@@ -42,7 +39,6 @@ const RegisterAthletePageCoach = () => {
 	const [payCompetitions, setPayCompetitions] = useState({});
 
 	const { user } = useContext(AuthContext);
-	const coachId = user.userId;
 
 	useEffect(() => {
 		loadInitialData();
@@ -52,35 +48,6 @@ const RegisterAthletePageCoach = () => {
 	useEffect(() => {
 		loadParticipations();
 	}, [participations.length]);
-
-	useEffect(() => {
-		const loadExercises = async () => {
-			try {
-				const response = await api.get('/api/exercise');
-				const options = response.data.map((ex) => ({
-					value: ex.id,
-					label: `${ex.code} - ${ex.name}`,
-					level: ex.levelId,
-					discipline: ex.disciplineId,
-				}));
-				setAllExercises(options);
-				setFilteredExercises(options);
-			} catch (error) {
-				console.error('Error loading exercises:', error);
-			}
-		};
-		loadExercises();
-	}, []);
-
-	useEffect(() => {
-		const filtered = allExercises.filter(
-			(ex) =>
-				(levelId === '' || ex.level === parseInt(levelId)) &&
-				(disciplineId === '' ||
-					ex.discipline === parseInt(disciplineId))
-		);
-		setFilteredExercises(filtered);
-	}, [levelId, disciplineId, allExercises]);
 
 	const loadInitialData = async () => {
 		try {
@@ -211,7 +178,7 @@ const RegisterAthletePageCoach = () => {
 	};
 
 	const openEditModal = (participation) => {
-		setEditingParticipation(participation); // Устанавливаем участие для редактирования
+		setEditingParticipation(participation);
 
 		setInitialValues({
 			athleteId: participation.athleteId || '',

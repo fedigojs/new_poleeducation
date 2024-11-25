@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import api from '../../api/api';
 import ModalVotingDetails from '../ModalVotingDetails';
 import ModalVoting from '../ModalVoting';
-import { AuthContext } from '../../context/AuthContext'; // Убедитесь, что путь к AuthContext корректен
+import { AuthContext } from '../../context/AuthContext';
 import '../adminpanel/AthletesDraw.css';
 
 const AthletesInCompetitionCoach = () => {
@@ -98,10 +98,6 @@ const AthletesInCompetitionCoach = () => {
 		} catch (error) {
 			console.error('Ошибка при получении данных:', error);
 		}
-	};
-
-	const fetchDataTabs = async () => {
-		// Ваш код для получения данных вкладок
 	};
 
 	const handleVoteSubmit = async (e) => {

@@ -200,7 +200,7 @@ const RegisterAthletePage = () => {
 				levelId: participation.levelId,
 				selectedExercises: participation.exercises.map((ex) => ({
 					value: ex.id,
-					label: `${ex.name}`,
+					label: ex.name,
 				})),
 				disciplineId: participation.disciplineId,
 			});

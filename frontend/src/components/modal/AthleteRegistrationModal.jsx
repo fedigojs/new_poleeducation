@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import Modal from '../Modal';
 import { Form, Button, Col } from 'react-bootstrap';
+import { Upload, message, Spin } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
+import api from '../../api/api';
 
 const AthleteRegistrationModal = ({
 	isVisible,
@@ -14,11 +17,11 @@ const AthleteRegistrationModal = ({
 	athleteAge,
 	levels,
 	disciplines,
-	allExercises,
 	editingParticipation,
 	initialValues,
 	t,
 }) => {
+	const { Dragger } = Upload;
 	const [athleteId, setAthleteId] = useState(initialValues.athleteId || '');
 	const [competitionId, setCompetitionId] = useState(
 		initialValues.competitionId || ''
@@ -37,10 +40,11 @@ const AthleteRegistrationModal = ({
 		initialValues.disciplineId || ''
 	);
 	const [error, setError] = useState('');
+	const [fileList, setFileList] = useState([]);
+	const [filteredExercises, setFilteredExercises] = useState([]);
+	const [allExercises, setAllExercises] = useState([]);
 
 	useEffect(() => {
-		console.log('Initial values for editing:', initialValues);
-
 		setAthleteId(initialValues.athleteId || '');
 		setCompetitionId(initialValues.competitionId || '');
 		setAthleteAgeId(initialValues.athleteAgeId || '');
@@ -49,6 +53,54 @@ const AthleteRegistrationModal = ({
 		setSelectedExercises(initialValues.selectedExercises || []);
 		setDisciplineId(initialValues.disciplineId || '');
 	}, [initialValues]);
+
+	useEffect(() => {
+		const loadExercises = async () => {
+			try {
+				const response = await api.get('/api/exercise');
+				const options = response.data.map((ex) => ({
+					value: ex.id,
+					label: `${ex.code} - ${ex.name}`,
+					level: ex.levelId,
+					discipline: ex.disciplineId,
+				}));
+				setAllExercises(options);
+				setFilteredExercises(options);
+			} catch (error) {
+				console.error('Error loading exercises:', error);
+				setError('Failed to load exercises.');
+			}
+		};
+		loadExercises();
+	}, []);
+
+	useEffect(() => {
+		const filtered = allExercises.filter(
+			(ex) =>
+				(levelId === '' || ex.level === parseInt(levelId)) &&
+				(disciplineId === '' ||
+					ex.discipline === parseInt(disciplineId))
+		);
+		setFilteredExercises(filtered);
+	}, [levelId, disciplineId, allExercises]);
+
+	console.log('initialValues:', initialValues);
+
+	if (!allExercises || allExercises.length === 0) {
+		return (
+			<Modal
+				onClose={onClose}
+				isVisible={isVisible}
+				className='narrow-modal'>
+				<div className='loading-container'>
+					<Spin
+						size='large'
+						tip={t('label.loading')}
+					/>
+				</div>
+			</Modal>
+		);
+	}
 
 	const handleRegisterSubmit = async (e) => {
 		e.preventDefault();
@@ -61,8 +113,8 @@ const AthleteRegistrationModal = ({
 			levelId,
 			exerciseIds: selectedExercises.map((ex) => ex.value),
 			disciplineId,
+			files: fileList,
 		};
-		console.log('This:', postData);
 
 		try {
 			await onSubmit(postData);
@@ -80,19 +132,69 @@ const AthleteRegistrationModal = ({
 		setSelectedExercises(selectedOptions || []);
 	};
 
-	const filteredExercises = allExercises
-		.map((exercise) => ({
-			value: exercise.id,
-			label: `${exercise.code} - ${exercise.name}`,
-			level: exercise.levelId,
-			discipline: exercise.disciplineId,
-		}))
-		.filter(
-			(ex) =>
-				(levelId === '' || ex.level === parseInt(levelId)) &&
-				(disciplineId === '' ||
-					ex.discipline === parseInt(disciplineId))
-		);
+	const handleUploadChange = (info) => {
+		let updatedFileList = [...info.fileList];
+
+		updatedFileList = updatedFileList.slice(-5);
+
+		// Update state
+		setFileList(updatedFileList);
+
+		// Display message based on status
+		updatedFileList.forEach((file) => {
+			if (file.status === 'done') {
+				message.success(`${file.name} uploaded successfully.`);
+			} else if (file.status === 'error') {
+				message.error(`${file.name} upload failed.`);
+			}
+		});
+	};
+
+	const customUpload = ({ file, onSuccess, onError, onProgress }) => {
+		const reader = new FileReader();
+
+		reader.onload = () => {
+			// Simulate server-side upload delay
+			setTimeout(() => {
+				onSuccess('ok');
+			}, 1000);
+		};
+
+		reader.onerror = (err) => {
+			onError(err);
+		};
+
+		reader.onprogress = (event) => {
+			if (event.loaded && event.total) {
+				const percent = Math.round((event.loaded / event.total) * 100);
+				onProgress({ percent }, file);
+			}
+		};
+
+		reader.readAsDataURL(file);
+	};
+
+	const props = {
+		fileList,
+		onChange: handleUploadChange,
+		customRequest: customUpload,
+		beforeUpload: (file) => {
+			const isAllowedFormat = [
+				'audio/mp3',
+				'video/mp4',
+				'image/jpeg',
+				'image/png',
+			].includes(file.type);
+			if (!isAllowedFormat) {
+				message.error(`${file.name} is not a supported file format.`);
+				return Upload.LIST_IGNORE;
+			}
+			return true;
+		},
+		showUploadList: {
+			showRemoveIcon: true,
+		},
+	};
 
 	return (
 		<Modal
@@ -261,6 +363,23 @@ const AthleteRegistrationModal = ({
 					/>
 				</Form.Group>
 
+				<Form.Group
+					as={Col}
+					controlId='fileUpload'>
+					<Form.Label>{t('label.uploadFiles')}</Form.Label>
+					<Dragger {...props}>
+						<p className='ant-upload-drag-icon'>
+							<InboxOutlined />
+						</p>
+						<p className='ant-upload-text'>
+							{t('label.dragOrClickToUpload')}
+						</p>
+						<p className='ant-upload-hint'>
+							{t('label.supportedFormats')}: mp3, mp4, jpg, png
+						</p>
+					</Dragger>
+				</Form.Group>
+
 				<div className='form-actions d-flex justify-content-between'>
 					<Button
 						className='m-4'
@@ -293,7 +412,6 @@ AthleteRegistrationModal.propTypes = {
 	athleteAge: PropTypes.array.isRequired,
 	levels: PropTypes.array.isRequired,
 	disciplines: PropTypes.array.isRequired,
-	allExercises: PropTypes.array.isRequired,
 	editingParticipation: PropTypes.bool.isRequired,
 	initialValues: PropTypes.shape({
 		athleteId: PropTypes.string,
