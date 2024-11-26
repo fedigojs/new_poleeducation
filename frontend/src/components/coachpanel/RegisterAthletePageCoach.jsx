@@ -126,17 +126,6 @@ const RegisterAthletePageCoach = () => {
 			);
 		}
 	};
-	const refetchParticipations = async () => {
-		try {
-			const response = await api.get(
-				`/api/comp-part/by-coach/${user.userId}`
-			);
-			setParticipations(response.data);
-		} catch (err) {
-			console.error('Error fetching participations:', err);
-			setError('Failed to fetch participations.');
-		}
-	};
 
 	const handleShowFiles = (uploadedFiles) => {
 		setSelectedFiles(uploadedFiles);

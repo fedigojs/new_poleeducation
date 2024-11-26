@@ -3,6 +3,7 @@ import api from '../../api/api';
 import { Button, Container, ButtonGroup, Dropdown } from 'react-bootstrap';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
+import UploadedFilesModal from '../modal/UploadedFilesModal';
 import { useTranslation } from 'react-i18next';
 import './RegisterAthletePage.css';
 import { Spin } from 'antd';
@@ -23,6 +24,7 @@ const RegisterAthletePage = () => {
 		useState(null);
 	const [isRegistrationModalVisible, setIsRegistrationModalVisible] =
 		useState(false);
+	const [isFilesModalVisible, setIsFilesModalVisible] = useState(false);
 	const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
 	const [editingParticipation, setEditingParticipation] = useState(null);
 	const [initialValues, setInitialValues] = useState({
@@ -34,6 +36,7 @@ const RegisterAthletePage = () => {
 		selectedExercises: [],
 		disciplineId: '',
 		isPaid: false,
+		uploadedFiles: [],
 	});
 	const [error, setError] = useState('');
 	const [filter, setFilter] = useState({
@@ -44,6 +47,7 @@ const RegisterAthletePage = () => {
 	});
 	const [filteredParticipations, setFilteredParticipations] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [selectedFiles, setSelectedFiles] = useState([]);
 
 	const role = localStorage.getItem('role');
 
@@ -214,6 +218,7 @@ const RegisterAthletePage = () => {
 					label: ex.name,
 				})),
 				disciplineId: participation.disciplineId,
+				uploadedFiles: participation.uploadedFiles || [],
 			});
 			setEditingParticipation(participation);
 		} else {
@@ -240,6 +245,16 @@ const RegisterAthletePage = () => {
 			disciplineId: '',
 		});
 		setEditingParticipation(null);
+	};
+
+	const handleShowFiles = (uploadedFiles) => {
+		setSelectedFiles(uploadedFiles);
+		setIsFilesModalVisible(true);
+	};
+
+	const closeFilesModal = () => {
+		setIsFilesModalVisible(false);
+		setSelectedFiles([]);
 	};
 
 	// Удаление участника
@@ -473,7 +488,16 @@ const RegisterAthletePage = () => {
 										}>
 										<i className='bi bi-file-earmark-text'></i>
 									</Button>
-
+									<Button
+										className='m-1'
+										variant='primary'
+										onClick={() =>
+											handleShowFiles(
+												participation.uploadedFiles
+											)
+										}>
+										<i className='bi bi-file-arrow-down-fill'></i>{' '}
+									</Button>
 									<Button
 										className='m-1'
 										variant='warning'
@@ -513,6 +537,13 @@ const RegisterAthletePage = () => {
 					</tbody>
 				</table>
 			</div>
+
+			<UploadedFilesModal
+				isVisible={isFilesModalVisible}
+				onClose={closeFilesModal}
+				files={selectedFiles}
+				t={t}
+			/>
 		</Container>
 	);
 };
