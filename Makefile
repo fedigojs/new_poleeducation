@@ -7,7 +7,7 @@ build-and-deploy:
 	docker-compose -f docker-compose.prod.yml run --rm frontend-builder
 	# Копирование сборки в директорию Nginx
 	docker run --rm \
-	  -v build:/frontend/build \
+	  -v poleeducation_build:/frontend/build \
 	  -v /var/www/html:/nginx-html \
 	  alpine sh -c "cp -r /frontend/build/* /nginx-html"
 	# Удаление только контейнера frontend-builder
