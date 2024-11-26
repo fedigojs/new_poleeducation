@@ -4,6 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
+import UploadedFilesModal from '../modal/UploadedFilesModal';
 import { Button, Col, Container } from 'react-bootstrap';
 import './RegisterAthletePageCoach.css';
 
@@ -23,9 +24,11 @@ const RegisterAthletePageCoach = () => {
 		useState(null);
 	const [isRegistrationModalVisible, setIsRegistrationModalVisible] =
 		useState(false);
+	const [isFilesModalVisible, setIsFilesModalVisible] = useState(false);
 	const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
 	const [editingParticipation, setEditingParticipation] = useState(null);
 	const [coaches, setCoaches] = useState([]);
+	const [selectedFiles, setSelectedFiles] = useState([]);
 	const [initialValues, setInitialValues] = useState({
 		athleteId: '',
 		competitionId: '',
@@ -34,6 +37,7 @@ const RegisterAthletePageCoach = () => {
 		levelId: '',
 		selectedExercises: [],
 		disciplineId: '',
+		uploadedFiles: [],
 	});
 
 	const [payCompetitions, setPayCompetitions] = useState({});
@@ -94,40 +98,54 @@ const RegisterAthletePageCoach = () => {
 		}
 	};
 
-	const handleRegister = async (postData) => {
+	const handleRegister = async (formData) => {
 		try {
 			let response;
 			if (editingParticipation) {
 				response = await api.put(
 					`/api/comp-part/${editingParticipation.id}`,
-					postData
+					formData
 				);
 				setParticipations((prev) =>
-					prev.map((p) =>
-						p.id === editingParticipation.id
-							? { ...p, ...response.data }
-							: p
+					prev.map((item) =>
+						item.id === editingParticipation.id
+							? response.data
+							: item
 					)
 				);
 			} else {
-				const response = await api.post('/api/comp-part', postData);
-				console.log('Athlete registration completed successfully!');
-				setParticipations((prevParticipations) => [
-					...prevParticipations,
-					response.data,
-				]);
+				await api.post('/api/comp-part', formData);
 			}
 
-			setParticipations([...participations, response.data]);
 			closeModal();
-			// window.location.reload();
+			window.location.reload();
 		} catch (err) {
-			console.error('Error during registration:', err);
 			setError(
 				err.response?.data.message ||
 					'An error occurred during registration'
 			);
 		}
+	};
+	const refetchParticipations = async () => {
+		try {
+			const response = await api.get(
+				`/api/comp-part/by-coach/${user.userId}`
+			);
+			setParticipations(response.data);
+		} catch (err) {
+			console.error('Error fetching participations:', err);
+			setError('Failed to fetch participations.');
+		}
+	};
+
+	const handleShowFiles = (uploadedFiles) => {
+		setSelectedFiles(uploadedFiles);
+		setIsFilesModalVisible(true);
+	};
+
+	const closeFilesModal = () => {
+		setIsFilesModalVisible(false);
+		setSelectedFiles([]);
 	};
 
 	const loadParticipations = async () => {
@@ -192,6 +210,7 @@ const RegisterAthletePageCoach = () => {
 					label: ex.name,
 				})) || [],
 			disciplineId: participation.disciplineId || '',
+			uploadedFiles: participation.uploadedFiles || [],
 		});
 
 		setIsRegistrationModalVisible(true);
@@ -309,6 +328,17 @@ const RegisterAthletePageCoach = () => {
 									</Button>
 									<Button
 										className='m-1'
+										variant='primary'
+										onClick={() =>
+											handleShowFiles(
+												participation.uploadedFiles
+											)
+										}>
+										<i className='bi bi-file-arrow-down-fill'></i>{' '}
+									</Button>
+
+									<Button
+										className='m-1'
 										variant='warning'
 										onClick={() =>
 											openEditModal(participation)
@@ -333,6 +363,13 @@ const RegisterAthletePageCoach = () => {
 					</tbody>
 				</table>
 			</div>
+
+			<UploadedFilesModal
+				isVisible={isFilesModalVisible}
+				onClose={closeFilesModal}
+				files={selectedFiles}
+				t={t}
+			/>
 		</Container>
 	);
 };

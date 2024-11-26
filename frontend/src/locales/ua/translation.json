@@ -9,7 +9,7 @@
 	"button.login": "Вхід",
 	"button.edit": "Оновити",
 	"button.cancel": "Скасування",
-	"button.close": "Вихід",
+	"button.close": "Закрити",
 	"button.details": "Деталі",
 	"button.delete": "Видалити",
 	"button.add": "Додати",
@@ -48,9 +48,12 @@
 	"label.uploadFiles": "Завантаження файлів",
 	"label.dragOrClickToUpload": "Натисніть або перетягніть файли сюди",
 	"label.supportedFormats": "Підтримуємі формати:",
+	"label.currentFiles": "Завантажені файли",
 	"modal.title.editAthlete": "Редагувати спортсмена",
 	"modal.title.addAthlete": "Додати спортсмена",
 	"select.chooseRole": "Виберіть вашу роль",
 	"select.athlete": "Сопртсмен",
-	"select.coach": "Тренер"
+	"select.coach": "Тренер",
+	"title.addedFiles": "Додані файли",
+	"p.filesIsNotAdded": "Файли не додані"
 }

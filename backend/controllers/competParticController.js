@@ -9,7 +9,7 @@ const {
 	Level,
 	Exercise,
 	Discipline,
-	UploadFile,
+	UploadedFile,
 } = require('../models');
 
 exports.updateIsPaid = async (req, res) => {
@@ -42,14 +42,15 @@ exports.createParticipation = async (req, res) => {
 	} = req.body;
 
 	const files = req.files;
+	let participation;
 
 	try {
 		const existingParticipation = await CompetitionsParticipation.findOne({
 			where: {
-				athleteId,
-				competitionId,
-				athleteAgeId,
-				athleteTrendId,
+				athleteId: parseInt(athleteId, 10),
+				competitionId: parseInt(competitionId, 10),
+				athleteAgeId: parseInt(athleteAgeId, 10),
+				athleteTrendId: parseInt(athleteTrendId, 10),
 			},
 		});
 
@@ -60,15 +61,22 @@ exports.createParticipation = async (req, res) => {
 				.json({ error: 'Participation already exists' });
 		}
 
-		const participation = await CompetitionsParticipation.create({
-			athleteId,
-			competitionId,
-			athleteAgeId,
-			athleteTrendId,
-			levelId,
-			disciplineId,
-			isPaid,
-		});
+		// Приведение типов и установка значения по умолчанию для isPaid
+		const participationData = {
+			athleteId: parseInt(athleteId, 10),
+			competitionId: parseInt(competitionId, 10),
+			athleteAgeId: parseInt(athleteAgeId, 10),
+			athleteTrendId: parseInt(athleteTrendId, 10),
+			levelId: parseInt(levelId, 10),
+			disciplineId: parseInt(disciplineId, 10),
+			isPaid: isPaid !== undefined ? !!isPaid : false,
+		};
+
+		// Создание записи
+		participation = await CompetitionsParticipation.create(
+			participationData
+		);
+		console.log('Participation created:', participation);
 
 		// Добавление упражнений, если предоставлены
 		if (exerciseIds && exerciseIds.length > 0) {
@@ -82,7 +90,7 @@ exports.createParticipation = async (req, res) => {
 				filePath: file.path,
 			}));
 
-			await UploadFile.bulkCreate(fileRecords);
+			await UploadedFile.bulkCreate(fileRecords);
 		}
 
 		// Возвращаем созданное участие с упражнениями
@@ -96,7 +104,7 @@ exports.createParticipation = async (req, res) => {
 						through: { attributes: [] },
 					},
 					{
-						model: UploadFile,
+						model: UploadedFile,
 						as: 'uploadedFiles',
 						attributes: ['fileName', 'filePath'],
 					},
@@ -152,6 +160,11 @@ exports.getAllParticipations = async (req, res) => {
 					as: 'discipline',
 					attributes: ['name'],
 				},
+				{
+					model: UploadedFile,
+					as: 'uploadedFiles',
+					attributes: ['fileName', 'filePath'],
+				},
 			],
 		});
 		return res.status(200).json(participations);
@@ -203,6 +216,11 @@ exports.getAllParticipationsByCoach = async (req, res) => {
 					as: 'discipline',
 					attributes: ['name'],
 				},
+				{
+					model: UploadedFile,
+					as: 'uploadedFiles',
+					attributes: ['fileName', 'filePath'],
+				},
 			],
 		});
 		return res.status(200).json(participations);
@@ -247,8 +265,16 @@ exports.getParticipationById = async (req, res) => {
 
 // Обновление участия
 exports.updateParticipation = async (req, res) => {
+	console.log('===== Request Body =====');
+	console.log(req.body); // Логируем данные из тела запроса
+
+	console.log('===== Uploaded Files =====');
+	console.log(req.files); // Логируем загруженные файлы
+
+	console.log('===== Request Headers =====');
+	console.log(req.headers); // Логируем заголовки запроса
+
 	const { id } = req.params;
-	console.log('Updating participation with:', req.body);
 	const {
 		athleteId,
 		competitionId,
@@ -257,10 +283,16 @@ exports.updateParticipation = async (req, res) => {
 		levelId,
 		disciplineId,
 		exerciseIds,
+		removeFileIds = [],
 	} = req.body;
 
+	const files = req.files || [];
+
 	try {
-		const participation = await CompetitionsParticipation.findByPk(id);
+		const participation = await CompetitionsParticipation.findByPk(id, {
+			include: [{ model: UploadedFile, as: 'uploadedFiles' }],
+		});
+
 		if (!participation) {
 			return res.status(404).json({ error: 'Participation not found' });
 		}
@@ -272,7 +304,6 @@ exports.updateParticipation = async (req, res) => {
 			athleteTrendId,
 			levelId,
 			disciplineId,
-			exerciseIds,
 		});
 
 		// Обновление упражнений, если они предоставлены
@@ -280,14 +311,48 @@ exports.updateParticipation = async (req, res) => {
 			await participation.setExercises(exerciseIds);
 		}
 
-		// Повторное извлечение для подтверждения обновления
+		// Remove old files
+		if (removeFileIds.length > 0) {
+			const filesToDelete = await UploadedFile.findAll({
+				where: { id: removeFileIds },
+			});
+			filesToDelete.forEach((file) => {
+				fs.unlinkSync(file.filePath);
+			});
+			await UploadedFile.destroy({
+				where: { id: removeFileIds },
+			});
+		}
+
+		// Add new files
+		if (files.length > 0) {
+			const fileRecords = files.map((file) => ({
+				competitionParticipationId: participation.id,
+				fileName: file.originalname,
+				filePath: file.path,
+			}));
+			await UploadedFile.bulkCreate(fileRecords);
+		}
+
+		// Повторно загрузить запись участия с обновленными файлами
 		const updatedParticipation = await CompetitionsParticipation.findByPk(
 			id,
 			{
-				include: [{ model: Exercise, as: 'exercises' }],
+				include: [
+					{
+						model: Exercise,
+						as: 'exercises',
+						through: { attributes: [] },
+					},
+					{
+						model: UploadedFile,
+						as: 'uploadedFiles',
+						attributes: ['id', 'fileName', 'filePath'],
+					},
+				],
 			}
 		);
-
+		console.log('Updated participation:', updatedParticipation);
 		return res.status(200).json(updatedParticipation);
 	} catch (error) {
 		console.error('Update failed:', error);

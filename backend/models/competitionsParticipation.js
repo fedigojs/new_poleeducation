@@ -84,7 +84,7 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'competitionParticipationId',
 			as: 'drawResults',
 		});
-		CompetitionsParticipation.hasMany(models.UploadFile, {
+		CompetitionsParticipation.hasMany(models.UploadedFile, {
 			foreignKey: 'competitionParticipationId',
 			as: 'uploadedFiles',
 		});

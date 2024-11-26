@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import Modal from '../Modal';
 import { Form, Button, Col } from 'react-bootstrap';
-import { Upload, message, Spin } from 'antd';
+import { Upload, message, Spin, List } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import api from '../../api/api';
 
@@ -43,6 +43,7 @@ const AthleteRegistrationModal = ({
 	const [fileList, setFileList] = useState([]);
 	const [filteredExercises, setFilteredExercises] = useState([]);
 	const [allExercises, setAllExercises] = useState([]);
+	const [currentFiles, setCurrentFiles] = useState([]);
 
 	useEffect(() => {
 		setAthleteId(initialValues.athleteId || '');
@@ -52,6 +53,7 @@ const AthleteRegistrationModal = ({
 		setLevelId(initialValues.levelId || '');
 		setSelectedExercises(initialValues.selectedExercises || []);
 		setDisciplineId(initialValues.disciplineId || '');
+		setCurrentFiles(initialValues.uploadedFiles || []);
 	}, [initialValues]);
 
 	useEffect(() => {
@@ -103,19 +105,38 @@ const AthleteRegistrationModal = ({
 	const handleRegisterSubmit = async (e) => {
 		e.preventDefault();
 
-		const postData = {
-			athleteId,
-			competitionId,
-			athleteAgeId,
-			athleteTrendId,
-			levelId,
-			exerciseIds: selectedExercises.map((ex) => ex.value),
-			disciplineId,
-			files: fileList,
-		};
+		const formData = new FormData();
+		formData.append('athleteId', athleteId);
+		formData.append('competitionId', competitionId);
+		formData.append('athleteAgeId', athleteAgeId);
+		formData.append('athleteTrendId', athleteTrendId);
+		formData.append('levelId', levelId);
+		formData.append('disciplineId', disciplineId);
+
+		selectedExercises.forEach((exercise) => {
+			if (exercise.value) {
+				formData.append('exerciseIds[]', exercise.value);
+			}
+		});
+
+		// Добавляем новые файлы
+		fileList.forEach((file) => {
+			if (file.originFileObj) {
+				formData.append('files', file.originFileObj);
+			} else {
+				formData.append('files', file);
+			}
+		});
+
+		// Добавляем текущие файлы (если не удалены)
+		currentFiles.forEach((file) => {
+			formData.append('currentFiles[]', file.id); // Привязка по ID файла
+		});
+
+		console.log('FormData Preview:', Object.fromEntries(formData));
 
 		try {
-			await onSubmit(postData);
+			await onSubmit(formData);
 			onClose();
 		} catch (err) {
 			console.error('Error during registration:', err);
@@ -146,6 +167,10 @@ const AthleteRegistrationModal = ({
 				message.error(`${file.name} upload failed.`);
 			}
 		});
+	};
+
+	const handleFileRemove = (fileId) => {
+		setCurrentFiles((prev) => prev.filter((file) => file.id !== fileId));
 	};
 
 	const customUpload = ({ file, onSuccess, onError, onProgress }) => {
@@ -361,6 +386,36 @@ const AthleteRegistrationModal = ({
 					/>
 				</Form.Group>
 
+				{/* Отображение текущих файлов */}
+				{editingParticipation && currentFiles.length > 0 && (
+					<div>
+						<h5>{t('label.currentFiles')}</h5>
+						<List
+							dataSource={currentFiles}
+							renderItem={(file) => (
+								<List.Item
+									actions={[
+										<Button
+											variant='danger'
+											onClick={() =>
+												handleFileRemove(file.id)
+											}>
+											<i className='bi bi-trash'></i>{' '}
+										</Button>,
+									]}>
+									<a
+										href={file.filePath}
+										target='_blank'
+										rel='noopener noreferrer'>
+										{file.fileName}
+									</a>
+								</List.Item>
+							)}
+						/>
+					</div>
+				)}
+
+				{/* Загрузка новых файлов */}
 				<Form.Group
 					as={Col}
 					controlId='fileUpload'>
@@ -419,6 +474,7 @@ AthleteRegistrationModal.propTypes = {
 		levelId: PropTypes.string,
 		selectedExercises: PropTypes.array,
 		disciplineId: PropTypes.string,
+		uploadedFiles: PropTypes.array,
 	}).isRequired,
 	t: PropTypes.func.isRequired,
 };

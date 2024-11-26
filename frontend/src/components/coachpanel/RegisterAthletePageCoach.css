@@ -2,3 +2,8 @@
 	background-color: green;
 	color: white;
 }
+
+.paid-row:hover {
+	background-color: green;
+	color: rgb(35, 13, 13);
+}

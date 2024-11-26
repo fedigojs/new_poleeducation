@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
 
 		const folderPath = path.join(
 			__dirname,
-			'../uploads',
+			'../../upload_files',
 			`competition_${competitionId}`,
 			`athlete_${athleteId}`
 		);
@@ -26,6 +26,9 @@ const storage = multer.diskStorage({
 	},
 });
 
-const uploadFilesMw = multer({ storage });
+const uploadFilesMw = multer({
+	storage,
+	limits: { fileSize: 15 * 1024 * 1024 }, // 15 MB
+}).fields([{ name: 'files', maxCount: 5 }]);
 
 module.exports = uploadFilesMw;
