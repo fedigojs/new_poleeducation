@@ -133,7 +133,7 @@ const AthleteRegistrationModal = ({
 			formData.append('currentFiles[]', file.id); // Привязка по ID файла
 		});
 
-		console.log('FormData Preview:', Object.fromEntries(formData));
+		console.log('Currentfile ', currentFiles);
 
 		try {
 			await onSubmit(formData);
@@ -390,29 +390,30 @@ const AthleteRegistrationModal = ({
 				{editingParticipation && currentFiles.length > 0 && (
 					<div>
 						<h5>{t('label.currentFiles')}</h5>
-						<List
-							dataSource={currentFiles}
-							renderItem={(file) => (
-								<List.Item
-									key={file.id || file.filePath}
-									actions={[
-										<Button
-											variant='danger'
-											onClick={() =>
-												handleFileRemove(file.id)
-											}>
-											<i className='bi bi-trash'></i>{' '}
-										</Button>,
-									]}>
+						<ul className='file-list'>
+							{currentFiles.map((file, index) => (
+								<li
+									key={file.id || file.filePath || index}
+									className='file-list-item'>
 									<a
 										href={file.filePath}
 										target='_blank'
-										rel='noopener noreferrer'>
-										{file.fileName}
+										rel='noopener noreferrer'
+										className='file-link'>
+										{file.fileName ||
+											t('label.unknownFile')}
 									</a>
-								</List.Item>
-							)}
-						/>
+									<Button
+										variant='danger'
+										onClick={() =>
+											handleFileRemove(file.id)
+										}
+										className='remove-file-button'>
+										<i className='bi bi-trash'></i>
+									</Button>
+								</li>
+							))}
+						</ul>
 					</div>
 				)}
 
