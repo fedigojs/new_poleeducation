@@ -12,6 +12,8 @@ services:
             - DATABASE_URL=postgres://fedigo_admin:Igor18052008@db_auth:5432/poleeducation_db
         depends_on:
             - db_auth
+        volumes:
+            - upload_files_data:/backend/upload_files
 
     frontend-builder:
         build:
@@ -38,3 +40,4 @@ services:
 volumes:
     db_data:
     build:
+    upload_files_data:
