@@ -41,8 +41,11 @@ exports.createParticipation = async (req, res) => {
 		isPaid,
 	} = req.body;
 
-	const files = req.files;
+	const files = req.files?.files || [];
 	let participation;
+
+	console.log('Files:', req.files);
+	console.log('Participation:', participation);
 
 	try {
 		const existingParticipation = await CompetitionsParticipation.findOne({
@@ -286,7 +289,7 @@ exports.updateParticipation = async (req, res) => {
 		removeFileIds = [],
 	} = req.body;
 
-	const files = req.files || [];
+	const files = req.files?.files || [];
 
 	try {
 		const participation = await CompetitionsParticipation.findByPk(id, {
@@ -311,6 +314,16 @@ exports.updateParticipation = async (req, res) => {
 			await participation.setExercises(exerciseIds);
 		}
 
+		// Add new files
+		if (files.length > 0) {
+			const fileRecords = files.map((file) => ({
+				competitionParticipationId: participation.id,
+				fileName: file.originalname,
+				filePath: file.path,
+			}));
+			await UploadedFile.bulkCreate(fileRecords);
+		}
+
 		// Remove old files
 		if (removeFileIds.length > 0) {
 			const filesToDelete = await UploadedFile.findAll({
@@ -322,16 +335,6 @@ exports.updateParticipation = async (req, res) => {
 			await UploadedFile.destroy({
 				where: { id: removeFileIds },
 			});
-		}
-
-		// Add new files
-		if (files.length > 0) {
-			const fileRecords = files.map((file) => ({
-				competitionParticipationId: participation.id,
-				fileName: file.originalname,
-				filePath: file.path,
-			}));
-			await UploadedFile.bulkCreate(fileRecords);
 		}
 
 		// Повторно загрузить запись участия с обновленными файлами
