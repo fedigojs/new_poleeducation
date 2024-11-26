@@ -1,7 +1,5 @@
 # Deploy
 
--   docker ps -q | xargs docker stop
-
 -   make build-and-deploy
 
 # Create volume backup on server in folder /var/www/poleeducation/backup
