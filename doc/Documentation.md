@@ -1,3 +1,7 @@
+# Deploy
+
+-   make build-and-deploy
+
 # Create volume backup on server in folder /var/www/poleeducation/backup
 
 -   docker run --rm -v poleeducation_db_data:/data -v /var/www/poleeducation/backup:/backup busybox tar czf /backup/poleeducation_db_backup.tar.gz -C /data .

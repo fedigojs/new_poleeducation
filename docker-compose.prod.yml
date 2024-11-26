@@ -13,13 +13,16 @@ services:
         depends_on:
             - db_auth
 
-    frontend:
+    frontend-builder:
         build:
             context: ./frontend
             dockerfile: Dockerfile.prod
+            target: builder # Используем только этап сборки
         container_name: frontend
-        ports:
-            - '3001:80'
+        volumes:
+            - build:/frontend/build
+        # ports:
+        #     - '3001:80'
         depends_on:
             - backend
 
@@ -37,3 +40,4 @@ services:
 
 volumes:
     db_data:
+    build:
