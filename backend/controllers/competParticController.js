@@ -44,9 +44,6 @@ exports.createParticipation = async (req, res) => {
 	const files = req.files?.files || [];
 	let participation;
 
-	console.log('Files:', req.files);
-	console.log('Participation:', participation);
-
 	try {
 		const existingParticipation = await CompetitionsParticipation.findOne({
 			where: {
@@ -268,15 +265,6 @@ exports.getParticipationById = async (req, res) => {
 
 // Обновление участия
 exports.updateParticipation = async (req, res) => {
-	console.log('===== Request Body =====');
-	console.log(req.body); // Логируем данные из тела запроса
-
-	console.log('===== Uploaded Files =====');
-	console.log(req.files); // Логируем загруженные файлы
-
-	console.log('===== Request Headers =====');
-	console.log(req.headers); // Логируем заголовки запроса
-
 	const { id } = req.params;
 	const {
 		athleteId,
@@ -355,7 +343,6 @@ exports.updateParticipation = async (req, res) => {
 				],
 			}
 		);
-		console.log('Updated participation:', updatedParticipation);
 		return res.status(200).json(updatedParticipation);
 	} catch (error) {
 		console.error('Update failed:', error);
