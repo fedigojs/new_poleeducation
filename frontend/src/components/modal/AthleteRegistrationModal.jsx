@@ -394,7 +394,7 @@ const AthleteRegistrationModal = ({
 							dataSource={currentFiles}
 							renderItem={(file) => (
 								<List.Item
-									key={file.id}
+									key={file.id || file.filePath}
 									actions={[
 										<Button
 											variant='danger'
