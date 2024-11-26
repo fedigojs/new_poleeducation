@@ -1,4 +1,6 @@
 build-and-deploy:
+	# Остановка всех контейнеров
+	docker-compose -f docker-compose.prod.yml down
 	# Запуск всех контейнеров, кроме frontend-builder
 	docker-compose -f docker-compose.prod.yml up -d db_auth backend
 	# Сборка фронтенда
