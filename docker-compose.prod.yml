@@ -19,10 +19,9 @@ services:
             dockerfile: Dockerfile.prod
             target: builder # Используем только этап сборки
         container_name: frontend
+        command: sh -c "pnpm run build" # Команда для сборки
         volumes:
             - build:/frontend/build
-        # ports:
-        #     - '3001:80'
         depends_on:
             - backend
 
