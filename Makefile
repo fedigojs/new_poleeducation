@@ -2,6 +2,7 @@ build-and-deploy:
 	# Остановка всех контейнеров
 	docker-compose -f docker-compose.prod.yml down --remove-orphans
 
+	# Удаление всех volumes, кроме poleeducation_db_data
 	docker volume ls --format '{{.Name}}' | grep -v '^poleeducation_db_data$' | xargs -r docker volume rm
 
 	# Запуск всех контейнеров, кроме frontend-builder
