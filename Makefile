@@ -9,6 +9,6 @@ build-and-deploy:
 	docker run --rm \
 	  -v build:/frontend/build \
 	  -v /var/www/html:/nginx-html \
-	  debian sh -c "cp -r /frontend/build/* /nginx-html"
+	  alpine sh -c "cp -r /frontend/build/* /nginx-html"
 	# Удаление только контейнера frontend-builder
 	docker-compose -f docker-compose.prod.yml rm -f frontend-builder

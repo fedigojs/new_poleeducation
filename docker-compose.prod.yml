@@ -22,8 +22,6 @@ services:
         command: sh -c "pnpm run build" # Команда для сборки
         volumes:
             - build:/frontend/build
-        depends_on:
-            - backend
 
     db_auth:
         container_name: poleeducation_db
