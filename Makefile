@@ -1,6 +1,9 @@
 build-and-deploy:
 	# Остановка всех контейнеров
 	docker-compose -f docker-compose.prod.yml down --remove-orphans
+
+	docker volume ls --format '{{.Name}}' | grep -v '^poleeducation_db_data$' | xargs -r docker volume rm
+
 	# Запуск всех контейнеров, кроме frontend-builder
 	docker-compose -f docker-compose.prod.yml up -d db_auth backend
 	# Сборка фронтенда
