@@ -12,3 +12,5 @@ build-and-deploy:
 	  alpine sh -c "cp -r /frontend/build/* /nginx-html"
 	# Удаление только контейнера frontend-builder
 	docker-compose -f docker-compose.prod.yml rm -f frontend-builder
+	# Перезагрузка Nginx
+	sudo systemctl reload nginx
