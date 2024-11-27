@@ -47,9 +47,34 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Static files for uploads
+// Static files for uploads with setHeaders
 const uploadDir = path.join(__dirname, 'upload_files');
-app.use('/backend/upload_files', express.static(uploadDir));
+app.use(
+	'/backend/upload_files',
+	express.static(uploadDir, {
+		setHeaders: (res, filePath) => {
+			const extension = path.extname(filePath).toLowerCase();
+			switch (extension) {
+				case '.mp3':
+					res.setHeader('Content-Type', 'audio/mpeg');
+					break;
+				case '.jpg':
+				case '.jpeg':
+					res.setHeader('Content-Type', 'image/jpeg');
+					break;
+				case '.png':
+					res.setHeader('Content-Type', 'image/png');
+					break;
+				case '.mp4':
+					res.setHeader('Content-Type', 'video/mp4');
+					break;
+				default:
+					// Не меняем Content-Type для других файлов
+					break;
+			}
+		},
+	})
+);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
