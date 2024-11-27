@@ -20,6 +20,8 @@ services:
             context: ./frontend
             dockerfile: Dockerfile.prod
             target: builder # Используем только этап сборки
+        environment:
+            - REACT_APP_API_URL=https://poleeducation.in.ua
         container_name: frontend
         command: sh -c "pnpm run build" # Команда для сборки
         volumes:
