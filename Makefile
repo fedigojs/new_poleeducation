@@ -9,7 +9,7 @@ LOCAL_BACKUP_PATH = ./poleeducation_db_backup.tar.gz
 build-and-deploy:
 	@echo "Деплой проекта..."
 	$(DOCKER_COMPOSE) down --remove-orphans || { echo "Failed to stop containers"; exit 1; }
-	docker system prune -af || { echo "Failed to prune Docker caches"; exit 1; }
+	docker system prune -a --volumes=false || { echo "Failed to prune Docker caches"; exit 1; }
 	sudo rm -rf /var/www/html/* || { echo "Failed to clear /var/www/html"; exit 1; }
 	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
 	$(DOCKER_COMPOSE) up --build -d db_auth backend || { echo "Failed to start backend containers"; exit 1; }
