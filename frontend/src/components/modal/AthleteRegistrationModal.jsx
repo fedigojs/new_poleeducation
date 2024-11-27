@@ -202,18 +202,16 @@ const AthleteRegistrationModal = ({
 		onChange: handleUploadChange,
 		customRequest: customUpload,
 		beforeUpload: (file) => {
-			const isAllowedFormat = [
-				'audio/mp3',
-				'video/mp4',
-				'image/jpeg',
-				'image/png',
-			].includes(file.type);
-			if (!isAllowedFormat) {
+			const allowedExtensions = ['mp3', 'mp4', 'jpeg', 'png'];
+			const fileExtension = file.name.split('.').pop().toLowerCase();
+
+			if (!allowedExtensions.includes(fileExtension)) {
 				message.error(`${file.name} is not a supported file format.`);
 				return Upload.LIST_IGNORE;
 			}
 			return true;
 		},
+
 		showUploadList: {
 			showRemoveIcon: true,
 		},
