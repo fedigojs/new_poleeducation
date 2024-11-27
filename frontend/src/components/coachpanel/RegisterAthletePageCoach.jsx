@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import api from '../../api/api';
 import { AuthContext } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -127,9 +127,10 @@ const RegisterAthletePageCoach = () => {
 		}
 	};
 
-	const handleShowFiles = (uploadedFiles) => {
+	const handleShowFiles = (uploadedFiles, participation) => {
 		setSelectedFiles(uploadedFiles);
 		setIsFilesModalVisible(true);
+		setEditingParticipation(participation);
 	};
 
 	const closeFilesModal = () => {
@@ -320,7 +321,8 @@ const RegisterAthletePageCoach = () => {
 										variant='primary'
 										onClick={() =>
 											handleShowFiles(
-												participation.uploadedFiles
+												participation.uploadedFiles,
+												participation
 											)
 										}>
 										<i className='bi bi-file-arrow-down-fill'></i>{' '}
@@ -357,6 +359,7 @@ const RegisterAthletePageCoach = () => {
 				isVisible={isFilesModalVisible}
 				onClose={closeFilesModal}
 				files={selectedFiles}
+				editingParticipation={editingParticipation}
 				t={t}
 			/>
 		</Container>

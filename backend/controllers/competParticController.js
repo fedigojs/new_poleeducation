@@ -249,6 +249,11 @@ exports.getParticipationById = async (req, res) => {
 					as: 'discipline',
 					attributes: ['name'],
 				},
+				{
+					model: UploadedFile,
+					as: 'uploadedFiles',
+					attributes: ['fileName', 'filePath'],
+				},
 			],
 			attributes: {
 				include: ['isPaid'],

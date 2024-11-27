@@ -47,6 +47,10 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Static files for uploads
+const uploadDir = path.join(__dirname, 'upload_files');
+app.use('/backend/upload_files', express.static(uploadDir));
+
 // Error handling middleware
 app.use((err, req, res, next) => {
 	console.error(err.stack);
