@@ -13,6 +13,7 @@ route.get(
 route.get('/:id', routeCompParticipation.getParticipationById);
 route.put('/:id', uploadFilesMw, routeCompParticipation.updateParticipation);
 route.delete('/:id', routeCompParticipation.deleteParticipation);
+route.delete('/files/:fileId', routeCompParticipation.deleteFile);
 route.get(
 	'/trends/:competitionId',
 	routeCompParticipation.getTrendsByCompetition

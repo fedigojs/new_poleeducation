@@ -1,4 +1,6 @@
 //controller/competParticController.js
+const fs = require('fs');
+const path = require('path');
 
 const {
 	CompetitionsParticipation,
@@ -26,6 +28,36 @@ exports.updateIsPaid = async (req, res) => {
 		return res.status(200).json(participation);
 	} catch (error) {
 		return res.status(400).json({ error: error.message });
+	}
+};
+
+exports.deleteFile = async (req, res) => {
+	const { fileId } = req.params;
+
+	try {
+		// Найти файл в базе данных
+		const file = await UploadedFile.findByPk(fileId);
+
+		if (!file) {
+			return res.status(404).json({ error: 'File not found' });
+		}
+
+		// Удалить файл с файловой системы
+		const filePath = path.resolve(file.filePath);
+		fs.unlink(filePath, (err) => {
+			if (err) {
+				console.error('Error deleting file:', err);
+				return res.status(500).json({ error: 'Failed to delete file' });
+			}
+		});
+
+		// Удалить запись из базы данных
+		await file.destroy();
+
+		return res.status(200).json({ message: 'File deleted successfully' });
+	} catch (error) {
+		console.error('Error deleting file:', error);
+		return res.status(500).json({ error: error.message });
 	}
 };
 
@@ -106,7 +138,7 @@ exports.createParticipation = async (req, res) => {
 					{
 						model: UploadedFile,
 						as: 'uploadedFiles',
-						attributes: ['fileName', 'filePath'],
+						attributes: ['fileName', 'filePath', 'id'],
 					},
 				],
 			}
@@ -134,7 +166,7 @@ exports.getAllParticipations = async (req, res) => {
 						{
 							model: require('../models').User,
 							as: 'coach',
-							attributes: ['firstName', 'lastName'],
+							attributes: ['firstName', 'lastName', 'id'],
 						},
 					],
 				},
@@ -163,7 +195,7 @@ exports.getAllParticipations = async (req, res) => {
 				{
 					model: UploadedFile,
 					as: 'uploadedFiles',
-					attributes: ['fileName', 'filePath'],
+					attributes: ['fileName', 'filePath', 'id'],
 				},
 			],
 		});
@@ -219,7 +251,7 @@ exports.getAllParticipationsByCoach = async (req, res) => {
 				{
 					model: UploadedFile,
 					as: 'uploadedFiles',
-					attributes: ['fileName', 'filePath'],
+					attributes: ['fileName', 'filePath', 'id'],
 				},
 			],
 		});
@@ -252,7 +284,7 @@ exports.getParticipationById = async (req, res) => {
 				{
 					model: UploadedFile,
 					as: 'uploadedFiles',
-					attributes: ['fileName', 'filePath'],
+					attributes: ['fileName', 'filePath', 'id'],
 				},
 			],
 			attributes: {
@@ -343,7 +375,7 @@ exports.updateParticipation = async (req, res) => {
 					{
 						model: UploadedFile,
 						as: 'uploadedFiles',
-						attributes: ['id', 'fileName', 'filePath'],
+						attributes: ['id', 'fileName', 'filePath', 'id'],
 					},
 				],
 			}

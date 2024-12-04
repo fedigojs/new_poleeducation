@@ -55,5 +55,6 @@
 	"select.athlete": "Сопртсмен",
 	"select.coach": "Тренер",
 	"title.addedFiles": "Додані файли",
-	"p.filesIsNotAdded": "Файли не додані"
+	"p.filesIsNotAdded": "Файли не додані",
+	"modal.confirmDeleteFile": "Ви впевнені, що хочете видалити цей файл?"
 }

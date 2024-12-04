@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import Modal from '../Modal';
 import { Form, Button, Col } from 'react-bootstrap';
-import { Upload, message, Spin, List } from 'antd';
+import { Upload, message, Spin } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import api from '../../api/api';
 
@@ -130,10 +130,8 @@ const AthleteRegistrationModal = ({
 
 		// Добавляем текущие файлы (если не удалены)
 		currentFiles.forEach((file) => {
-			formData.append('currentFiles[]', file.id); // Привязка по ID файла
+			formData.append('currentFiles[]', file.id);
 		});
-
-		console.log('Currentfile ', currentFiles);
 
 		try {
 			await onSubmit(formData);
@@ -169,8 +167,31 @@ const AthleteRegistrationModal = ({
 		});
 	};
 
-	const handleFileRemove = (fileId) => {
-		setCurrentFiles((prev) => prev.filter((file) => file.id !== fileId));
+	const confirmFileRemove = (fileId) => {
+		const confirmed = window.confirm(t('modal.confirmDeleteFile'));
+
+		if (confirmed) {
+			handleFileRemove(fileId);
+		} else {
+			console.log('Delete canceled');
+		}
+	};
+
+	const handleFileRemove = async (fileId) => {
+		try {
+			// Запрос на удаление файла
+			await api.delete(`/api/comp-part/files/${fileId}`);
+
+			// Удалить файл из текущего состояния
+			setCurrentFiles((prev) =>
+				prev.filter((file) => file.id !== fileId)
+			);
+
+			message.success('File deleted successfully');
+		} catch (error) {
+			console.error('Error deleting file:', error);
+			message.error('Failed to delete file');
+		}
 	};
 
 	const customUpload = ({ file, onSuccess, onError, onProgress }) => {
@@ -404,7 +425,7 @@ const AthleteRegistrationModal = ({
 									<Button
 										variant='danger'
 										onClick={() =>
-											handleFileRemove(file.id)
+											confirmFileRemove(file.id)
 										}
 										className='remove-file-button'>
 										<i className='bi bi-trash'></i>

@@ -33,8 +33,6 @@ const UploadedFilesModal = ({
 		}
 	}, [isVisible, editingParticipation]);
 
-	console.log('files:', files);
-
 	return (
 		<Modal
 			show={isVisible}

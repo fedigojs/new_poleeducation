@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		const { competitionId, athleteId } = req.body;
+		const { competitionId, athleteId, athleteTrendId } = req.body;
 
 		if (!competitionId || !athleteId) {
 			return cb(new Error('Missing competitionId or athleteId'));
@@ -15,7 +15,8 @@ const storage = multer.diskStorage({
 			__dirname,
 			'../../upload_files',
 			`competition_${competitionId}`,
-			`athlete_${athleteId}`
+			`athlete_${athleteId}`,
+			`athlete_trends_${athleteTrendId}`
 		);
 
 		fs.mkdirSync(folderPath, { recursive: true });
