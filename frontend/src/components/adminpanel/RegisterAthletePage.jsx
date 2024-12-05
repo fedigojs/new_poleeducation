@@ -247,9 +247,10 @@ const RegisterAthletePage = () => {
 		setEditingParticipation(null);
 	};
 
-	const handleShowFiles = (uploadedFiles) => {
+	const handleShowFiles = (uploadedFiles, participation) => {
 		setSelectedFiles(uploadedFiles);
 		setIsFilesModalVisible(true);
+		setEditingParticipation(participation);
 	};
 
 	const closeFilesModal = () => {
@@ -493,7 +494,8 @@ const RegisterAthletePage = () => {
 										variant='primary'
 										onClick={() =>
 											handleShowFiles(
-												participation.uploadedFiles
+												participation.uploadedFiles,
+												participation
 											)
 										}>
 										<i className='bi bi-file-arrow-down-fill'></i>{' '}
@@ -542,6 +544,7 @@ const RegisterAthletePage = () => {
 				isVisible={isFilesModalVisible}
 				onClose={closeFilesModal}
 				files={selectedFiles}
+				editingParticipation={editingParticipation}
 				t={t}
 			/>
 		</Container>

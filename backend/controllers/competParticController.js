@@ -39,25 +39,58 @@ exports.deleteFile = async (req, res) => {
 		const file = await UploadedFile.findByPk(fileId);
 
 		if (!file) {
-			return res.status(404).json({ error: 'File not found' });
+			return res
+				.status(404)
+				.json({ error: 'File not found in database' });
 		}
 
-		// Удалить файл с файловой системы
+		// Удалить файл с файловой системы, если он существует
 		const filePath = path.resolve(file.filePath);
-		fs.unlink(filePath, (err) => {
+
+		fs.access(filePath, fs.constants.F_OK, async (err) => {
 			if (err) {
-				console.error('Error deleting file:', err);
-				return res.status(500).json({ error: 'Failed to delete file' });
+				// Если файл не найден, просто удаляем запись из базы
+				console.warn(
+					'File not found on disk, deleting record only:',
+					filePath
+				);
+			} else {
+				// Если файл найден, удаляем его
+				try {
+					await fs.promises.unlink(filePath);
+					console.log('File deleted from disk:', filePath);
+				} catch (unlinkError) {
+					console.error(
+						'Error deleting file from disk:',
+						unlinkError
+					);
+					return res
+						.status(500)
+						.json({ error: 'Failed to delete file from disk' });
+				}
+			}
+
+			// Удаляем запись из базы данных
+			try {
+				await file.destroy();
+				return res
+					.status(200)
+					.json({ message: 'File deleted successfully' });
+			} catch (dbError) {
+				console.error(
+					'Error deleting file record from database:',
+					dbError
+				);
+				return res
+					.status(500)
+					.json({ error: 'Failed to delete file record' });
 			}
 		});
-
-		// Удалить запись из базы данных
-		await file.destroy();
-
-		return res.status(200).json({ message: 'File deleted successfully' });
 	} catch (error) {
 		console.error('Error deleting file:', error);
-		return res.status(500).json({ error: error.message });
+		if (!res.headersSent) {
+			return res.status(500).json({ error: error.message });
+		}
 	}
 };
 
