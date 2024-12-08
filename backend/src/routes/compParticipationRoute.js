@@ -1,7 +1,7 @@
 const express = require('express');
 const route = express.Router();
 const routeCompParticipation = require('../controllers/competParticController');
-const uploadFilesMw = require('../src/middleware/uploadFilesMw');
+const uploadFilesMw = require('../middleware/uploadFilesMw');
 
 route.patch('/:participationId/ispaid', routeCompParticipation.updateIsPaid);
 route.post('/', uploadFilesMw, routeCompParticipation.createParticipation);

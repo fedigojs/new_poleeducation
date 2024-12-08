@@ -20,6 +20,7 @@ import AthletesInCompetitionCoach from './components/coachpanel/AthletesInCompet
 import RegisterAthletePageCoach from './components/coachpanel/RegisterAthletePageCoach';
 import TestExerciseHomePage from './pages/HomePage/TestExerciseHomePage';
 import AddAthleteCoach from './components/coachpanel/AddAthleteCoach';
+import CompetitionJudgement from './components/adminpanel/CompetitionJudgment';
 
 const AppRoutes = () => (
 	<Router>
@@ -67,6 +68,10 @@ const AppRoutes = () => (
 				<Route
 					path='athletes-draw'
 					element={<AthletesDraw />}
+				/>
+				<Route
+					path='athletes-judgement'
+					element={<CompetitionJudgement />}
 				/>
 			</Route>
 			<Route

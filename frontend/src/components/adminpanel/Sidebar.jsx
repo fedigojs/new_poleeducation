@@ -27,6 +27,9 @@ const Sidebar = () => {
 				<li>
 					<Link to='/admin/athletes-draw'>Змагання</Link>
 				</li>
+				<li>
+					<Link to='/admin/athletes-draw-new'>NEW COMPETITIONS</Link>
+				</li>
 			</ul>
 		</div>
 	);

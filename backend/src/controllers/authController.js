@@ -1,7 +1,7 @@
 // controllers/authController.js
 const { User, Role } = require('../models');
 const bcrypt = require('bcrypt');
-const jwtUtils = require('../src/middleware/jwtutils');
+const jwtUtils = require('../middleware/jwtutils');
 
 exports.register = async (req, res) => {
 	const { firstName, lastName, phoneNumber, email, password } = req.body;

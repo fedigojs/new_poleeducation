@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
-const {
-	authenticate,
-	authorizeRoles,
-} = require('../src/middleware/authenticate');
+const { authenticate, authorizeRoles } = require('../middleware/authenticate');
 
 // Route to access the dashboard
 router.get(

@@ -1,8 +1,5 @@
 //controllers/athleteController.js
-const {
-	authenticate,
-	authorizeRoles,
-} = require('../src/middleware/authenticate');
+const { authenticate, authorizeRoles } = require('../middleware/authenticate');
 const { User, Athlete } = require('../models');
 
 // Создание атлета

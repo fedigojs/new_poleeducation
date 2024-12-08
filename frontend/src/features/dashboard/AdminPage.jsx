@@ -16,6 +16,10 @@ const AdminPage = () => {
 			path: '/admin/athletes-draw',
 			label: 'Змагання',
 		},
+		{
+			path: '/admin/athletes-judgement',
+			label: 'Судейство',
+		},
 	];
 
 	return (

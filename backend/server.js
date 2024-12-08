@@ -2,30 +2,31 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const app = express();
-const { sequelize } = require('./models');
+const { sequelize } = require('./src/models');
 const cors = require('cors');
 const morgan = require('morgan');
 
 // Import routes
-const usersRoute = require('./routes/usersRoute');
-const athletesRoute = require('./routes/athletesRoute');
-const athleteAgeRoute = require('./routes/athleteAgeRoute');
-const athleteTrendRoute = require('./routes/athleteTrendRoute');
-const competitionRoute = require('./routes/competitionRoute');
-const competitionPartRoute = require('./routes/compParticipationRoute');
-const disciplineRoute = require('./routes/disciplineRoute');
-const exerciseRoute = require('./routes/exerciseRoute');
-const levelRoute = require('./routes/levelRoute');
-const protocolRoute = require('./routes/protocolRoute');
-const protocolDetailsRoute = require('./routes/protocolDetailsRoute');
-const roleRoute = require('./routes/roleRoute');
-const scoreRoute = require('./routes/scoreRoute');
-const authRoute = require('./routes/authRoute');
-const adminRoute = require('./routes/adminRoute');
-const detailExerciseRoute = require('./routes/detailExerciseRoute');
-const drawResultsRoute = require('./routes/drawResultRoute');
-const protocolElementResultRoute = require('./routes/protocolElementResultRoute');
-const protocolExerciseResultRoute = require('./routes/protocolExerciseResultRoute');
+const usersRoute = require('./src/routes/usersRoute');
+const athletesRoute = require('./src/routes/athletesRoute');
+const athleteAgeRoute = require('./src/routes/athleteAgeRoute');
+const athleteTrendRoute = require('./src/routes/athleteTrendRoute');
+const competitionRoute = require('./src/routes/competitionRoute');
+const competitionPartRoute = require('./src/routes/compParticipationRoute');
+const disciplineRoute = require('./src/routes/disciplineRoute');
+const exerciseRoute = require('./src/routes/exerciseRoute');
+const levelRoute = require('./src/routes/levelRoute');
+const protocolRoute = require('./src/routes/protocolRoute');
+const protocolDetailsRoute = require('./src/routes/protocolDetailsRoute');
+const roleRoute = require('./src/routes/roleRoute');
+const scoreRoute = require('./src/routes/scoreRoute');
+const authRoute = require('./src/routes/authRoute');
+const adminRoute = require('./src/routes/adminRoute');
+const detailExerciseRoute = require('./src/routes/detailExerciseRoute');
+const drawResultsRoute = require('./src/routes/drawResultRoute');
+const protocolElementResultRoute = require('./src/routes/protocolElementResultRoute');
+const protocolExerciseResultRoute = require('./src/routes/protocolExerciseResultRoute');
+const JudgementRoute = require('./src/routes/n1/judgementRoute');
 
 // Sync database
 sequelize
@@ -102,6 +103,7 @@ app.use('/api/score', scoreRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/admin', adminRoute);
 app.use('/api/draw-result', drawResultsRoute);
+app.use('/api/draw-judgement', JudgementRoute);
 
 // Start server
 const PORT = process.env.PORT_BACKEND;
