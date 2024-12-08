@@ -12,6 +12,7 @@ const {
 	Exercise,
 	Discipline,
 	UploadedFile,
+	DetailExercises,
 } = require('../models');
 
 exports.updateIsPaid = async (req, res) => {
@@ -218,7 +219,10 @@ exports.getAllParticipations = async (req, res) => {
 				{
 					model: Exercise,
 					as: 'exercises',
-					through: { attributes: [] },
+					through: {
+						model: DetailExercises,
+						attributes: [],
+					},
 				},
 				{
 					model: Discipline,
@@ -230,6 +234,16 @@ exports.getAllParticipations = async (req, res) => {
 					as: 'uploadedFiles',
 					attributes: ['fileName', 'filePath', 'id'],
 				},
+			],
+			// Добавляем сортировку по ID внутри соединения с DetailExercises
+			// Допустим, ассоциация через 'DetailExercises' настроена корректно
+			order: [
+				[
+					{ model: Exercise, as: 'exercises' },
+					DetailExercises,
+					'id',
+					'ASC',
+				],
 			],
 		});
 		return res.status(200).json(participations);
@@ -274,7 +288,10 @@ exports.getAllParticipationsByCoach = async (req, res) => {
 				{
 					model: Exercise,
 					as: 'exercises',
-					through: { attributes: [] },
+					through: {
+						model: DetailExercises,
+						attributes: [],
+					},
 				},
 				{
 					model: Discipline,
@@ -286,6 +303,16 @@ exports.getAllParticipationsByCoach = async (req, res) => {
 					as: 'uploadedFiles',
 					attributes: ['fileName', 'filePath', 'id'],
 				},
+			],
+			// Добавляем сортировку по ID внутри соединения с DetailExercises
+			// Допустим, ассоциация через 'DetailExercises' настроена корректно
+			order: [
+				[
+					{ model: Exercise, as: 'exercises' },
+					DetailExercises,
+					'id',
+					'ASC',
+				],
 			],
 		});
 		return res.status(200).json(participations);

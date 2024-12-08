@@ -11,8 +11,9 @@ exports.getDetailExercises = async (req, res) => {
 					include: ['discipline', 'level'], // Подгрузка дополнительных связей из модели Exercise
 				},
 			],
+			order: [['id', 'ASC']],
 		});
-		res.json(detailExercises);
+		res.json(detailExercises); // Сортировка по ID
 	} catch (error) {
 		res.status(500).send({
 			message: 'Ошибка при получении данных: ' + error.message,

@@ -2,6 +2,11 @@
 
 module.exports = (sequelize, DataTypes) => {
 	const DetailExercises = sequelize.define('DetailExercises', {
+		id: {
+			type: DataTypes.INTEGER,
+			autoIncrement: true,
+			primaryKey: true,
+		},
 		competitionParticipationId: {
 			type: DataTypes.INTEGER,
 			references: {
