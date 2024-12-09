@@ -15,15 +15,15 @@ const AthletesDraw = () => {
 	const [selectedCompetition, setSelectedCompetition] = useState('');
 	const [activeTrend, setActiveTrend] = useState('');
 	const [startTime, setStartTime] = useState('09:00');
-	const [performanceDuration, setPerformanceDuration] = useState(5); // в минутах
-	const [breakDuration, setBreakDuration] = useState(1); // в минутах
+	const [performanceDuration, setPerformanceDuration] = useState(5);
+	const [breakDuration, setBreakDuration] = useState(1);
 	const [lunchBreakStart, setLunchBreakStart] = useState('12:00');
 	const [lunchBreakEnd, setLunchBreakEnd] = useState('13:00');
-	const [endTime, setEndTime] = useState('19:00'); // Например, соревнования заканчиваются в 18:00
+	const [endTime, setEndTime] = useState('19:00');
 	const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 	const [isVotingModalOpen, setIsVotingModalOpen] = useState(false);
 	const [selectedParticipant, setSelectedParticipant] = useState(null);
-	const { user } = useContext(AuthContext); // Получаем пользователя из контекста
+	const { user } = useContext(AuthContext);
 
 	useEffect(() => {
 		fetchData();
@@ -726,8 +726,8 @@ const AthletesDraw = () => {
 								<th>Ім`я</th>
 								<th>Розряд</th>
 								<th>Вікова категорія</th>
-								<th>Заг. балл</th>
-								<th>Протоколи</th>
+								{/* <th>Заг. балл</th> */}
+								{/* <th>Протоколи</th> */}
 								<th>Дія</th>
 							</tr>
 						</thead>
@@ -756,11 +756,10 @@ const AthletesDraw = () => {
 												.age
 										}
 									</td>
-									<td>
+									{/* <td>
 										{participant.totalScore}{' '}
-										{/* Отображаем общую сумму баллов */}
-									</td>
-									<td>
+									</td> */}
+									{/* <td>
 										{participant.protocolStatuses &&
 											participant.protocolStatuses.map(
 												(status) => (
@@ -775,7 +774,7 @@ const AthletesDraw = () => {
 													</span>
 												)
 											)}
-									</td>
+									</td> */}
 									<td>
 										<button
 											className='detail-button'

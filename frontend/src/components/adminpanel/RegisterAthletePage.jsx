@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
-import { Button, Container, ButtonGroup, Dropdown } from 'react-bootstrap';
+import { Button, Space, Spin, Popconfirm } from 'antd';
+import CustomTable from '../Table/customTable';
+import {
+	FileTextOutlined,
+	DownloadOutlined,
+	EditOutlined,
+	DeleteOutlined,
+	DollarCircleOutlined,
+} from '@ant-design/icons';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
 import UploadedFilesModal from '../modal/UploadedFilesModal';
 import { useTranslation } from 'react-i18next';
 import './RegisterAthletePage.css';
-import { Spin } from 'antd';
 
 const RegisterAthletePage = () => {
 	const { t } = useTranslation();
@@ -39,35 +46,23 @@ const RegisterAthletePage = () => {
 		uploadedFiles: [],
 	});
 	const [error, setError] = useState('');
-	const [filter, setFilter] = useState({
-		coachId: '',
-		athleteId: '',
-		trend: '',
-		age: '',
-	});
-	const [filteredParticipations, setFilteredParticipations] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedFiles, setSelectedFiles] = useState([]);
-
 	const role = localStorage.getItem('role');
 
 	useEffect(() => {
 		const fetchData = async () => {
-			setIsLoading(true); // Начало загрузки
+			setIsLoading(true);
 			try {
 				await Promise.all([loadInitialData(), loadParticipations()]);
 			} catch (err) {
 				console.error('Ошибка при загрузке данных:', err);
 			} finally {
-				setIsLoading(false); // Конец загрузки
+				setIsLoading(false);
 			}
 		};
 		fetchData();
 	}, []);
-
-	useEffect(() => {
-		applyFilters();
-	}, [filter, participations]);
 
 	const loadInitialData = async () => {
 		try {
@@ -103,12 +98,11 @@ const RegisterAthletePage = () => {
 			setError('Не удалось загрузить данные.');
 		}
 	};
+
 	const loadParticipations = async () => {
 		try {
 			const response = await api.get('/api/comp-part');
 			setParticipations(response.data);
-
-			// Устанавливаем начальные значения для payCompetitions на основе данных из базы
 			const payStatus = response.data.reduce((acc, participation) => {
 				acc[participation.id] = participation.isPaid;
 				return acc;
@@ -120,55 +114,10 @@ const RegisterAthletePage = () => {
 		}
 	};
 
-	const applyFilters = () => {
-		let filtered = participations;
-
-		if (filter.coachId) {
-			filtered = filtered.filter(
-				(participation) =>
-					participation.Athlete.coachId === filter.coachId
-			);
-		}
-		if (filter.athleteId) {
-			filtered = filtered.filter(
-				(participation) => participation.athleteId === filter.athleteId
-			);
-		}
-		if (filter.trend) {
-			filtered = filtered.filter(
-				(participation) =>
-					participation.AthleteTrend.trends === filter.trend
-			);
-		}
-		if (filter.age) {
-			filtered = filtered.filter(
-				(participation) => participation.AthleteAge.age === filter.age
-			);
-		}
-
-		setFilteredParticipations(filtered);
-	};
-
-	const handleFilterChange = (key, value) => {
-		setFilter((prev) => ({ ...prev, [key]: value }));
-	};
-
-	const resetFilters = () => {
-		setFilter({
-			coachId: '',
-			athleteId: '',
-			trend: '',
-			age: '',
-		});
-		setFilteredParticipations(participations); // Возвращаем все данные
-		console.log('Filters reset');
-	};
-
 	const handleRegister = async (formData) => {
 		try {
 			let response;
 			if (editingParticipation) {
-				// Если редактируем существующую регистрацию
 				response = await api.put(
 					`/api/comp-part/${editingParticipation.id}`,
 					formData
@@ -181,7 +130,6 @@ const RegisterAthletePage = () => {
 					)
 				);
 			} else {
-				// Если создаем новую регистрацию
 				response = await api.post('/api/comp-part', formData);
 				setParticipations((prevParticipations) => [
 					...prevParticipations,
@@ -189,9 +137,8 @@ const RegisterAthletePage = () => {
 				]);
 			}
 
-			setIsRegistrationModalVisible(false); // Закрываем модальное окно после успешной регистрации
+			setIsRegistrationModalVisible(false);
 			resetForm();
-			// window.location.reload();
 		} catch (err) {
 			console.error('Ошибка при регистрации:', err);
 			setError(
@@ -200,10 +147,8 @@ const RegisterAthletePage = () => {
 		}
 	};
 
-	// Открыть модальное окно регистрации
 	const openModal = (participationId = null) => {
 		if (participationId) {
-			// Редактирование существующего участника
 			const participation = participations.find(
 				(p) => p.id === participationId
 			);
@@ -227,13 +172,11 @@ const RegisterAthletePage = () => {
 		setIsRegistrationModalVisible(true);
 	};
 
-	// Закрыть модальное окно и сбросить форму
 	const closeModal = () => {
 		setIsRegistrationModalVisible(false);
 		resetForm();
 	};
 
-	// Сброс формы
 	const resetForm = () => {
 		setInitialValues({
 			athleteId: '',
@@ -258,31 +201,16 @@ const RegisterAthletePage = () => {
 		setSelectedFiles([]);
 	};
 
-	// Удаление участника
 	const handleDeleteAthleteRegistration = async (participationId) => {
-		if (window.confirm('Вы уверены, что хотите удалить этого участника?')) {
-			try {
-				await api.delete(`/api/comp-part/${participationId}`);
-				loadParticipations();
-			} catch (error) {
-				console.error('Ошибка при удалении участника:', error);
-				setError(
-					error.response?.data.message ||
-						'Произошла ошибка при удалении'
-				);
-			}
+		try {
+			await api.delete(`/api/comp-part/${participationId}`);
+			loadParticipations();
+		} catch (error) {
+			console.error('Ошибка при удалении участника:', error);
+			setError(
+				error.response?.data.message || 'Произошла ошибка при удалении'
+			);
 		}
-	};
-
-	// Сортировка участников по фамилии
-	const sortParticipations = (participations) => {
-		return participations.sort((a, b) => {
-			const lastNameA = a.Athlete?.lastName.toLowerCase() || '';
-			const lastNameB = b.Athlete?.lastName.toLowerCase() || '';
-			if (lastNameA < lastNameB) return -1;
-			if (lastNameA > lastNameB) return 1;
-			return 0;
-		});
 	};
 
 	const handleDetailsClick = (participationId) => {
@@ -297,33 +225,156 @@ const RegisterAthletePage = () => {
 		});
 	};
 
-	// const sortedParticipations = sortParticipations(participations);
-
 	const togglePayCompetition = async (participationId, currentIsPaid) => {
-		// Подтверждение перед изменением
 		if (!window.confirm('Вы уверены, что хотите изменить статус оплаты?')) {
 			return;
 		}
-
 		try {
-			// Отправляем запрос на сервер для обновления isPaid
 			const response = await api.patch(
 				`/api/comp-part/${participationId}/ispaid`,
-				{ isPaid: !currentIsPaid } // Переключаем значение
+				{
+					isPaid: !currentIsPaid,
+				}
 			);
 
-			// Обновляем локальное состояние, если запрос прошёл успешно
 			setPayCompetitions((prevState) => ({
 				...prevState,
-				[participationId]: response.data.isPaid, // Устанавливаем обновленное значение isPaid
+				[participationId]: response.data.isPaid,
 			}));
 		} catch (error) {
 			console.error('Ошибка при обновлении статуса оплаты:', error);
 		}
 	};
 
+	// Формируем фильтры для направления и возраста
+	const distinctTrends = [
+		...new Set(participations.map((p) => p.AthleteTrend?.trends)),
+	].filter(Boolean);
+	const trendFilters = distinctTrends.map((trend) => ({
+		text: trend,
+		value: trend,
+	}));
+
+	const distinctAges = [
+		...new Set(participations.map((p) => p.AthleteAge?.age)),
+	].filter(Boolean);
+	const ageFilters = distinctAges.map((age) => ({
+		text: age,
+		value: age,
+	}));
+
+	// Формируем фильтры для тренера
+	const distinctCoaches = [
+		...new Set(
+			participations.map((p) =>
+				p.Athlete?.coach
+					? `${p.Athlete.coach.lastName} ${p.Athlete.coach.firstName}`
+					: ''
+			)
+		),
+	].filter(Boolean);
+
+	const coachFilters = distinctCoaches.map((coach) => ({
+		text: coach,
+		value: coach,
+	}));
+
+	const columns = [
+		{
+			title: '№',
+			dataIndex: 'index',
+			key: 'index',
+			render: (text, record, index) => index + 1,
+		},
+		{
+			title: 'Атлет',
+			dataIndex: 'Athlete',
+			key: 'Athlete',
+			render: (Athlete) =>
+				`${Athlete?.lastName || ''} ${Athlete?.firstName || ''}`,
+		},
+		{
+			title: 'Тренер',
+			dataIndex: ['Athlete', 'coach'],
+			key: 'coach',
+			filters: coachFilters,
+			onFilter: (value, record) => {
+				const coachName = record.Athlete?.coach
+					? `${record.Athlete.coach.lastName} ${record.Athlete.coach.firstName}`
+					: '';
+				return coachName === value;
+			},
+			render: (coach) =>
+				coach ? `${coach.lastName || ''} ${coach.firstName || ''}` : '',
+		},
+		{
+			title: 'Соревнование',
+			dataIndex: ['Competition', 'title'],
+			key: 'Competition',
+		},
+		{
+			title: 'Направление',
+			dataIndex: ['AthleteTrend', 'trends'],
+			key: 'AthleteTrend',
+			filters: trendFilters,
+			onFilter: (value, record) => record.AthleteTrend?.trends === value,
+		},
+		{
+			title: 'Возраст',
+			dataIndex: ['AthleteAge', 'age'],
+			key: 'AthleteAge',
+			filters: ageFilters,
+			onFilter: (value, record) => record.AthleteAge?.age === value,
+		},
+		{
+			title: 'Действие',
+			key: 'action',
+			render: (text, record) => (
+				<Space>
+					<Button
+						icon={<FileTextOutlined />}
+						onClick={() => handleDetailsClick(record.id)}
+					/>
+					<Button
+						icon={<DownloadOutlined />}
+						onClick={() =>
+							handleShowFiles(record.uploadedFiles, record)
+						}
+					/>
+					<Button
+						icon={<EditOutlined />}
+						onClick={() => openModal(record.id)}
+					/>
+					<Popconfirm
+						title='Вы уверены, что хотите удалить этого участника?'
+						okText='Да'
+						cancelText='Нет'
+						onConfirm={() =>
+							handleDeleteAthleteRegistration(record.id)
+						}>
+						<Button
+							icon={<DeleteOutlined />}
+							danger
+						/>
+					</Popconfirm>
+					{role === 'Admin' && (
+						<Button
+							icon={<DollarCircleOutlined />}
+							onClick={() =>
+								togglePayCompetition(
+									record.id,
+									payCompetitions[record.id]
+								)
+							}
+						/>
+					)}
+				</Space>
+			),
+		},
+	];
+
 	return (
-		<Container>
+		<div style={{ padding: '16px' }}>
 			<h1>{t('h1.athleteRegistration')}</h1>
 			{isLoading ? (
 				<div className='spinner-container'>
@@ -332,95 +383,11 @@ const RegisterAthletePage = () => {
 			) : (
 				<>
 					<Button
+						type='primary'
 						className='m-4'
-						variant='success'
 						onClick={() => openModal(null)}>
 						{t('button.registrationNoun')}
 					</Button>
-
-					<div className='filters'>
-						<ButtonGroup>
-							<Dropdown className='ms-2'>
-								<Dropdown.Toggle>
-									{t('label.coach')}
-								</Dropdown.Toggle>
-								<Dropdown.Menu>
-									{athletes
-										.map((athlete) => ({
-											coachId: athlete.coachId,
-											coachName: `${athlete.coach.lastName} ${athlete.coach.firstName}`, // Используем фамилию сначала
-										}))
-										.filter(
-											(v, i, a) =>
-												a.findIndex(
-													(t) =>
-														t.coachId === v.coachId
-												) === i
-										)
-										.sort((a, b) =>
-											a.coachName.localeCompare(
-												b.coachName
-											)
-										)
-										.map((coach) => (
-											<Dropdown.Item
-												key={coach.coachId}
-												onClick={() =>
-													handleFilterChange(
-														'coachId',
-														coach.coachId
-													)
-												}>
-												{coach.coachName}
-											</Dropdown.Item>
-										))}
-								</Dropdown.Menu>
-							</Dropdown>
-
-							<Dropdown className='ms-2'>
-								<Dropdown.Toggle>Направление</Dropdown.Toggle>
-								<Dropdown.Menu>
-									{athleteTrend.map((trend) => (
-										<Dropdown.Item
-											key={trend.id}
-											onClick={() =>
-												handleFilterChange(
-													'trend',
-													trend.trends
-												)
-											}>
-											{trend.trends}
-										</Dropdown.Item>
-									))}
-								</Dropdown.Menu>
-							</Dropdown>
-
-							<Dropdown className='ms-2'>
-								<Dropdown.Toggle>Возраст</Dropdown.Toggle>
-								<Dropdown.Menu>
-									{athleteAge.map((age) => (
-										<Dropdown.Item
-											key={age.id}
-											onClick={() =>
-												handleFilterChange(
-													'age',
-													age.age
-												)
-											}>
-											{age.age}
-										</Dropdown.Item>
-									))}
-								</Dropdown.Menu>
-							</Dropdown>
-						</ButtonGroup>
-						{/* Кнопка сброса фильтров */}
-						<Button
-							variant='secondary'
-							onClick={resetFilters}
-							className='ms-2'>
-							Сбросить фильтры
-						</Button>
-					</div>
 				</>
 			)}
 
@@ -451,94 +418,17 @@ const RegisterAthletePage = () => {
 				/>
 			)}
 
-			<div className='table-container'>
-				<table>
-					<thead>
-						<tr>
-							<th>№</th>
-							<th>Атлет</th>
-							<th>Соревнование</th>
-							<th>Направление</th>
-							<th>Возраст</th>
-							<th>Действие</th>
-						</tr>
-					</thead>
-					<tbody>
-						{filteredParticipations.map((participation, index) => (
-							<tr
-								className={
-									payCompetitions[participation.id]
-										? 'paid-row'
-										: ''
-								}
-								key={participation.id}>
-								<td>{index + 1}</td>
-								<td>
-									{participation.Athlete?.lastName}{' '}
-									{participation.Athlete?.firstName}
-								</td>
-								<td>{participation.Competition?.title}</td>
-								<td>{participation.AthleteTrend?.trends}</td>
-								<td>{participation.AthleteAge?.age}</td>
-								<td>
-									<Button
-										className='m-1'
-										variant='info'
-										onClick={() =>
-											handleDetailsClick(participation.id)
-										}>
-										<i className='bi bi-file-earmark-text'></i>
-									</Button>
-									<Button
-										className='m-1'
-										variant='primary'
-										onClick={() =>
-											handleShowFiles(
-												participation.uploadedFiles,
-												participation
-											)
-										}>
-										<i className='bi bi-file-arrow-down-fill'></i>{' '}
-									</Button>
-									<Button
-										className='m-1'
-										variant='warning'
-										onClick={() =>
-											openModal(participation.id)
-										}>
-										<i className='bi bi-pencil'></i>
-									</Button>
-									<Button
-										className='m-1'
-										variant='danger'
-										onClick={() =>
-											handleDeleteAthleteRegistration(
-												participation.id
-											)
-										}>
-										<i className='bi bi-trash'></i>
-									</Button>
-									{role === 'Admin' ? (
-										<Button
-											className='m-1'
-											variant='success'
-											onClick={() =>
-												togglePayCompetition(
-													participation.id,
-													payCompetitions[
-														participation.id
-													]
-												)
-											}>
-											<i className='bi bi-cash-coin'></i>
-										</Button>
-									) : null}
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
+			<CustomTable
+				columns={columns}
+				dataSource={participations.map((item) => ({
+					...item,
+					key: item.id,
+				}))}
+				rowClassName={(record) =>
+					payCompetitions[record.id] ? 'paid-row' : ''
+				}
+				minRows={100}
+			/>
 
 			<UploadedFilesModal
 				isVisible={isFilesModalVisible}
@@ -547,7 +437,7 @@ const RegisterAthletePage = () => {
 				editingParticipation={editingParticipation}
 				t={t}
 			/>
-		</Container>
+		</div>
 	);
 };
 

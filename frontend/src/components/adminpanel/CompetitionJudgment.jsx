@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import CompetitionJudgementAPI from '../../api/CompetitionJudgementAPI';
 import CustomTable from '../Table/customTable';
+import ModalJudgementDetails from '../modal/judgement/ModalJudgementDetails';
 import { Button, Space } from 'antd';
 import {
 	SolutionOutlined,
@@ -14,6 +15,9 @@ import Spinner from '../Spinner/Spinner';
 const CompetitionJudgment = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(100);
+	const [isDetailJudgementModalOpen, setIsDetailJudgementModalOpen] =
+		useState(false);
+	const [selectedParticipant, setSelectedParticipant] = useState(null);
 
 	const {
 		data: competitionList = [],
@@ -23,6 +27,44 @@ const CompetitionJudgment = () => {
 		queryKey: ['competitionList'],
 		queryFn: async () => await CompetitionJudgementAPI.listAllJudgement(),
 	});
+
+	if (isLoading) return <Spinner />;
+	if (error) return <p>Error loading data: {error.message}</p>;
+
+	const dataTable = competitionList.map((item, index) => ({
+		key: item.participation.id,
+		no: index + 1,
+		timings: `${item.timing} - day ${item.competitionDay}`,
+		sportsman: `${item.participation.Athlete.firstName} ${item.participation.Athlete.lastName}`,
+		level: item.level.name,
+		ageGroup: item.participation.AthleteAge.age,
+		totalScore: item.totalscore,
+		protocols: item.protocol,
+		competitionParticipationId: item.competitionParticipationId,
+	}));
+
+	// Получаем уникальные значения для фильтров Level и AgeGroup
+	const distinctLevels = [
+		...new Set(dataTable.map((item) => item.level)),
+	].filter(Boolean);
+	const levelFilters = distinctLevels.map((l) => ({ text: l, value: l }));
+
+	const distinctAgeGroups = [
+		...new Set(dataTable.map((item) => item.ageGroup)),
+	].filter(Boolean);
+	const ageFilters = distinctAgeGroups.map((a) => ({ text: a, value: a }));
+
+	const openDetailsModal = (record) => {
+		const filteredData = {
+			competitionParticipationId: record.competitionParticipationId,
+		};
+		setSelectedParticipant(filteredData);
+		setIsDetailJudgementModalOpen(true);
+	};
+
+	const closeDetailsModal = () => {
+		setIsDetailJudgementModalOpen(false);
+	};
 
 	const columns = [
 		{
@@ -38,18 +80,22 @@ const CompetitionJudgment = () => {
 		},
 		{
 			title: 'Sportsman',
-			dataIndex: 'judgement',
-			key: 'judgement',
+			dataIndex: 'sportsman',
+			key: 'sportsman',
 		},
 		{
 			title: 'Level',
 			dataIndex: 'level',
 			key: 'level',
+			filters: levelFilters,
+			onFilter: (value, record) => record.level === value,
 		},
 		{
 			title: 'AgeGroup',
 			dataIndex: 'ageGroup',
 			key: 'ageGroup',
+			filters: ageFilters,
+			onFilter: (value, record) => record.ageGroup === value,
 		},
 		{
 			title: 'TotalScore',
@@ -70,7 +116,7 @@ const CompetitionJudgment = () => {
 					<Button
 						type='link'
 						icon={<SolutionOutlined />}
-						onClick={() => console.log('View', record)}
+						onClick={() => openDetailsModal(record)}
 					/>
 					<Button
 						type='link'
@@ -85,28 +131,15 @@ const CompetitionJudgment = () => {
 					<Button
 						type='link'
 						icon={<MessageOutlined />}
-						onClick={() => console.log('Delete', record)}
+						onClick={() => console.log('Voting', record)}
 					/>
 				</Space>
 			),
 		},
 	];
 
-	const dataTable = competitionList.map((item, index) => ({
-		no: index + 1,
-		timings: `${item.timing} - day ${item.competitionDay}`,
-		judgement: `${item.participation.Athlete.firstName} ${item.participation.Athlete.lastName}`,
-		level: item.level.name,
-		ageGroup: item.participation.AthleteAge.age,
-		totalScore: item.totalscore,
-	}));
-
-	if (isLoading) return <Spinner />;
-
-	if (error) return <p>Error loading data: {error.message}</p>;
-
 	return (
-		<div>
+		<>
 			<h1>Competition Judgment</h1>
 			<CustomTable
 				dataSource={dataTable}
@@ -120,7 +153,15 @@ const CompetitionJudgment = () => {
 					},
 				}}
 			/>
-		</div>
+
+			<ModalJudgementDetails
+				isOpen={isDetailJudgementModalOpen}
+				onClose={closeDetailsModal}
+				competitionParticipationId={
+					selectedParticipant?.competitionParticipationId
+				}
+			/>
+		</>
 	);
 };
 

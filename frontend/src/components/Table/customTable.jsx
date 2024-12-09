@@ -7,7 +7,7 @@ const CustomTable = ({
 	title,
 	dataSource,
 	columns,
-	rowKey = 'id',
+	rowKey = 'key',
 	minRows = 50,
 	...rest
 }) => {
@@ -18,7 +18,6 @@ const CustomTable = ({
 				className={styles.table}
 				dataSource={dataSource}
 				columns={columns}
-				rowKey={rowKey}
 				pagination={{
 					pageSize: minRows,
 				}}

@@ -13,11 +13,11 @@ const AdminPage = () => {
 		},
 		{
 			path: '/admin/athletes-draw',
-			label: 'Змагання',
+			label: 'Timings',
 		},
 		{
 			path: '/admin/athletes-judgement',
-			label: 'Судейство',
+			label: 'Judgement',
 		},
 	];
 
