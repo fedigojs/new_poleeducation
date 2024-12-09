@@ -3,6 +3,7 @@ import { Modal } from 'antd';
 import './ModalJudgementDetails.css';
 import CustomTable from '../../Table/customTable';
 import api from '../../../api/api';
+import PropTypes from 'prop-types';
 
 const ModalJudgementDetails = ({
 	isOpen,
@@ -28,7 +29,7 @@ const ModalJudgementDetails = ({
 						'Error fetching exercise protocol details:',
 						error
 					);
-					setDataTable([]);
+					setDataTableList([]);
 				} finally {
 					setLoading(false);
 				}
@@ -131,4 +132,14 @@ const ModalJudgementDetails = ({
 		</Modal>
 	);
 };
+
+ModalJudgementDetails.propTypes = {
+	isOpen: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	competitionParticipationId: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.number,
+	]).isRequired,
+};
+
 export default ModalJudgementDetails;
