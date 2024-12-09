@@ -226,9 +226,6 @@ const RegisterAthletePage = () => {
 	};
 
 	const togglePayCompetition = async (participationId, currentIsPaid) => {
-		if (!window.confirm('Вы уверены, что хотите изменить статус оплаты?')) {
-			return;
-		}
 		try {
 			const response = await api.patch(
 				`/api/comp-part/${participationId}/ispaid`,
@@ -358,15 +355,18 @@ const RegisterAthletePage = () => {
 						/>
 					</Popconfirm>
 					{role === 'Admin' && (
-						<Button
-							icon={<DollarCircleOutlined />}
-							onClick={() =>
+						<Popconfirm
+							title='Вы уверены, что хотите удалить изменить статус оплаты?'
+							okText='Да'
+							cancelText='Нет'
+							onConfirm={() =>
 								togglePayCompetition(
 									record.id,
 									payCompetitions[record.id]
 								)
-							}
-						/>
+							}>
+							<Button icon={<DollarCircleOutlined />} />
+						</Popconfirm>
 					)}
 				</Space>
 			),
