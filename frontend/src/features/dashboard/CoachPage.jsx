@@ -4,7 +4,6 @@ import Menu from '../../components/Menu/Menu';
 
 const CoachPage = () => {
 	const menuItems = [
-		{ path: '/coach', label: 'Головна' },
 		{ path: '/coach/add-athlete-coach', label: 'Спортсмени' },
 		{ path: '/coach/add-registration', label: 'Реєстрація на змаганнях' },
 		{ path: '/coach/athletes-competitions', label: 'Змагання' },

@@ -4,7 +4,6 @@ import Menu from '../../components/Menu/Menu';
 
 const AdminPage = () => {
 	const menuItems = [
-		{ path: '/admin', label: 'Головна' },
 		{ path: '/admin/add-user', label: 'Додати користувача' },
 		{ path: '/admin/add-athletes', label: 'Додати спортсмена' },
 		{ path: '/admin/add-competition', label: 'Створити змагання' },

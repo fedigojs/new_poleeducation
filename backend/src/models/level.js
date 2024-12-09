@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'levelId', // Указываем внешний ключ, по которому будет установлена связь
 			as: 'exercises', // Устанавливаем алиас для связи
 		});
+		Level.hasMany(models.DrawResult, {
+			foreignKey: 'levelId',
+			as: 'drawResults',
+		});
 	};
 
 	return Level;

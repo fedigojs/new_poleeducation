@@ -26,7 +26,7 @@ const detailExerciseRoute = require('./src/routes/detailExerciseRoute');
 const drawResultsRoute = require('./src/routes/drawResultRoute');
 const protocolElementResultRoute = require('./src/routes/protocolElementResultRoute');
 const protocolExerciseResultRoute = require('./src/routes/protocolExerciseResultRoute');
-const JudgementRoute = require('./src/routes/n1/judgementRoute');
+const judgementRoute = require('./src/routes/n1/judgementRoute');
 
 // Sync database
 sequelize
@@ -103,7 +103,7 @@ app.use('/api/score', scoreRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/admin', adminRoute);
 app.use('/api/draw-result', drawResultsRoute);
-app.use('/api/draw-judgement', JudgementRoute);
+app.use('/api/draw-judgement', judgementRoute);
 
 // Start server
 const PORT = process.env.PORT_BACKEND;
