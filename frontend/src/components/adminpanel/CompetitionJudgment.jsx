@@ -7,6 +7,7 @@ import {
 	SolutionOutlined,
 	LikeOutlined,
 	SoundOutlined,
+	MessageOutlined,
 } from '@ant-design/icons';
 import Spinner from '../Spinner/Spinner';
 
@@ -79,6 +80,11 @@ const CompetitionJudgment = () => {
 					<Button
 						type='link'
 						icon={<SoundOutlined />}
+						onClick={() => console.log('Delete', record)}
+					/>
+					<Button
+						type='link'
+						icon={<MessageOutlined />}
 						onClick={() => console.log('Delete', record)}
 					/>
 				</Space>
