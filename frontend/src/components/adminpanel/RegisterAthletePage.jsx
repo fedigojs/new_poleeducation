@@ -269,7 +269,9 @@ const RegisterAthletePage = () => {
 					: ''
 			)
 		),
-	].filter(Boolean);
+	]
+		.filter(Boolean)
+		.sort((a, b) => a.split(' ')[0].localeCompare(b.split(' ')[0]));
 
 	const coachFilters = distinctCoaches.map((coach) => ({
 		text: coach,
@@ -336,6 +338,11 @@ const RegisterAthletePage = () => {
 						icon={<DownloadOutlined />}
 						onClick={() =>
 							handleShowFiles(record.uploadedFiles, record)
+						}
+						className={
+							record.uploadedFiles?.length > 0
+								? 'button-blue'
+								: ''
 						}
 					/>
 					<Button
