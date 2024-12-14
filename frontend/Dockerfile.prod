@@ -10,6 +10,15 @@ WORKDIR /frontend
 # Копируем файл package.json и pnpm-lock.yaml для установки зависимостей
 COPY package.json pnpm-lock.yaml ./
 
+# Проверяем и удаляем устаревший lock-файл, затем устанавливаем зависимости
+RUN if [ -f pnpm-lock.yaml ]; then \
+      echo "Checking lockfile..."; \
+      pnpm install --frozen-lockfile || (rm pnpm-lock.yaml && pnpm install --no-frozen-lockfile); \
+    else \
+      echo "No lockfile found, proceeding with install..."; \
+      pnpm install --no-frozen-lockfile; \
+    fi
+
 # Устанавливаем зависимости
 RUN pnpm install --frozen-lockfile
 
