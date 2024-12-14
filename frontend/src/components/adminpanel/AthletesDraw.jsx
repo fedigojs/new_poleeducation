@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
-import ModalVotingDetails from '../ModalVotingDetails';
-import ModalVoting from '../ModalVoting';
 import './AthletesDraw.css';
-import { AuthContext } from '../../context/AuthContext';
 import { Container } from 'react-bootstrap';
 
 const AthletesDraw = () => {
@@ -20,10 +17,6 @@ const AthletesDraw = () => {
 	const [lunchBreakStart, setLunchBreakStart] = useState('12:00');
 	const [lunchBreakEnd, setLunchBreakEnd] = useState('13:00');
 	const [endTime, setEndTime] = useState('19:00');
-	const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-	const [isVotingModalOpen, setIsVotingModalOpen] = useState(false);
-	const [selectedParticipant, setSelectedParticipant] = useState(null);
-	const { user } = useContext(AuthContext);
 
 	useEffect(() => {
 		fetchData();
@@ -34,24 +27,6 @@ const AthletesDraw = () => {
 			fetchDataTabs();
 		}
 	}, [selectedCompetition]);
-
-	const openDetailsModal = (participant) => {
-		setSelectedParticipant(participant);
-		setIsDetailsModalOpen(true);
-	};
-
-	const closeDetailsModal = () => {
-		setIsDetailsModalOpen(false);
-	};
-
-	const openVotingModal = (participant) => {
-		setSelectedParticipant(participant);
-		setIsVotingModalOpen(true);
-	};
-
-	const closeVotingModal = () => {
-		setIsVotingModalOpen(false);
-	};
 
 	const fetchProtocolStatuses = async (participant) => {
 		const { athleteId, competitionParticipationId } = participant;
@@ -347,67 +322,6 @@ const AthletesDraw = () => {
 		}
 	};
 
-	const handleVoteSubmit = async (e) => {
-		e.preventDefault(); // Предотвращаем стандартное поведение формы
-
-		// Собираем данные из формы
-		const formData = {
-			athleteId: selectedParticipant.participation.Athlete.id,
-			score: e.target.score.value, // Предполагаем, что у поля ввода оценки есть имя 'score'
-			comment: e.target.comment.value, // Предполагаем, что у текстового поля комментария есть имя 'comment'
-		};
-
-		try {
-			// Отправляем данные на сервер
-			const response = await api.post('/api/voting', formData);
-			if (response.status === 200) {
-				console.log('Голос успешно зарегистрирован');
-				// Здесь можно добавить дальнейшие действия, например, закрыть модальное окно
-				closeVotingModal();
-			} else {
-				console.error('Ошибка при отправке данных', response);
-			}
-		} catch (error) {
-			console.error('Ошибка при отправке данных', error);
-		}
-	};
-
-	const handleUpdateScore = (participantId, newTotalScore) => {
-		setParticipants((prevParticipants) =>
-			prevParticipants.map((participant) =>
-				participant.id === participantId
-					? { ...participant, totalScore: newTotalScore }
-					: participant
-			)
-		);
-	};
-
-	const handleUpdateAllScores = async () => {
-		try {
-			const updatedParticipants = await Promise.all(
-				participants.map(async (participant) => {
-					const totalScore = await calculateTotalScore(
-						participant.participation.athleteId,
-						participant.participation.id
-					);
-					await api.put(
-						`/api/draw-result/update-total-score/${participant.id}`,
-						{
-							totalScore,
-						}
-					);
-					return { ...participant, totalScore };
-				})
-			);
-			setParticipants(updatedParticipants);
-		} catch (error) {
-			console.error(
-				'Ошибка при обновлении totalScore для всех участников:',
-				error
-			);
-		}
-	};
-
 	const calculateTotalScore = async (
 		athleteId,
 		competitionParticipationId
@@ -478,26 +392,6 @@ const AthletesDraw = () => {
 		}
 	};
 
-	const updateParticipantTotalScore = async (participantId, totalScore) => {
-		try {
-			await api.put(
-				`/api/draw-result/update-total-score/${participantId}`,
-				{
-					totalScore,
-				}
-			);
-			setParticipants((prevParticipants) =>
-				prevParticipants.map((participant) =>
-					participant.participation.id === participantId
-						? { ...participant, totalScore }
-						: participant
-				)
-			);
-		} catch (error) {
-			console.error('Ошибка при обновлении общего балла:', error);
-		}
-	};
-
 	const dayColors = [
 		'#F0F8FF', // Alice Blue
 		'#FAEBD7', // Antique White
@@ -509,24 +403,6 @@ const AthletesDraw = () => {
 
 	return (
 		<Container>
-			<ModalVotingDetails
-				isOpen={isDetailsModalOpen}
-				onClose={closeDetailsModal}
-				participant={selectedParticipant}
-				onUpdateTotalScore={updateParticipantTotalScore}
-				onUpdateScore={handleUpdateScore}
-			/>
-
-			{user && (
-				<ModalVoting
-					isOpen={isVotingModalOpen}
-					onClose={closeVotingModal}
-					participant={selectedParticipant}
-					onSubmit={handleVoteSubmit}
-					judgeId={user.userId} // Передаем judgeId в ModalVoting
-				/>
-			)}
-
 			<div className='container'>
 				<h1>Жеребкування спортсменів</h1>
 				<div className='form-group'>
@@ -709,12 +585,6 @@ const AthletesDraw = () => {
 				</button>
 			</div>
 
-			<button
-				className='update-all-scores-button'
-				onClick={handleUpdateAllScores}>
-				Обновить Общий Балл для всех
-			</button>
-
 			<div className='tab-content-container'>
 				<div className='table-container'>
 					<table>
@@ -726,9 +596,6 @@ const AthletesDraw = () => {
 								<th>Ім`я</th>
 								<th>Розряд</th>
 								<th>Вікова категорія</th>
-								{/* <th>Заг. балл</th> */}
-								{/* <th>Протоколи</th> */}
-								<th>Дія</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -755,41 +622,6 @@ const AthletesDraw = () => {
 											participant.participation.AthleteAge
 												.age
 										}
-									</td>
-									{/* <td>
-										{participant.totalScore}{' '}
-									</td> */}
-									{/* <td>
-										{participant.protocolStatuses &&
-											participant.protocolStatuses.map(
-												(status) => (
-													<span
-														key={
-															status.protocolTypeId
-														}
-														className='protocol-status'>
-														{status.isFilled
-															? '❌'
-															: '✔️'}
-													</span>
-												)
-											)}
-									</td> */}
-									<td>
-										<button
-											className='detail-button'
-											onClick={() =>
-												openDetailsModal(participant)
-											}>
-											Детали
-										</button>
-										<button
-											className='voting-button'
-											onClick={() =>
-												openVotingModal(participant)
-											}>
-											Голосование
-										</button>
 									</td>
 								</tr>
 							))}
