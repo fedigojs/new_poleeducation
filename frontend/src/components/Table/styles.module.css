@@ -1,16 +1,16 @@
 .wrapper {
-	margin: 0 auto; /* Горизонтальное центрирование */
-	padding: 20px 50px; /* Отступы от контента */
-	max-width: 1700px; /* Ограничение ширины */
+    margin: 0 auto; /* Горизонтальное центрирование */
+    padding: 20px 50px; /* Отступы от контента */
+    max-width: 1700px; /* Ограничение ширины */
 }
 
 .centered {
-	display: flex;
-	justify-content: center; /* Центрирование по горизонтали */
-	align-items: center; /* Центрирование по вертикали */
-	min-height: 100vh; /* Высота экрана */
+    display: flex;
+    justify-content: center; /* Центрирование по горизонтали */
+    align-items: center; /* Центрирование по вертикали */
+    min-height: 100vh; /* Высота экрана */
 }
 
 .table {
-	width: 100%;
+    width: 100%;
 }

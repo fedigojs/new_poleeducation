@@ -5,57 +5,57 @@ import { jwtDecode } from 'jwt-decode';
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true); // Добавляем состояние загрузки
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true); // Добавляем состояние загрузки
 
-	useEffect(() => {
-		const token = localStorage.getItem('authToken');
-		if (token) {
-			try {
-				const decodedUser = jwtDecode(token);
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            try {
+                const decodedUser = jwtDecode(token);
 
-				setUser({
-					userId: decodedUser.userId,
-					firstName: decodedUser.userFirstName,
-					lastName: decodedUser.userLastName,
-					roleName: decodedUser.roleName,
-				});
-			} catch (err) {
-				console.error('Ошибка декодирования токена:', err);
-			}
-		}
-		setLoading(false); // Устанавливаем загрузку в false после проверки токена
-	}, []);
+                setUser({
+                    userId: decodedUser.userId,
+                    firstName: decodedUser.userFirstName,
+                    lastName: decodedUser.userLastName,
+                    roleName: decodedUser.roleName,
+                });
+            } catch (err) {
+                console.error('Ошибка декодирования токена:', err);
+            }
+        }
+        setLoading(false); // Устанавливаем загрузку в false после проверки токена
+    }, []);
 
-	const login = (token) => {
-		localStorage.setItem('authToken', token);
+    const login = (token) => {
+        localStorage.setItem('authToken', token);
 
-		try {
-			const decodedUser = jwtDecode(token);
-			setUser({
-				userId: decodedUser.userId,
-				firstName: decodedUser.userFirstName,
-				lastName: decodedUser.userLastName,
-				roleName: decodedUser.roleName,
-			});
-		} catch (error) {
-			console.error('Failed to decode token', error);
-		}
-	};
+        try {
+            const decodedUser = jwtDecode(token);
+            setUser({
+                userId: decodedUser.userId,
+                firstName: decodedUser.userFirstName,
+                lastName: decodedUser.userLastName,
+                roleName: decodedUser.roleName,
+            });
+        } catch (error) {
+            console.error('Failed to decode token', error);
+        }
+    };
 
-	const logout = () => {
-		localStorage.removeItem('authToken');
-		setUser(null);
-	};
+    const logout = () => {
+        localStorage.removeItem('authToken');
+        setUser(null);
+    };
 
-	return (
-		<AuthContext.Provider value={{ user, loading, login, logout }}>
-			{children}
-		</AuthContext.Provider>
-	);
+    return (
+        <AuthContext.Provider value={{ user, loading, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 AuthProvider.propTypes = {
-	children: PropTypes.node.isRequired,
+    children: PropTypes.node.isRequired,
 };
 export const useAuth = () => useContext(AuthContext);

@@ -4,21 +4,21 @@ import enTranslation from './locales/en/translation.json';
 import uaTranslation from './locales/ua/translation.json';
 
 const resources = {
-	en: {
-		translation: enTranslation,
-	},
-	ua: {
-		translation: uaTranslation,
-	},
+    en: {
+        translation: enTranslation,
+    },
+    ua: {
+        translation: uaTranslation,
+    },
 };
 
 i18n.use(initReactI18next).init({
-	resources,
-	lng: 'ua',
-	fallbackLng: 'ua',
-	interpolation: {
-		escapeValue: false,
-	},
+    resources,
+    lng: 'ua',
+    fallbackLng: 'ua',
+    interpolation: {
+        escapeValue: false,
+    },
 });
 
 export default i18n;

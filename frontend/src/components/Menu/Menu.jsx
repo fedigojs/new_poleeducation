@@ -6,64 +6,55 @@ import { useAuth } from '../../context/AuthContext';
 import { AuthContext } from '../../context/AuthContext';
 
 const Menu = ({ menuItems, brandLink }) => {
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const { logout } = useAuth();
-	const { user } = useContext(AuthContext);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { logout } = useAuth();
+    const { user } = useContext(AuthContext);
 
-	const toggleMenu = () => {
-		setIsMenuOpen(!isMenuOpen);
-	};
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
 
-	return (
-		<Navbar
-			bg='dark'
-			variant='dark'
-			expand='lg'
-			expanded={isMenuOpen}>
-			<Container>
-				<Navbar.Brand
-					as={Link}
-					to={brandLink}
-					className='text-white'>
-					POLEEducation {user.roleName}
-				</Navbar.Brand>
+    return (
+        <Navbar bg="dark" variant="dark" expand="lg" expanded={isMenuOpen}>
+            <Container>
+                <Navbar.Brand as={Link} to={brandLink} className="text-white">
+                    POLEEducation {user.roleName}
+                </Navbar.Brand>
 
-				<Navbar.Toggle
-					aria-controls='basic-navbar-nav'
-					onClick={toggleMenu}
-				/>
+                <Navbar.Toggle
+                    aria-controls="basic-navbar-nav"
+                    onClick={toggleMenu}
+                />
 
-				<Navbar.Collapse id='basic-navbar-nav'>
-					<Nav className='ml-auto d-flex align-items-center'>
-						{menuItems.map((item, index) => (
-							<Nav.Link
-								as={Link}
-								to={item.path}
-								key={index}>
-								{item.label}
-							</Nav.Link>
-						))}
-						<Button
-							variant='danger'
-							onClick={logout}
-							className='ml-5'>
-							Logout
-						</Button>
-					</Nav>
-				</Navbar.Collapse>
-			</Container>
-		</Navbar>
-	);
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="ml-auto d-flex align-items-center">
+                        {menuItems.map((item, index) => (
+                            <Nav.Link as={Link} to={item.path} key={index}>
+                                {item.label}
+                            </Nav.Link>
+                        ))}
+                        <Button
+                            variant="danger"
+                            onClick={logout}
+                            className="ml-5"
+                        >
+                            Logout
+                        </Button>
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
+    );
 };
 
 Menu.propTypes = {
-	menuItems: PropTypes.arrayOf(
-		PropTypes.shape({
-			path: PropTypes.string.isRequired,
-			label: PropTypes.string.isRequired,
-		})
-	).isRequired,
-	brandLink: PropTypes.string.isRequired,
+    menuItems: PropTypes.arrayOf(
+        PropTypes.shape({
+            path: PropTypes.string.isRequired,
+            label: PropTypes.string.isRequired,
+        })
+    ).isRequired,
+    brandLink: PropTypes.string.isRequired,
 };
 
 export default Menu;

@@ -1,162 +1,162 @@
 /* AthletesDraw.css */
 
 .container {
-	max-width: 800px;
-	margin: 0 auto;
-	padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 .form-group {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .select-competition {
-	padding: 8px;
-	margin-right: 10px;
+    padding: 8px;
+    margin-right: 10px;
 }
 .voting-button,
 .detail-button,
 .edit-button,
 .delete-button,
 .calculate-button {
-	padding: 8px 16px;
-	cursor: pointer;
-	border: none;
-	border-radius: 4px;
-	margin-right: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    margin-right: 10px;
 }
 
 .edit-button {
-	background-color: #4caf50;
-	color: white;
+    background-color: #4caf50;
+    color: white;
 }
 
 .delete-button {
-	background-color: #f44336;
-	color: white;
+    background-color: #f44336;
+    color: white;
 }
 
 .calculate-button {
-	background-color: #2196f3;
-	color: white;
+    background-color: #2196f3;
+    color: white;
 }
 .voting-button {
-	background-color: #4caf50;
-	color: white;
+    background-color: #4caf50;
+    color: white;
 }
 
 .detail-button {
-	background-color: #2196f3;
-	color: white;
+    background-color: #2196f3;
+    color: white;
 }
 .reset-button {
-	background-color: #5ea7f1; /* светло-серый цвет фона */
-	color: #333; /* темно-серый цвет текста */
-	border: 1px solid #ccc; /* граница */
-	padding: 5px 10px; /* внутренние отступы */
-	margin-left: 10px; /* отступ слева */
-	cursor: pointer; /* курсор в виде указателя */
+    background-color: #5ea7f1; /* светло-серый цвет фона */
+    color: #333; /* темно-серый цвет текста */
+    border: 1px solid #ccc; /* граница */
+    padding: 5px 10px; /* внутренние отступы */
+    margin-left: 10px; /* отступ слева */
+    cursor: pointer; /* курсор в виде указателя */
 }
 
 .reset-button:hover {
-	background-color: #e2e6ea; /* чуть темнее при наведении */
+    background-color: #e2e6ea; /* чуть темнее при наведении */
 }
 
 .row {
-	display: flex;
-	flex-wrap: wrap;
-	margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
 .col {
-	flex: 1;
-	margin-right: 10px;
+    flex: 1;
+    margin-right: 10px;
 }
 
 .col:nth-child(3n) {
-	margin-right: 0;
+    margin-right: 0;
 }
 
 label {
-	display: block;
-	margin-bottom: 5px;
+    display: block;
+    margin-bottom: 5px;
 }
 
 input[type='time'],
 input[type='number'] {
-	padding: 8px;
-	width: 90%; /* Calculate width for three items per row */
-	margin-bottom: 10px;
+    padding: 8px;
+    width: 90%; /* Calculate width for three items per row */
+    margin-bottom: 10px;
 }
 
 button {
-	padding: 8px 16px;
-	cursor: pointer;
-	border: none;
-	border-radius: 4px;
-	margin-bottom: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
 
 button:hover {
-	opacity: 0.8;
+    opacity: 0.8;
 }
 
 .tabs {
-	margin-top: 10px;
-	margin-bottom: 70px;
+    margin-top: 10px;
+    margin-bottom: 70px;
 }
 
 .tabs button {
-	background-color: inherit;
-	float: left;
-	border: none;
-	outline: none;
-	cursor: pointer;
-	padding: 14px 16px;
-	transition: 0.3s;
-	font-size: 17px;
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
 }
 
 .tabs button:hover {
-	background-color: #ddd;
+    background-color: #ddd;
 }
 
 .tabs button.active {
-	background-color: #ccc;
+    background-color: #ccc;
 }
 
 .tab-content {
-	display: none;
-	padding: 6px 12px;
-	border: 1px solid #ccc;
-	border-top: none;
-	clear: both; /* добавляем это для обнуления обтекания */
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    clear: both; /* добавляем это для обнуления обтекания */
 }
 
 .tab-content.active {
-	display: block;
+    display: block;
 }
 .bold-and-red {
-	font-weight: bold;
-	color: red;
+    font-weight: bold;
+    color: red;
 }
 
 .trend-container {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-around;
-	margin-bottom: 10px; /* Расстояние между рядами, если они есть */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 10px; /* Расстояние между рядами, если они есть */
 }
 
 .trend-item {
-	display: flex;
-	flex-direction: column; /* Изменено на column для вертикального выравнивания */
-	align-items: flex-start; /* Выравнивание элементов по началу контейнера */
-	margin-right: 5px; /* Расстояние между элементами в ряду */
-	margin-bottom: 10px; /* Расстояние между элементами разных трендов */
+    display: flex;
+    flex-direction: column; /* Изменено на column для вертикального выравнивания */
+    align-items: flex-start; /* Выравнивание элементов по началу контейнера */
+    margin-right: 5px; /* Расстояние между элементами в ряду */
+    margin-bottom: 10px; /* Расстояние между элементами разных трендов */
 }
 
 .trend-item label {
-	margin-right: 5px; /* Расстояние между меткой и селектором */
+    margin-right: 5px; /* Расстояние между меткой и селектором */
 }

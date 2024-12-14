@@ -1,44 +1,44 @@
 .paid-row {
-	background-color: green;
-	color: white;
+    background-color: green;
+    color: white;
 }
 
 .paid-row:hover {
-	background-color: green;
-	color: rgb(35, 13, 13);
+    background-color: green;
+    color: rgb(35, 13, 13);
 }
 
 .file-list {
-	list-style: none;
-	padding: 0;
-	margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .file-list-item {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 8px;
-	border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
 }
 
 .file-link {
-	color: #007bff;
-	text-decoration: none;
-	margin-right: 8px;
+    color: #007bff;
+    text-decoration: none;
+    margin-right: 8px;
 }
 
 .file-link:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 .remove-file-button {
-	background: transparent;
-	border: none;
-	color: #dc3545;
-	cursor: pointer;
+    background: transparent;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
 }
 
 .remove-file-button:hover {
-	color: #a71d2a;
+    color: #a71d2a;
 }

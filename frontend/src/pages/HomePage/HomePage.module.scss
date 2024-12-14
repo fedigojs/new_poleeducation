@@ -1,41 +1,41 @@
 .background_color {
-	background-color: #343537;
-	background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
-		url('../../../public/images/background_home.png'); /* Слой полупрозрачного цвета и изображение */
-	background-repeat: no-repeat;
-	background-size: contain; /* Фон покрывает блок */
-	background-position: center; /* Центрируем изображение */
-	background-attachment: fixed; /* Закрепляем фон, чтобы он не прокручивался */
-	width: 100%;
-	min-height: 100vh;
-	position: relative;
-	z-index: 0;
+    background-color: #343537;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+        url('../../../public/images/background_home.png'); /* Слой полупрозрачного цвета и изображение */
+    background-repeat: no-repeat;
+    background-size: contain; /* Фон покрывает блок */
+    background-position: center; /* Центрируем изображение */
+    background-attachment: fixed; /* Закрепляем фон, чтобы он не прокручивался */
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    z-index: 0;
 }
 
 .background_color_menu {
-	background-color: #121213;
-	z-index: 0;
+    background-color: #121213;
+    z-index: 0;
 }
 
 @media (max-width: 1024px) {
-	.background_color {
-		background-size: cover; /* Изображение покрывает весь экран */
-		background-position: top center; /* Сдвигаем изображение наверх и центрируем */
-	}
+    .background_color {
+        background-size: cover; /* Изображение покрывает весь экран */
+        background-position: top center; /* Сдвигаем изображение наверх и центрируем */
+    }
 }
 
 @media (max-width: 768px) {
-	.background_color {
-		background-size: cover; /* Изображение покрывает весь экран */
-		background-position: top; /* Фон смещаем к верхней части */
-	}
+    .background_color {
+        background-size: cover; /* Изображение покрывает весь экран */
+        background-position: top; /* Фон смещаем к верхней части */
+    }
 }
 
 /* Медиа-запрос для очень маленьких экранов (ширина экрана до 480px) */
 @media (max-width: 480px) {
-	.background_color {
-		background-size: cover; /* Изображение масштабируется на весь экран */
-		background-position: top; /* Располагаем изображение сверху */
-		background-attachment: scroll; /* Убираем fixed для мобильных, чтобы избежать проблем с прокруткой */
-	}
+    .background_color {
+        background-size: cover; /* Изображение масштабируется на весь экран */
+        background-position: top; /* Располагаем изображение сверху */
+        background-attachment: scroll; /* Убираем fixed для мобильных, чтобы избежать проблем с прокруткой */
+    }
 }
