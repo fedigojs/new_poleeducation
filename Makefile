@@ -13,8 +13,7 @@ build-and-deploy:
 	sudo rm -rf /var/www/html/* || { echo "Failed to clear /var/www/html"; exit 1; }
 	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
 	$(DOCKER_COMPOSE) up --build -d db_auth backend || { echo "Failed to start backend containers"; exit 1; }
-	$(DOCKER_COMPOSE) run --rm frontend-builder sh -c "rm -rf /frontend/build/*" || { echo "Failed to clear old frontend build"; exit 1; }
-	$(DOCKER_COMPOSE) run --rm frontend-builder sh -c "pnpm install && pnpm run build" || { echo "Frontend build failed"; exit 1; }
+	$(DOCKER_COMPOSE) run --rm frontend-builder sh -c "rm -rf /frontend/build/* && rm -f pnpm-lock.yaml && pnpm install --no-frozen-lockfile && pnpm run build" || { echo "Frontend build failed"; exit 1; }
 	docker run --rm -v poleeducation_build:/frontend/build -v /var/www/html:/nginx-html alpine sh -c "cp -r /frontend/build/* /nginx-html" || { echo "Failed to copy frontend build to Nginx directory"; exit 1; }
 	$(DOCKER_COMPOSE) rm -f frontend-builder || { echo "Failed to remove frontend-builder container"; exit 1; }
 	sudo systemctl reload nginx || { echo "Failed to reload Nginx after deployment"; exit 1; }
