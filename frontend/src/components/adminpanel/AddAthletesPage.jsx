@@ -1,29 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Modal, Container } from 'react-bootstrap';
+import { Button, Modal, Form, Input, Select, message, Popconfirm } from 'antd';
+import CustomTable from '../Table/customTable';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/api';
-import '../Modal.css';
 import { useTranslation } from 'react-i18next';
 
-import AddAthleteModal from '../modal/AddAthleteModal';
+const { Option } = Select;
 
 const AddAthletePage = () => {
 	const { t } = useTranslation();
 	const [athletes, setAthletes] = useState([]);
-
 	const [coaches, setCoaches] = useState([]);
-
+	const [isModalVisible, setModalVisible] = useState(false);
+	const [isEditMode, setEditMode] = useState(false);
 	const [selectedAthlete, setSelectedAthlete] = useState(null);
-	const [firstName, setFirstName] = useState('');
-	const [lastName, setLastName] = useState('');
-
-	const [coachId, setCoachId] = useState('');
-	const [error, setError] = useState('');
-	const [isAddAthleteModalVisible, setAddAthleteModalVisible] =
-		useState(false);
-	const [isEditAthleteModalVisible, setEditAthleteModalVisible] =
-		useState(false);
-
-	const coachRoleId = 2;
+	const [form] = Form.useForm();
+	const [sortDirection, setSortDirection] = useState('asc'); // 'asc' для возрастания, 'desc' для убывания
 
 	useEffect(() => {
 		loadAthletes();
@@ -31,14 +23,11 @@ const AddAthletePage = () => {
 	}, []);
 
 	const loadAthletes = async () => {
-		const token = localStorage.getItem('authToken');
-
 		try {
-			const response = await api.get('/api/athletes', token);
+			const response = await api.get('/api/athletes');
 			setAthletes(response.data);
 		} catch (err) {
-			console.error('Ошибка загрузки атлетов:', err);
-			setError('Не удалось загрузить атлетов.');
+			message.error('Ошибка загрузки атлетов');
 		}
 	};
 
@@ -47,73 +36,65 @@ const AddAthletePage = () => {
 			const responseCoaches = await api.get('/api/users');
 			setCoaches(responseCoaches.data);
 		} catch (err) {
-			console.error('Ошибка при загрузке ролей:', err);
-			setError('Не удалось загрузить роли.');
+			message.error('Ошибка при загрузке тренеров');
 		}
 	};
 
-	const handleAddAthleteSubmit = async ({ firstName, lastName, coachId }) => {
-		await api.post('/api/athletes', {
-			firstName,
-			lastName,
-			coachId,
-		});
-		loadAthletes();
+	const handleAddAthlete = async (values) => {
+		try {
+			await api.post('/api/athletes', values);
+			message.success('Атлет успешно добавлен');
+			setModalVisible(false);
+			loadAthletes();
+		} catch (err) {
+			message.error(
+				err.response?.data.message || 'Ошибка при добавлении'
+			);
+		}
 	};
 
-	const handleUpdateAthlete = async (e) => {
-		e.preventDefault();
+	const handleEditAthlete = async (values) => {
 		if (!selectedAthlete) {
-			setError('Выберите атлета для изменения.');
+			message.error('Выберите атлета для изменения');
 			return;
 		}
 		try {
-			await api.put(`/api/athletes/${selectedAthlete.id}`, {
-				firstName,
-				lastName,
-				coachId,
-			});
-			console.log('Данные атлета успешно обновлены!');
+			await api.put(`/api/athletes/${selectedAthlete.id}`, values);
+			message.success('Данные атлета успешно обновлены');
+			setModalVisible(false);
 			loadAthletes();
-			setFirstName('');
-			setLastName('');
-			setCoachId('');
 			setSelectedAthlete(null);
 		} catch (err) {
-			setError(err.response?.data.message || 'Произошла ошибка');
+			message.error(err.response?.data.message || 'Ошибка при изменении');
 		}
-	};
-
-	const handleSelectAthlete = (athlete) => {
-		setSelectedAthlete(athlete);
-		setFirstName(athlete.firstName);
-		setLastName(athlete.lastName);
-		setCoachId(athlete.coachId);
-		setEditAthleteModalVisible(true); // Показываем модальное окно для редактирования
-	};
-
-	const closeModals = () => {
-		setAddAthleteModalVisible(false);
-		setEditAthleteModalVisible(false);
 	};
 
 	const handleDeleteAthlete = async (athleteId) => {
-		if (window.confirm('Вы уверены, что хотите удалить этого атлета?')) {
-			try {
-				await api.delete(`/api/athletes/${athleteId}`);
-				console.log('Атлет успешно удален!');
-				loadAthletes(); // Обновляем список атлетов
-			} catch (err) {
-				console.error('Ошибка при удалении атлета:', err);
-				setError(
-					err.response?.data.message ||
-						'Произошла ошибка при удалении'
-				);
-			}
+		try {
+			await api.delete(`/api/athletes/${athleteId}`);
+			message.success('Атлет успешно удален');
+			loadAthletes();
+		} catch (err) {
+			message.error(err.response?.data.message || 'Ошибка при удалении');
 		}
 	};
 
-	const [sortDirection, setSortDirection] = useState('asc'); // 'asc' для возрастания, 'desc' для убывания
+	const openAddAthleteModal = () => {
+		setEditMode(false);
+		form.resetFields();
+		setModalVisible(true);
+	};
+
+	const openEditAthleteModal = (athlete) => {
+		setEditMode(true);
+		setSelectedAthlete(athlete);
+		form.setFieldsValue({
+			firstName: athlete.firstName,
+			lastName: athlete.lastName,
+			coachId: athlete.coachId,
+		});
+		setModalVisible(true);
+	};
 
 	const sortedAthletes = useMemo(() => {
 		return athletes.sort((a, b) => {
@@ -135,129 +116,121 @@ const AddAthletePage = () => {
 		);
 	};
 
+	const columns = [
+		{
+			title: '№',
+			dataIndex: 'index',
+			render: (_, __, index) => index + 1,
+		},
+		{
+			title: 'Фамилия Имя',
+			dataIndex: 'name',
+			render: (_, athlete) => `${athlete.lastName} ${athlete.firstName}`,
+			sorter: handleSortByName,
+		},
+		{
+			title: 'Тренер',
+			dataIndex: 'coachName',
+			render: (_, athlete) => {
+				const coach = coaches.find((c) => c.id === athlete.coachId);
+				return `${coach?.firstName || ''} ${coach?.lastName || ''}`;
+			},
+		},
+		{
+			title: 'Действия',
+			dataIndex: 'actions',
+			render: (_, athlete) => (
+				<>
+					<Button
+						type='link'
+						icon={<EditOutlined />}
+						onClick={() => openEditAthleteModal(athlete)}
+					/>
+					<Popconfirm
+						title='Вы уверены, что хотите удалить этого атлета?'
+						onConfirm={() => handleDeleteAthlete(athlete.id)}
+						okText='Да'
+						cancelText='Нет'>
+						<Button
+							type='link'
+							icon={<DeleteOutlined />}
+							danger
+						/>
+					</Popconfirm>
+				</>
+			),
+		},
+	];
+
 	return (
-		<Container>
+		<div>
 			<h1>Управление атлетами</h1>
-			<button
-				className='edit-button'
-				onClick={() => setAddAthleteModalVisible(true)}>
+			<Button
+				type='primary'
+				icon={<PlusOutlined />}
+				onClick={openAddAthleteModal}
+				style={{ marginBottom: 20 }}>
 				Создать атлета
-			</button>
-			{isAddAthleteModalVisible && (
-				<AddAthleteModal
-					isVisible={isAddAthleteModalVisible}
-					onClose={closeModals}
-					onSubmit={handleAddAthleteSubmit}
-					coaches={coaches}
-					coachRoleId={coachRoleId}
-				/>
-			)}
-			{isEditAthleteModalVisible && (
-				<Modal onClose={closeModals}>
-					<form onSubmit={(e) => handleUpdateAthlete(e)}>
-						<h3>Редактировать атлета</h3>
-						<label htmlFor='firstName'>
-							Имя:
-							<input
-								type='text'
-								id='firstName'
-								value={firstName}
-								onChange={(e) => setFirstName(e.target.value)}
-								required
-							/>
-						</label>
-						<label htmlFor='lastName'>
-							Фамилия:
-							<input
-								type='text'
-								id='lastName'
-								value={lastName}
-								onChange={(e) => setLastName(e.target.value)}
-								required
-							/>
-						</label>
-						<label htmlFor='coachId'>
-							Тренер:
-							<select
-								id='coachId'
-								value={coachId}
-								onChange={(e) => setCoachId(e.target.value)}
-								required>
-								<option value=''>Выберите тренера</option>
-								{coaches
-									.filter(
-										(coach) => coach.roleId === coachRoleId
-									)
-									.map((coach) => (
-										<option
-											key={coach.id}
-											value={coach.id}>
-											{coach.firstName} {coach.lastName}
-										</option>
-									))}
-							</select>
-						</label>
-						<div className='form-actions'>
-							<button type='submit'>Сохранить изменения</button>
-							<button
-								type='button'
-								onClick={closeModals}>
-								Отмена
-							</button>
-						</div>
-					</form>
-				</Modal>
-			)}
-
-			<div className='table-container'>
-				<h2>Список атлетов</h2>
-				<table>
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th onClick={handleSortByName}>Фамилия Имя</th>
-							<th>Тренер</th>
-							<th>Действия</th>
-						</tr>
-					</thead>
-					<tbody>
-						{sortedAthletes.map((athlete, index) => {
-							const coach = coaches.find(
-								(cch) => cch.id === athlete.coachId
-							);
-							const coachName = `${coach?.firstName} ${coach?.lastName}`;
-
-							return (
-								<tr key={athlete.id}>
-									<td>{index + 1}</td>
-									<td>
-										{athlete.lastName} {athlete.firstName}
-									</td>
-
-									<td>{coachName}</td>
-									<td>
-										<button
-											className='edit-button'
-											onClick={() =>
-												handleSelectAthlete(athlete)
-											}>
-											Редактировать
-										</button>
-										<button
-											className='delete-button'
-											onClick={() =>
-												handleDeleteAthlete(athlete.id)
-											}>
-											Удалить
-										</button>
-									</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</div>
-		</Container>
+			</Button>
+			<CustomTable
+				dataSource={sortedAthletes}
+				columns={columns}
+				rowKey='id'
+			/>
+			<Modal
+				title={isEditMode ? 'Редактировать атлета' : 'Добавить атлета'}
+				visible={isModalVisible}
+				onCancel={() => setModalVisible(false)}
+				footer={null}>
+				<Form
+					form={form}
+					onFinish={isEditMode ? handleEditAthlete : handleAddAthlete}
+					layout='vertical'>
+					<Form.Item
+						label='Имя'
+						name='firstName'
+						rules={[{ required: true, message: 'Введите имя' }]}>
+						<Input />
+					</Form.Item>
+					<Form.Item
+						label='Фамилия'
+						name='lastName'
+						rules={[
+							{ required: true, message: 'Введите фамилию' },
+						]}>
+						<Input />
+					</Form.Item>
+					<Form.Item
+						label='Тренер'
+						name='coachId'
+						rules={[
+							{ required: true, message: 'Выберите тренера' },
+						]}>
+						<Select placeholder='Выберите тренера'>
+							{coaches.map((coach) => (
+								<Option
+									key={coach.id}
+									value={coach.id}>
+									{coach.firstName} {coach.lastName}
+								</Option>
+							))}
+						</Select>
+					</Form.Item>
+					<Form.Item>
+						<Button
+							type='primary'
+							htmlType='submit'>
+							{isEditMode ? 'Сохранить изменения' : 'Добавить'}
+						</Button>
+						<Button
+							style={{ marginLeft: 10 }}
+							onClick={() => setModalVisible(false)}>
+							Отмена
+						</Button>
+					</Form.Item>
+				</Form>
+			</Modal>
+		</div>
 	);
 };
 

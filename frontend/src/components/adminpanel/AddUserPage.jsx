@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { Button, Modal, Form, Input, Select, message, Popconfirm } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import CustomTable from '../Table/customTable';
 import api from '../../api/api';
 import './AddUserPage.css';
-import Modal from '../Modal';
-import { Container } from 'react-bootstrap';
+
+const { Option } = Select;
 
 const AddUserPage = () => {
 	const [users, setUsers] = useState([]);
 	const [roles, setRoles] = useState([]);
+	const [isModalVisible, setModalVisible] = useState(false);
+	const [isEditMode, setEditMode] = useState(false);
+	const [form] = Form.useForm();
 	const [selectedUser, setSelectedUser] = useState(null);
-	const [firstName, setFirstName] = useState('');
-	const [lastName, setLastName] = useState('');
-	const [phoneNumber, setPhoneNumber] = useState('');
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [roleId, setRole] = useState('');
-	const [error, setError] = useState('');
-	const [isAddUserModalVisible, setAddUserModalVisible] = useState(false);
-	const [isEditUserModalVisible, setEditUserModalVisible] = useState(false);
 
 	useEffect(() => {
 		loadUsers();
@@ -28,327 +25,238 @@ const AddUserPage = () => {
 			const response = await api.get('/api/users');
 			setUsers(response.data);
 		} catch (err) {
-			console.error('Ошибка загрузки пользователей:', err);
+			message.error('Ошибка загрузки пользователей');
 		}
 	};
+
 	const loadRoles = async () => {
 		try {
-			const response = await api.get('/api/role'); // Убедитесь, что этот URL верный
+			const response = await api.get('/api/role');
 			setRoles(response.data);
 		} catch (err) {
-			console.error('Ошибка при загрузке ролей:', err);
+			message.error('Ошибка при загрузке ролей');
 		}
 	};
 
-	const handleAddUser = async (e) => {
-		e.preventDefault();
+	const handleAddUser = async (values) => {
 		try {
-			await api.post('/api/users', {
-				firstName,
-				lastName,
-				phoneNumber,
-				email,
-				password,
-				roleId,
-			});
-			console.log('Пользователь успешно добавлен!');
+			await api.post('/api/users', values);
+			message.success('Пользователь успешно добавлен');
+			setModalVisible(false);
 			loadUsers();
-			setFirstName('');
-			setLastName('');
-			setPhoneNumber('');
-			setEmail('');
-			setPassword('');
-			setRole('');
-			setAddUserModalVisible(false);
 		} catch (err) {
-			setError(err.response?.data.message || 'Произошла ошибка');
+			message.error(err.response?.data.message || 'Произошла ошибка');
 		}
 	};
 
-	const handleSelectUser = (user) => {
-		setSelectedUser(user);
-		setFirstName(user.firstName);
-		setLastName(user.lastName);
-		setPhoneNumber(user.phoneNumber);
-		setEmail(user.email);
-		setRole(user.roleId);
-		setEditUserModalVisible(true);
-	};
-
-	const closeModals = () => {
-		setAddUserModalVisible(false);
-		setEditUserModalVisible(false);
-	};
-	const handleUpdateUser = async (e) => {
-		e.preventDefault();
-		if (!selectedUser || !selectedUser.id) {
-			// Предполагая, что у объекта пользователя есть свойство id
-			setError('Не удалось идентифицировать выбранного пользователя.');
+	const handleEditUser = async (values) => {
+		if (!selectedUser?.id) {
+			message.error(
+				'Не удалось идентифицировать выбранного пользователя'
+			);
 			return;
 		}
 		try {
-			const updateData = {
-				firstName,
-				lastName,
-				phoneNumber,
-				email,
-				roleId,
-				// Добавьте пароль в данные для обновления, если он был изменён
-				...(password && { password }),
-			};
-			await api.put(`/api/users/${selectedUser.id}`, updateData);
-			console.log('Данные пользователя успешно обновлены!');
+			await api.put(`/api/users/${selectedUser.id}`, values);
+			message.success('Пользователь успешно обновлен');
+			setModalVisible(false);
 			loadUsers();
-			setEditUserModalVisible(false); // Закрываем модальное окно после обновления
-			setFirstName('');
-			setLastName('');
-			setPhoneNumber('');
-			setEmail('');
-			setRole('');
 			setSelectedUser(null);
 		} catch (err) {
-			setError(err.response?.data.message || 'Произошла ошибка');
+			message.error(err.response?.data.message || 'Произошла ошибка');
 		}
 	};
 
 	const handleDeleteUser = async (userId) => {
-		if (
-			window.confirm('Вы уверены, что хотите удалить этого пользователя?')
-		) {
-			try {
-				await api.delete(`/api/users/${userId}`);
-				console.log('Пользователь успешно удален!');
-				loadUsers(); // Обновляем список пользователей
-			} catch (err) {
-				console.error('Ошибка при удалении пользователя:', err);
-				setError(
-					err.response?.data.message ||
-						'Произошла ошибка при удалении'
-				);
-			}
+		try {
+			await api.delete(`/api/users/${userId}`);
+			message.success('Пользователь успешно удален');
+			loadUsers();
+		} catch (err) {
+			message.error(err.response?.data.message || 'Ошибка при удалении');
 		}
 	};
 
+	const openAddUserModal = () => {
+		setEditMode(false);
+		form.resetFields();
+		setModalVisible(true);
+	};
+
+	const openEditUserModal = (user) => {
+		setEditMode(true);
+		setSelectedUser(user);
+		form.setFieldsValue({
+			firstName: user.firstName,
+			lastName: user.lastName,
+			phoneNumber: user.phoneNumber,
+			email: user.email,
+			roleId: user.roleId,
+		});
+		setModalVisible(true);
+	};
+
+	const columns = [
+		{
+			title: '№',
+			dataIndex: 'index',
+			render: (_, __, index) => index + 1,
+		},
+		{
+			title: 'Имя',
+			dataIndex: 'firstName',
+		},
+		{
+			title: 'Фамилия',
+			dataIndex: 'lastName',
+		},
+		{
+			title: 'Номер Телефона',
+			dataIndex: 'phoneNumber',
+		},
+		{
+			title: 'Email',
+			dataIndex: 'email',
+		},
+		{
+			title: 'Роль',
+			dataIndex: ['Role', 'name'],
+		},
+		{
+			title: 'Действия',
+			dataIndex: 'actions',
+			render: (_, user) => (
+				<>
+					<Button
+						type='link'
+						icon={<EditOutlined />}
+						onClick={() => openEditUserModal(user)}
+					/>
+					<Popconfirm
+						title='Вы уверены, что хотите удалить этого пользователя?'
+						onConfirm={() => handleDeleteUser(user.id)}
+						okText='Да'
+						cancelText='Нет'>
+						<Button
+							type='link'
+							icon={<DeleteOutlined />}
+							danger
+						/>
+					</Popconfirm>
+				</>
+			),
+		},
+	];
+
 	return (
-		<Container>
+		<div>
 			<h1>Управление пользователями</h1>
-			<button
-				className='edit-button'
-				onClick={() => setAddUserModalVisible(true)}>
+			<Button
+				type='primary'
+				icon={<PlusOutlined />}
+				onClick={openAddUserModal}>
 				Создать пользователя
-			</button>
+			</Button>
+			<CustomTable
+				dataSource={users}
+				columns={columns}
+				rowKey='id'
+			/>
 
-			{isAddUserModalVisible && (
-				<Modal onClose={closeModals}>
-					<form
-						onSubmit={handleAddUser}
-						className='user-form'>
-						<h3>Добавить пользователя</h3>
-						<label htmlFor='firstName'>
-							Имя:
-							<input
-								type='text'
-								id='firstName'
-								value={firstName}
-								onChange={(e) => setFirstName(e.target.value)}
-								required
-							/>
-						</label>
-						<label htmlFor='lastName'>
-							Фамилия:
-							<input
-								type='text'
-								id='lastName'
-								value={lastName}
-								onChange={(e) => setLastName(e.target.value)}
-								required
-							/>
-						</label>
-						<label htmlFor='phoneNumber'>
-							Номер Телефону:
-							<input
-								type='text'
-								id='phoneNumber'
-								value={phoneNumber}
-								onChange={(e) => setPhoneNumber(e.target.value)}
-								required
-							/>
-						</label>
-						<label htmlFor='email'>
-							Email:
-							<input
-								type='email'
-								id='email'
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-								required
-							/>
-						</label>
-						<label htmlFor='password'>
-							Пароль:
-							<input
-								type='password'
-								id='password'
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								required
-							/>
-						</label>
-						<label htmlFor='role'>Роль:</label>
-						<select
-							id='role'
-							value={roleId}
-							onChange={(e) => setRole(e.target.value)}
-							required>
+			<Modal
+				title={
+					isEditMode
+						? 'Редактировать пользователя'
+						: 'Добавить пользователя'
+				}
+				visible={isModalVisible}
+				onCancel={() => setModalVisible(false)}
+				footer={null}>
+				<Form
+					form={form}
+					onFinish={isEditMode ? handleEditUser : handleAddUser}
+					layout='vertical'>
+					<Form.Item
+						label='Имя'
+						name='firstName'
+						rules={[{ required: true, message: 'Введите имя' }]}>
+						<Input />
+					</Form.Item>
+					<Form.Item
+						label='Фамилия'
+						name='lastName'
+						rules={[
+							{ required: true, message: 'Введите фамилию' },
+						]}>
+						<Input />
+					</Form.Item>
+					<Form.Item
+						label='Номер телефона'
+						name='phoneNumber'
+						rules={[
+							{
+								required: true,
+								message: 'Введите номер телефона',
+							},
+						]}>
+						<Input />
+					</Form.Item>
+					<Form.Item
+						label='Email'
+						name='email'
+						rules={[
+							{
+								required: true,
+								type: 'email',
+								message: 'Введите корректный Email',
+							},
+						]}>
+						<Input />
+					</Form.Item>
+					<Form.Item
+						label='Пароль'
+						name='password'
+						rules={
+							!isEditMode
+								? [
+										{
+											required: true,
+											message: 'Введите пароль',
+										},
+								  ]
+								: []
+						}>
+						<Input.Password />
+					</Form.Item>
+					<Form.Item
+						label='Роль'
+						name='roleId'
+						rules={[{ required: true, message: 'Выберите роль' }]}>
+						<Select placeholder='Выберите роль'>
 							{roles.map((role) => (
-								<option
+								<Option
 									key={role.id}
 									value={role.id}>
 									{role.name}
-								</option>
+								</Option>
 							))}
-						</select>
-						<div className='form-actions'>
-							<button type='submit'>Добавить</button>
-							<button
-								type='button'
-								onClick={closeModals}>
-								Отмена
-							</button>
-						</div>
-						{error && <p className='error-message'>{error}</p>}
-					</form>
-				</Modal>
-			)}
-
-			{isEditUserModalVisible && (
-				<Modal onClose={() => setEditUserModalVisible(false)}>
-					<form
-						onSubmit={handleUpdateUser}
-						className='user-form'>
-						<h3>Редактировать пользователя</h3>
-						<label htmlFor='edit-firstName'>Имя:</label>
-						<input
-							type='text'
-							id='edit-firstName'
-							value={firstName}
-							onChange={(e) => setFirstName(e.target.value)}
-							required
-						/>
-						<label htmlFor='edit-lastName'>Фамилия:</label>
-						<input
-							type='text'
-							id='edit-lastName'
-							value={lastName}
-							onChange={(e) => setLastName(e.target.value)}
-							required
-						/>
-						<label htmlFor='edit-phoneNumber'>
-							Номер телефону:
-						</label>
-						<input
-							type='text'
-							id='edit-phoneNumber'
-							value={phoneNumber}
-							onChange={(e) => setPhoneNumber(e.target.value)}
-							required
-						/>
-						<label htmlFor='edit-email'>Email:</label>
-						<input
-							type='email'
-							id='edit-email'
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
-						/>
-
-						<label htmlFor='edit-password'>Пароль:</label>
-						<input
-							type='password'
-							id='edit-password'
-							value={password} // Убедитесь, что у вас определено состояние password
-							onChange={(e) => setPassword(e.target.value)}
-							// Не устанавливайте атрибут required, если хотите разрешить пользователям не изменять пароль
-						/>
-
-						<label htmlFor='edit-role'>Роль:</label>
-						<select
-							id='edit-role'
-							value={roleId}
-							onChange={(e) => setRole(e.target.value)}
-							required>
-							{roles.map((role) => (
-								<option
-									key={role.id}
-									value={role.id}>
-									{role.name}
-								</option>
-							))}
-						</select>
-						<div className='form-actions'>
-							<button type='submit'>Сохранить изменения</button>
-							<button
-								type='button'
-								onClick={() => setEditUserModalVisible(false)}>
-								Отмена
-							</button>
-						</div>
-						{error && <p className='error-message'>{error}</p>}
-					</form>
-				</Modal>
-			)}
-
-			<div className='table-container'>
-				<h2>Список пользователей</h2>
-				<table>
-					<thead>
-						<tr>
-							<th>№</th>
-							<th>Имя</th>
-							<th>Фамилия</th>
-							<th>Номер Телефону</th>
-							<th>Email</th>
-							<th>Роль</th>
-							<th>Действия</th>
-						</tr>
-					</thead>
-					<tbody>
-						{users.map((user, index) => (
-							<tr
-								key={user.id}
-								className={
-									selectedUser === user ? 'selected' : ''
-								}>
-								<td>{index + 1}</td>
-								<td>{user.firstName}</td>
-								<td>{user.lastName}</td>
-								<td>{user.phoneNumber}</td>
-								<td>{user.email}</td>
-								<td>{user.Role.name}</td>
-								<td>
-									<button
-										className='edit-button'
-										onClick={(e) => {
-											e.stopPropagation(); // Предотвращаем всплытие события
-											handleSelectUser(user);
-										}}>
-										Редактировать
-									</button>
-
-									<button
-										className='delete-button'
-										onClick={() =>
-											handleDeleteUser(user.id)
-										}>
-										Удалить
-									</button>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
-		</Container>
+						</Select>
+					</Form.Item>
+					<Form.Item>
+						<Button
+							type='primary'
+							htmlType='submit'>
+							{isEditMode ? 'Сохранить изменения' : 'Добавить'}
+						</Button>
+						<Button
+							style={{ marginLeft: 10 }}
+							onClick={() => setModalVisible(false)}>
+							Отмена
+						</Button>
+					</Form.Item>
+				</Form>
+			</Modal>
+		</div>
 	);
 };
 
