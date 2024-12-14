@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AuthContext } from '../../context/AuthContext';
 import CompetitionJudgementAPI from '../../api/CompetitionJudgementAPI';
+import api from '../../api/api';
 import CustomTable from '../Table/customTable';
 import ModalJudgementDetails from '../modal/judgement/ModalJudgementDetails';
 import ModalJudgement from '../modal/judgement/ModalJudgement';
@@ -51,7 +52,7 @@ const CompetitionJudgment = () => {
 			if (response.status === 200) {
 				console.log('Голос успешно зарегистрирован');
 				// Здесь можно добавить дальнейшие действия, например, закрыть модальное окно
-				closeVotingModal();
+				closeJudgementModal();
 			} else {
 				console.error('Ошибка при отправке данных', response);
 			}
@@ -109,7 +110,7 @@ const CompetitionJudgment = () => {
 		setIsDetailJudgementModalOpen(false);
 	};
 
-	const closeJUdgementModal = () => {
+	const closeJudgementModal = () => {
 		setIsJudgementModalOpen(false);
 	};
 
@@ -212,7 +213,7 @@ const CompetitionJudgment = () => {
 			{user && (
 				<ModalJudgement
 					isOpen={isJudgementModalOpen}
-					onClose={closeJUdgementModal}
+					onClose={closeJudgementModal}
 					participant={selectedParticipant}
 					onSubmit={handleJudgeSubmit}
 					judgeId={user.userId}
