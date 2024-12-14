@@ -49,6 +49,8 @@ const RegisterAthletePage = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedFiles, setSelectedFiles] = useState([]);
 	const role = localStorage.getItem('role');
+	const [currentPage, setCurrentPage] = useState(1);
+	const [pageSize, setPageSize] = useState(100);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -283,7 +285,7 @@ const RegisterAthletePage = () => {
 			title: '№',
 			dataIndex: 'index',
 			key: 'index',
-			render: (text, record, index) => index + 1,
+			render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
 		},
 		{
 			title: 'Атлет',
@@ -434,7 +436,13 @@ const RegisterAthletePage = () => {
 				rowClassName={(record) =>
 					payCompetitions[record.id] ? 'paid-row' : ''
 				}
-				minRows={100}
+				pagination={{
+					pageSize,
+					onChange: (page, size) => {
+						setCurrentPage(page);
+						setPageSize(size);
+					},
+				}}
 			/>
 
 			<UploadedFilesModal

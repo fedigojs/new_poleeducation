@@ -21,7 +21,6 @@ const ModalJudgementDetails = ({
 					const response = await api.get(
 						`/api/draw-judgement-result/participation/${competitionParticipationId}`
 					);
-					console.log('fetchExerciseProtocolDetails', response.data);
 
 					setDataTableList(response.data || []);
 				} catch (error) {

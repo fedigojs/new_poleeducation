@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { AuthContext } from '../../context/AuthContext';
 import CompetitionJudgementAPI from '../../api/CompetitionJudgementAPI';
 import CustomTable from '../Table/customTable';
 import ModalJudgementDetails from '../modal/judgement/ModalJudgementDetails';
+import ModalJudgement from '../modal/judgement/ModalJudgement';
 import { Button, Space } from 'antd';
 import {
 	SolutionOutlined,
@@ -13,11 +15,13 @@ import {
 import Spinner from '../Spinner/Spinner';
 
 const CompetitionJudgment = () => {
+	const { user } = useContext(AuthContext);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(100);
 	const [isDetailJudgementModalOpen, setIsDetailJudgementModalOpen] =
 		useState(false);
 	const [selectedParticipant, setSelectedParticipant] = useState(null);
+	const [isJudgementModalOpen, setIsJudgementModalOpen] = useState(false);
 
 	const {
 		data: competitionList = [],
@@ -31,6 +35,31 @@ const CompetitionJudgment = () => {
 	if (isLoading) return <Spinner />;
 	if (error) return <p>Error loading data: {error.message}</p>;
 
+	const handleJudgeSubmit = async (e) => {
+		e.preventDefault(); // Предотвращаем стандартное поведение формы
+
+		// Собираем данные из формы
+		const formData = {
+			athleteId: selectedParticipant.participation.Athlete.id,
+			score: e.target.score.value, // Предполагаем, что у поля ввода оценки есть имя 'score'
+			comment: e.target.comment.value, // Предполагаем, что у текстового поля комментария есть имя 'comment'
+		};
+
+		try {
+			// Отправляем данные на сервер
+			const response = await api.post('/api/voting', formData);
+			if (response.status === 200) {
+				console.log('Голос успешно зарегистрирован');
+				// Здесь можно добавить дальнейшие действия, например, закрыть модальное окно
+				closeVotingModal();
+			} else {
+				console.error('Ошибка при отправке данных', response);
+			}
+		} catch (error) {
+			console.error('Ошибка при отправке данных', error);
+		}
+	};
+
 	const dataTable = competitionList.map((item, index) => ({
 		key: item.participation.id,
 		no: index + 1,
@@ -41,6 +70,15 @@ const CompetitionJudgment = () => {
 		totalScore: item.totalscore,
 		protocols: item.protocol,
 		competitionParticipationId: item.competitionParticipationId,
+		participation: {
+			AthleteTrend: item.participation.athleteTrendId,
+			athleteId: item.participation.athleteId,
+			competitionId: item.participation.competitionId,
+			Athlete: {
+				firstName: item.participation.Athlete.firstName,
+				lastName: item.participation.Athlete.lastName,
+			},
+		},
 	}));
 
 	// Получаем уникальные значения для фильтров Level и AgeGroup
@@ -62,8 +100,17 @@ const CompetitionJudgment = () => {
 		setIsDetailJudgementModalOpen(true);
 	};
 
+	const openJudgementModal = (record) => {
+		setSelectedParticipant(record);
+		setIsJudgementModalOpen(true);
+	};
+
 	const closeDetailsModal = () => {
 		setIsDetailJudgementModalOpen(false);
+	};
+
+	const closeJUdgementModal = () => {
+		setIsJudgementModalOpen(false);
 	};
 
 	const columns = [
@@ -121,7 +168,7 @@ const CompetitionJudgment = () => {
 					<Button
 						type='link'
 						icon={<LikeOutlined />}
-						onClick={() => console.log('Edit', record)}
+						onClick={() => openJudgementModal(record)}
 					/>
 					<Button
 						type='link'
@@ -144,7 +191,7 @@ const CompetitionJudgment = () => {
 			<CustomTable
 				dataSource={dataTable}
 				columns={columns}
-				rowKey='id'
+				rowKey='key'
 				pagination={{
 					pageSize,
 					onChange: (page, size) => {
@@ -158,9 +205,19 @@ const CompetitionJudgment = () => {
 				isOpen={isDetailJudgementModalOpen}
 				onClose={closeDetailsModal}
 				competitionParticipationId={
-					selectedParticipant?.competitionParticipationId
+					selectedParticipant?.competitionParticipationId || null
 				}
 			/>
+
+			{user && (
+				<ModalJudgement
+					isOpen={isJudgementModalOpen}
+					onClose={closeJUdgementModal}
+					participant={selectedParticipant}
+					onSubmit={handleJudgeSubmit}
+					judgeId={user.userId}
+				/>
+			)}
 		</>
 	);
 };
