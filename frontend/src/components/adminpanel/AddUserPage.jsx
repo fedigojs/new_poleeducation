@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, Input, Select, message, Popconfirm, Layout } from 'antd';
+import {
+    Button,
+    Modal,
+    Form,
+    Input,
+    Select,
+    message,
+    Popconfirm,
+    Layout,
+} from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import CustomTable from '../Table/customTable';
 import api from '../../api/api';
@@ -148,113 +157,119 @@ const AddUserPage = () => {
     return (
         <div>
             <Layout className="layout">
-            <h1>Управление пользователями</h1>
-            <Button
-                className="global-button"
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={openAddUserModal}
-            >
-                Создать пользователя
-            </Button>
-            <CustomTable dataSource={users} columns={columns} rowKey="id" />
-
-            <Modal
-                title={
-                    isEditMode
-                        ? 'Редактировать пользователя'
-                        : 'Добавить пользователя'
-                }
-                visible={isModalVisible}
-                onCancel={() => setModalVisible(false)}
-                footer={null}
-            >
-                <Form
-                    form={form}
-                    onFinish={isEditMode ? handleEditUser : handleAddUser}
-                    layout="vertical"
+                <h1>Управление пользователями</h1>
+                <Button
+                    className="global-button"
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={openAddUserModal}
                 >
-                    <Form.Item
-                        label="Имя"
-                        name="firstName"
-                        rules={[{ required: true, message: 'Введите имя' }]}
+                    Создать пользователя
+                </Button>
+                <CustomTable dataSource={users} columns={columns} rowKey="id" />
+
+                <Modal
+                    title={
+                        isEditMode
+                            ? 'Редактировать пользователя'
+                            : 'Добавить пользователя'
+                    }
+                    visible={isModalVisible}
+                    onCancel={() => setModalVisible(false)}
+                    footer={null}
+                >
+                    <Form
+                        form={form}
+                        onFinish={isEditMode ? handleEditUser : handleAddUser}
+                        layout="vertical"
                     >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Фамилия"
-                        name="lastName"
-                        rules={[{ required: true, message: 'Введите фамилию' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Номер телефона"
-                        name="phoneNumber"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Введите номер телефона',
-                            },
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[
-                            {
-                                required: true,
-                                type: 'email',
-                                message: 'Введите корректный Email',
-                            },
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Пароль"
-                        name="password"
-                        rules={
-                            !isEditMode
-                                ? [
-                                      {
-                                          required: true,
-                                          message: 'Введите пароль',
-                                      },
-                                  ]
-                                : []
-                        }
-                    >
-                        <Input.Password />
-                    </Form.Item>
-                    <Form.Item
-                        label="Роль"
-                        name="roleId"
-                        rules={[{ required: true, message: 'Выберите роль' }]}
-                    >
-                        <Select placeholder="Выберите роль">
-                            {roles.map((role) => (
-                                <Option key={role.id} value={role.id}>
-                                    {role.name}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            {isEditMode ? 'Сохранить изменения' : 'Добавить'}
-                        </Button>
-                        <Button
-                            style={{ marginLeft: 10 }}
-                            onClick={() => setModalVisible(false)}
+                        <Form.Item
+                            label="Имя"
+                            name="firstName"
+                            rules={[{ required: true, message: 'Введите имя' }]}
                         >
-                            Отмена
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Фамилия"
+                            name="lastName"
+                            rules={[
+                                { required: true, message: 'Введите фамилию' },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Номер телефона"
+                            name="phoneNumber"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Введите номер телефона',
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Email"
+                            name="email"
+                            rules={[
+                                {
+                                    required: true,
+                                    type: 'email',
+                                    message: 'Введите корректный Email',
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Пароль"
+                            name="password"
+                            rules={
+                                !isEditMode
+                                    ? [
+                                          {
+                                              required: true,
+                                              message: 'Введите пароль',
+                                          },
+                                      ]
+                                    : []
+                            }
+                        >
+                            <Input.Password />
+                        </Form.Item>
+                        <Form.Item
+                            label="Роль"
+                            name="roleId"
+                            rules={[
+                                { required: true, message: 'Выберите роль' },
+                            ]}
+                        >
+                            <Select placeholder="Выберите роль">
+                                {roles.map((role) => (
+                                    <Option key={role.id} value={role.id}>
+                                        {role.name}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                {isEditMode
+                                    ? 'Сохранить изменения'
+                                    : 'Добавить'}
+                            </Button>
+                            <Button
+                                style={{ marginLeft: 10 }}
+                                onClick={() => setModalVisible(false)}
+                            >
+                                Отмена
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
             </Layout>
         </div>
     );

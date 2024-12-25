@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Table, Button, Modal, Form, Input, DatePicker, Select, message } from 'antd';
+import {
+    Layout,
+    Table,
+    Button,
+    Modal,
+    Form,
+    Input,
+    DatePicker,
+    Select,
+    message,
+} from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import api from '../../api/api';
@@ -37,7 +47,10 @@ const AddCompetitionPage = () => {
             };
 
             if (editingCompetition) {
-                await api.put(`/api/competition/${editingCompetition.id}`, payload);
+                await api.put(
+                    `/api/competition/${editingCompetition.id}`,
+                    payload
+                );
                 message.success('Соревнование успешно обновлено!');
             } else {
                 await api.post('/api/competition', payload);
@@ -47,7 +60,9 @@ const AddCompetitionPage = () => {
             loadCompetitions();
             closeModal();
         } catch (err) {
-            message.error(err.response?.data.message || 'Произошла ошибка при сохранении.');
+            message.error(
+                err.response?.data.message || 'Произошла ошибка при сохранении.'
+            );
         }
     };
 
@@ -57,7 +72,9 @@ const AddCompetitionPage = () => {
             message.success('Соревнование успешно удалено!');
             setCompetitions(competitions.filter((c) => c.id !== competitionId));
         } catch (err) {
-            message.error(err.response?.data.message || 'Произошла ошибка при удалении.');
+            message.error(
+                err.response?.data.message || 'Произошла ошибка при удалении.'
+            );
         }
     };
 
@@ -120,16 +137,17 @@ const AddCompetitionPage = () => {
             key: 'actions',
             render: (_, record) => (
                 <>
-                    <Button type="link"
-                    icon={<EditOutlined />}
-                    onClick={() => openModal(record)}
+                    <Button
+                        type="link"
+                        icon={<EditOutlined />}
+                        onClick={() => openModal(record)}
                     />
                     <Button
                         type="link"
                         icon={<DeleteOutlined />}
                         danger
                         onClick={() => handleDeleteCompetition(record.id)}
-                        />
+                    />
                 </>
             ),
         },
@@ -137,73 +155,92 @@ const AddCompetitionPage = () => {
 
     return (
         <Layout className="layout">
-                <h1>Управление соревнованиями</h1>
-                <Button
+            <h1>Управление соревнованиями</h1>
+            <Button
                 className="global-button"
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={() => openModal()}
-                >
-                    Создать соревнование
-                </Button>
-                <Table dataSource={competitions} columns={columns} rowKey="id" />
+            >
+                Создать соревнование
+            </Button>
+            <Table dataSource={competitions} columns={columns} rowKey="id" />
 
-                <Modal
-                    title={editingCompetition ? 'Редактировать соревнование' : 'Добавить соревнование'}
-                    visible={isModalVisible}
-                    onCancel={closeModal}
-                    onOk={() => {
-                        form
-                            .validateFields()
-                            .then((values) => {
-                                handleSaveCompetition(values);
-                            })
-                            .catch((info) => {
-                                console.log('Validate Failed:', info);
-                            });
-                    }}
-                >
-                    <Form form={form} layout="vertical">
-                        <Form.Item
-                            name="title"
-                            label="Название"
-                            rules={[{ required: true, message: 'Введите название!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="dateOpen"
-                            label="Дата начала"
-                            rules={[{ required: true, message: 'Введите дату начала!' }]}
-                        >
-                            <DatePicker format="YYYY-MM-DD" />
-                        </Form.Item>
-                        <Form.Item
-                            name="dateClose"
-                            label="Дата окончания"
-                            rules={[{ required: true, message: 'Введите дату окончания!' }]}
-                        >
-                            <DatePicker format="YYYY-MM-DD" />
-                        </Form.Item>
-                        <Form.Item
-                            name="location"
-                            label="Местоположение"
-                            rules={[{ required: true, message: 'Введите местоположение!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="endRegistration"
-                            label="Запрет регистрации"
-                            rules={[{ required: true, message: 'Выберите значение!' }]}
-                        >
-                            <Select>
-                                <Option value="true">Нет</Option>
-                                <Option value="false">Да</Option>
-                            </Select>
-                        </Form.Item>
-                    </Form>
-                </Modal>
+            <Modal
+                title={
+                    editingCompetition
+                        ? 'Редактировать соревнование'
+                        : 'Добавить соревнование'
+                }
+                visible={isModalVisible}
+                onCancel={closeModal}
+                onOk={() => {
+                    form.validateFields()
+                        .then((values) => {
+                            handleSaveCompetition(values);
+                        })
+                        .catch((info) => {
+                            console.log('Validate Failed:', info);
+                        });
+                }}
+            >
+                <Form form={form} layout="vertical">
+                    <Form.Item
+                        name="title"
+                        label="Название"
+                        rules={[
+                            { required: true, message: 'Введите название!' },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="dateOpen"
+                        label="Дата начала"
+                        rules={[
+                            { required: true, message: 'Введите дату начала!' },
+                        ]}
+                    >
+                        <DatePicker format="YYYY-MM-DD" />
+                    </Form.Item>
+                    <Form.Item
+                        name="dateClose"
+                        label="Дата окончания"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Введите дату окончания!',
+                            },
+                        ]}
+                    >
+                        <DatePicker format="YYYY-MM-DD" />
+                    </Form.Item>
+                    <Form.Item
+                        name="location"
+                        label="Местоположение"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Введите местоположение!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="endRegistration"
+                        label="Запрет регистрации"
+                        rules={[
+                            { required: true, message: 'Выберите значение!' },
+                        ]}
+                    >
+                        <Select>
+                            <Option value="true">Нет</Option>
+                            <Option value="false">Да</Option>
+                        </Select>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </Layout>
     );
 };

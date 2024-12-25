@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
 import './AthletesDraw.css';
 import { Layout } from 'antd';
-import Spinner  from '../Spinner/Spinner';
+import Spinner from '../Spinner/Spinner';
 import CustomTable from '../Table/customTable';
 import '../../styles/global.scss';
 
@@ -429,7 +429,8 @@ const AthletesDraw = () => {
             title: 'Имя',
             dataIndex: ['participation', 'Athlete'],
             key: 'athleteName',
-            render: (athlete) => `${athlete?.firstName || ''} ${athlete?.lastName || ''}`,
+            render: (athlete) =>
+                `${athlete?.firstName || ''} ${athlete?.lastName || ''}`,
         },
         {
             title: 'Разряд',
@@ -449,191 +450,221 @@ const AthletesDraw = () => {
                 <div style={{ textAlign: 'center', padding: '20px' }}>
                     <Spinner />
                 </div>
-            ) : (<>
-            <div className="container">
-                <h1>Жеребкування спортсменів</h1>
-                <div className="form-group">
-                    <select
-                        className="select-competition"
-                        value={selectedCompetition}
-                        onChange={(e) => setSelectedCompetition(e.target.value)}
-                    >
-                        <option value="">Виберіть змагання</option>
-                        {competitions.map((competition) => (
-                            <option key={competition.id} value={competition.id}>
-                                {competition.title}
-                            </option>
-                        ))}
-                    </select>
-                    <button
-                        className="edit-button"
-                        onClick={() => {
-                            handleDraw(selectedCompetition);
-                        }}
-                    >
-                        Провести жеребкування
-                    </button>
-                    <button
-                        className="delete-button"
-                        onClick={() => {
-                            deleteAllDrawResultsForCompetition(
-                                selectedCompetition
-                            );
-                        }}
-                    >
-                        Видалити жеребкування
-                    </button>
-                </div>
-                <div className="trend-container">
-                    {tabTrends
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((trend, index) => {
-                            const trendName = trend.split('(')[0].trim();
-                            return (
-                                <div className="trend-item" key={index}>
-                                    <label>{trendName}</label>
-                                    <select
-                                        value={
-                                            trendOrder.find(
-                                                (item) =>
-                                                    item.trend === trendName
-                                            )?.position || ''
-                                        }
-                                        onChange={(e) =>
-                                            handleTrendOrderChange(
-                                                trendName,
-                                                e.target.value
-                                            )
-                                        }
+            ) : (
+                <>
+                    <div className="container">
+                        <h1>Жеребкування спортсменів</h1>
+                        <div className="form-group">
+                            <select
+                                className="select-competition"
+                                value={selectedCompetition}
+                                onChange={(e) =>
+                                    setSelectedCompetition(e.target.value)
+                                }
+                            >
+                                <option value="">Виберіть змагання</option>
+                                {competitions.map((competition) => (
+                                    <option
+                                        key={competition.id}
+                                        value={competition.id}
                                     >
-                                        <option value="">Встановити</option>
-                                        {Array.from(
-                                            { length: tabTrends.length },
-                                            (_, i) => (
-                                                <option key={i} value={i + 1}>
-                                                    {i + 1}
+                                        {competition.title}
+                                    </option>
+                                ))}
+                            </select>
+                            <button
+                                className="edit-button"
+                                onClick={() => {
+                                    handleDraw(selectedCompetition);
+                                }}
+                            >
+                                Провести жеребкування
+                            </button>
+                            <button
+                                className="delete-button"
+                                onClick={() => {
+                                    deleteAllDrawResultsForCompetition(
+                                        selectedCompetition
+                                    );
+                                }}
+                            >
+                                Видалити жеребкування
+                            </button>
+                        </div>
+                        <div className="trend-container">
+                            {tabTrends
+                                .sort((a, b) => a.localeCompare(b))
+                                .map((trend, index) => {
+                                    const trendName = trend
+                                        .split('(')[0]
+                                        .trim();
+                                    return (
+                                        <div className="trend-item" key={index}>
+                                            <label>{trendName}</label>
+                                            <select
+                                                value={
+                                                    trendOrder.find(
+                                                        (item) =>
+                                                            item.trend ===
+                                                            trendName
+                                                    )?.position || ''
+                                                }
+                                                onChange={(e) =>
+                                                    handleTrendOrderChange(
+                                                        trendName,
+                                                        e.target.value
+                                                    )
+                                                }
+                                            >
+                                                <option value="">
+                                                    Встановити
                                                 </option>
-                                            )
-                                        )}
-                                    </select>
+                                                {Array.from(
+                                                    {
+                                                        length: tabTrends.length,
+                                                    },
+                                                    (_, i) => (
+                                                        <option
+                                                            key={i}
+                                                            value={i + 1}
+                                                        >
+                                                            {i + 1}
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+                                        </div>
+                                    );
+                                })}
+                        </div>
+
+                        <div className="form-group">
+                            <div className="row">
+                                <div className="col">
+                                    <label htmlFor="start-time">
+                                        Час початку:
+                                    </label>
+                                    <input
+                                        id="start-time"
+                                        type="time"
+                                        value={startTime}
+                                        onChange={(e) =>
+                                            setStartTime(e.target.value)
+                                        }
+                                    />
                                 </div>
-                            );
-                        })}
-                </div>
+                                <div className="col">
+                                    <label htmlFor="end-time">
+                                        Час закінчення дня:
+                                    </label>
+                                    <input
+                                        id="end-time"
+                                        type="time"
+                                        value={endTime}
+                                        onChange={(e) =>
+                                            setEndTime(e.target.value)
+                                        }
+                                    />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="performance-duration">
+                                        Тривалість виступу (хв):
+                                    </label>
+                                    <input
+                                        id="performance-duration"
+                                        type="number"
+                                        value={performanceDuration}
+                                        onChange={(e) =>
+                                            setPerformanceDuration(
+                                                Number(e.target.value)
+                                            )
+                                        }
+                                    />
+                                </div>
+                            </div>
 
-                <div className="form-group">
-                    <div className="row">
-                        <div className="col">
-                            <label htmlFor="start-time">Час початку:</label>
-                            <input
-                                id="start-time"
-                                type="time"
-                                value={startTime}
-                                onChange={(e) => setStartTime(e.target.value)}
-                            />
+                            <div className="row">
+                                <div className="col">
+                                    <label htmlFor="break-duration">
+                                        Тривалість перерви (хв):
+                                    </label>
+                                    <input
+                                        id="break-duration"
+                                        type="number"
+                                        value={breakDuration}
+                                        onChange={(e) =>
+                                            setBreakDuration(
+                                                Number(e.target.value)
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="lunch-start-time">
+                                        Обідня перерва початок:
+                                    </label>
+                                    <input
+                                        id="lunch-start-time"
+                                        type="time"
+                                        value={lunchBreakStart}
+                                        onChange={(e) =>
+                                            setLunchBreakStart(e.target.value)
+                                        }
+                                    />
+                                </div>
+                                <div className="col">
+                                    <label htmlFor="lunch-end-time">
+                                        Обідня перерва кінець:
+                                    </label>
+                                    <input
+                                        id="lunch-end-time"
+                                        type="time"
+                                        value={lunchBreakEnd}
+                                        onChange={(e) =>
+                                            setLunchBreakEnd(e.target.value)
+                                        }
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <div className="col">
-                            <label htmlFor="end-time">
-                                Час закінчення дня:
-                            </label>
-                            <input
-                                id="end-time"
-                                type="time"
-                                value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
-                            />
-                        </div>
-                        <div className="col">
-                            <label htmlFor="performance-duration">
-                                Тривалість виступу (хв):
-                            </label>
-                            <input
-                                id="performance-duration"
-                                type="number"
-                                value={performanceDuration}
-                                onChange={(e) =>
-                                    setPerformanceDuration(
-                                        Number(e.target.value)
-                                    )
-                                }
-                            />
-                        </div>
+
+                        <button
+                            className="calculate-button"
+                            onClick={calculateTiming}
+                        >
+                            Розрахувати таймінг
+                        </button>
                     </div>
 
-                    <div className="row">
-                        <div className="col">
-                            <label htmlFor="break-duration">
-                                Тривалість перерви (хв):
-                            </label>
-                            <input
-                                id="break-duration"
-                                type="number"
-                                value={breakDuration}
-                                onChange={(e) =>
-                                    setBreakDuration(Number(e.target.value))
-                                }
-                            />
-                        </div>
-                        <div className="col">
-                            <label htmlFor="lunch-start-time">
-                                Обідня перерва початок:
-                            </label>
-                            <input
-                                id="lunch-start-time"
-                                type="time"
-                                value={lunchBreakStart}
-                                onChange={(e) =>
-                                    setLunchBreakStart(e.target.value)
-                                }
-                            />
-                        </div>
-                        <div className="col">
-                            <label htmlFor="lunch-end-time">
-                                Обідня перерва кінець:
-                            </label>
-                            <input
-                                id="lunch-end-time"
-                                type="time"
-                                value={lunchBreakEnd}
-                                onChange={(e) =>
-                                    setLunchBreakEnd(e.target.value)
-                                }
-                            />
-                        </div>
+                    <div className="tabs">
+                        {tabTrends.map((trend, index) => (
+                            <button
+                                key={index}
+                                className={`tab-link ${
+                                    trend === activeTrend ? 'active' : ''
+                                }`}
+                                onClick={() => handleTabClick(trend)}
+                            >
+                                {trend}
+                            </button>
+                        ))}
+                        <button
+                            className="tab-link reset-button"
+                            onClick={resetFilter}
+                        >
+                            Скинути фільтр
+                        </button>
                     </div>
-                </div>
 
-                <button className="calculate-button" onClick={calculateTiming}>
-                    Розрахувати таймінг
-                </button>
-            </div>
-
-            <div className="tabs">
-                {tabTrends.map((trend, index) => (
-                    <button
-                        key={index}
-                        className={`tab-link ${
-                            trend === activeTrend ? 'active' : ''
-                        }`}
-                        onClick={() => handleTabClick(trend)}
-                    >
-                        {trend}
-                    </button>
-                ))}
-                <button className="tab-link reset-button" onClick={resetFilter}>
-                    Скинути фільтр
-                </button>
-            </div>
-
-            <CustomTable
-                    dataSource={participants}
-                    columns={columns}
-                    rowKey="id"
-                    pagination={{ pageSize: 100 }}
-                    style={{ marginTop: 0 }}
-                />
-            </>
-        )}
+                    <CustomTable
+                        dataSource={participants}
+                        columns={columns}
+                        rowKey="id"
+                        pagination={{ pageSize: 100 }}
+                        style={{ marginTop: 0 }}
+                    />
+                </>
+            )}
         </Layout>
     );
 };

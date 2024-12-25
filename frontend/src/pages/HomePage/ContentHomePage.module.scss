@@ -9,22 +9,21 @@
 }
 
 .container_h1 {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin-top: 35vh;
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 35vh;
+}
 
 .oswald_main_h1 {
-        text-align: center;
-        font-family: 'Oswald', sans-serif;
-        font-size: 85px;
-        font-weight: 500;
-        font-weight: bold;
-        margin-top: -20px;
-    }
-
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 85px;
+    font-weight: 500;
+    font-weight: bold;
+    margin-top: -20px;
+}
 
 /* Для устройств с шириной экрана до 1024px */
 @media (max-width: 1024px) {

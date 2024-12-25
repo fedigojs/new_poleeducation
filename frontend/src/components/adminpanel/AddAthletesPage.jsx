@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Button, Modal, Form, Input, Select, message, Popconfirm, Layout } from 'antd';
+import {
+    Button,
+    Modal,
+    Form,
+    Input,
+    Select,
+    message,
+    Popconfirm,
+    Layout,
+} from 'antd';
 import CustomTable from '../Table/customTable';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/api';
@@ -163,73 +172,81 @@ const AddAthletePage = () => {
     return (
         <div>
             <Layout className="layout">
-            <h1>Управление атлетами</h1>
-            <Button
-                className="global-button"
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={openAddAthleteModal}
-            >
-                Создать атлета
-            </Button>
-            <CustomTable
-                dataSource={sortedAthletes}
-                columns={columns}
-                rowKey="id"
-            />
-            <Modal
-                title={isEditMode ? 'Редактировать атлета' : 'Добавить атлета'}
-                visible={isModalVisible}
-                onCancel={() => setModalVisible(false)}
-                footer={null}
-            >
-                <Form
-                    form={form}
-                    onFinish={isEditMode ? handleEditAthlete : handleAddAthlete}
-                    layout="vertical"
+                <h1>Управление атлетами</h1>
+                <Button
+                    className="global-button"
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={openAddAthleteModal}
                 >
-                    <Form.Item
-                        label="Имя"
-                        name="firstName"
-                        rules={[{ required: true, message: 'Введите имя' }]}
+                    Создать атлета
+                </Button>
+                <CustomTable
+                    dataSource={sortedAthletes}
+                    columns={columns}
+                    rowKey="id"
+                />
+                <Modal
+                    title={
+                        isEditMode ? 'Редактировать атлета' : 'Добавить атлета'
+                    }
+                    visible={isModalVisible}
+                    onCancel={() => setModalVisible(false)}
+                    footer={null}
+                >
+                    <Form
+                        form={form}
+                        onFinish={
+                            isEditMode ? handleEditAthlete : handleAddAthlete
+                        }
+                        layout="vertical"
                     >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Фамилия"
-                        name="lastName"
-                        rules={[{ required: true, message: 'Введите фамилию' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Тренер"
-                        name="coachId"
-                        rules={[
-                            { required: true, message: 'Выберите тренера' },
-                        ]}
-                    >
-                        <Select placeholder="Выберите тренера">
-                            {coaches.map((coach) => (
-                                <Option key={coach.id} value={coach.id}>
-                                    {coach.firstName} {coach.lastName}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            {isEditMode ? 'Сохранить изменения' : 'Добавить'}
-                        </Button>
-                        <Button
-                            style={{ marginLeft: 10 }}
-                            onClick={() => setModalVisible(false)}
+                        <Form.Item
+                            label="Имя"
+                            name="firstName"
+                            rules={[{ required: true, message: 'Введите имя' }]}
                         >
-                            Отмена
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Фамилия"
+                            name="lastName"
+                            rules={[
+                                { required: true, message: 'Введите фамилию' },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Тренер"
+                            name="coachId"
+                            rules={[
+                                { required: true, message: 'Выберите тренера' },
+                            ]}
+                        >
+                            <Select placeholder="Выберите тренера">
+                                {coaches.map((coach) => (
+                                    <Option key={coach.id} value={coach.id}>
+                                        {coach.firstName} {coach.lastName}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                {isEditMode
+                                    ? 'Сохранить изменения'
+                                    : 'Добавить'}
+                            </Button>
+                            <Button
+                                style={{ marginLeft: 10 }}
+                                onClick={() => setModalVisible(false)}
+                            >
+                                Отмена
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
             </Layout>
         </div>
     );

@@ -8,7 +8,7 @@ import {
     EditOutlined,
     DeleteOutlined,
     DollarCircleOutlined,
-    PlusOutlined
+    PlusOutlined,
 } from '@ant-design/icons';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
