@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
 
 const uploadFilesMw = multer({
 	storage,
-	limits: { fileSize: 15 * 1024 * 1024 }, // 15 MB
+	limits: { fileSize: 50 * 1024 * 1024 }, // 15 MB
 }).fields([{ name: 'files', maxCount: 5 }]);
 
 module.exports = uploadFilesMw;
