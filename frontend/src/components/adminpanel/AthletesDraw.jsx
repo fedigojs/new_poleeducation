@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
 import './AthletesDraw.css';
 import { Layout } from 'antd';
+import Spinner  from '../Spinner/Spinner';
 import CustomTable from '../Table/customTable';
 import '../../styles/global.scss';
 
@@ -19,6 +20,7 @@ const AthletesDraw = () => {
     const [lunchBreakStart, setLunchBreakStart] = useState('12:00');
     const [lunchBreakEnd, setLunchBreakEnd] = useState('13:00');
     const [endTime, setEndTime] = useState('19:00');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -72,6 +74,7 @@ const AthletesDraw = () => {
     };
 
     const fetchData = async () => {
+        setLoading(true);
         try {
             const responseDraw = await api.get('/api/draw-result');
             const sortedData = responseDraw.data.sort(
@@ -120,6 +123,8 @@ const AthletesDraw = () => {
             setTabTrends(Array.from(uniqueTrends)); // Преобразуем Set в массив и сохраняем в состояние
         } catch (error) {
             console.error('Ошибка при получении данных:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -440,6 +445,11 @@ const AthletesDraw = () => {
 
     return (
         <Layout className="layout">
+            {loading ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                    <Spinner />
+                </div>
+            ) : (<>
             <div className="container">
                 <h1>Жеребкування спортсменів</h1>
                 <div className="form-group">
@@ -622,7 +632,8 @@ const AthletesDraw = () => {
                     pagination={{ pageSize: 100 }}
                     style={{ marginTop: 0 }}
                 />
-
+            </>
+        )}
         </Layout>
     );
 };
