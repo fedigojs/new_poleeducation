@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
 import './AthletesDraw.css';
-import { Container } from 'react-bootstrap';
+import { Layout } from 'antd';
+import '../../styles/global.scss';
 
 const AthletesDraw = () => {
     const [participants, setParticipants] = useState([]);
@@ -402,7 +403,7 @@ const AthletesDraw = () => {
     ];
 
     return (
-        <Container>
+        <Layout className="layout">
             <div className="container">
                 <h1>Жеребкування спортсменів</h1>
                 <div className="form-group">
@@ -623,7 +624,7 @@ const AthletesDraw = () => {
                     </table>
                 </div>
             </div>
-        </Container>
+        </Layout>
     );
 };
 

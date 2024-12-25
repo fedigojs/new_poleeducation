@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, Input, Select, message, Popconfirm } from 'antd';
+import { Button, Modal, Form, Input, Select, message, Popconfirm, Layout } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import CustomTable from '../Table/customTable';
 import api from '../../api/api';
-import './AddUserPage.css';
+import '../../styles/global.scss';
 
 const { Option } = Select;
 
@@ -147,8 +147,10 @@ const AddUserPage = () => {
 
     return (
         <div>
+            <Layout className="layout">
             <h1>Управление пользователями</h1>
             <Button
+                className="global-button"
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={openAddUserModal}
@@ -253,6 +255,7 @@ const AddUserPage = () => {
                     </Form.Item>
                 </Form>
             </Modal>
+            </Layout>
         </div>
     );
 };

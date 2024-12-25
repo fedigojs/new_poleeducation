@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Button, Modal, Form, Input, Select, message, Popconfirm } from 'antd';
+import { Button, Modal, Form, Input, Select, message, Popconfirm, Layout } from 'antd';
 import CustomTable from '../Table/customTable';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/api';
 import { useTranslation } from 'react-i18next';
+import '../../styles/global.scss';
 
 const { Option } = Select;
 
@@ -161,12 +162,13 @@ const AddAthletePage = () => {
 
     return (
         <div>
+            <Layout className="layout">
             <h1>Управление атлетами</h1>
             <Button
+                className="global-button"
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={openAddAthleteModal}
-                style={{ marginBottom: 20 }}
             >
                 Создать атлета
             </Button>
@@ -228,6 +230,7 @@ const AddAthletePage = () => {
                     </Form.Item>
                 </Form>
             </Modal>
+            </Layout>
         </div>
     );
 };

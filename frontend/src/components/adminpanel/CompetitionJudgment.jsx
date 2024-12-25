@@ -6,7 +6,7 @@ import api from '../../api/api';
 import CustomTable from '../Table/customTable';
 import ModalJudgementDetails from '../modal/judgement/ModalJudgementDetails';
 import ModalJudgement from '../modal/judgement/ModalJudgement';
-import { Button, Space } from 'antd';
+import { Button, Space, Layout } from 'antd';
 import {
     SolutionOutlined,
     LikeOutlined,
@@ -187,7 +187,7 @@ const CompetitionJudgment = () => {
     ];
 
     return (
-        <>
+        <Layout className="layout">
             <h1>Competition Judgment</h1>
             <CustomTable
                 dataSource={dataTable}
@@ -219,7 +219,7 @@ const CompetitionJudgment = () => {
                     judgeId={user.userId}
                 />
             )}
-        </>
+        </Layout>
     );
 };
 

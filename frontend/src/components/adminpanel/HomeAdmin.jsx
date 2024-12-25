@@ -1,12 +1,15 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
+import {Layout} from 'antd';
+import '../../styles/global.scss';
 
 const HomeAdmin = () => {
     const { user, error } = useContext(AuthContext);
 
     return (
+
+        <Layout className="layout">
         <div className="home-admin">
-            \
             {user ? (
                 <div>
                     <h1>
@@ -20,6 +23,7 @@ const HomeAdmin = () => {
             )}
             {error && <p className="error-message">{error}</p>}
         </div>
+        </Layout>
     );
 };
 

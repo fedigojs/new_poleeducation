@@ -1,6 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Oswald:wght@200..700&display=swap');
 
+@import 'antd/dist/reset.css';
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+html,
+body {
+	font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+	height: 100%;
+	overflow: auto;
+
+    .layout {
+        padding:30px;
+        height: 100%;
+
+        .global-button {
+            max-width: 300px;
+            margin: 0 0 25px 0;
+        }
+    }
+}
+
+
 .font_montserrat_menu {
     font-family: 'Montserrat';
     font-size: 16px;

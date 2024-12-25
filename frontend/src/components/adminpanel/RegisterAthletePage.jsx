@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
-import { Button, Space, Spin, Popconfirm } from 'antd';
+import { Button, Space, Spin, Popconfirm, Layout } from 'antd';
 import CustomTable from '../Table/customTable';
 import {
     FileTextOutlined,
@@ -8,6 +8,7 @@ import {
     EditOutlined,
     DeleteOutlined,
     DollarCircleOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
@@ -382,7 +383,7 @@ const RegisterAthletePage = () => {
     ];
 
     return (
-        <div style={{ padding: '16px' }}>
+        <Layout className="layout">
             <h1>{t('h1.athleteRegistration')}</h1>
             {isLoading ? (
                 <div className="spinner-container">
@@ -391,8 +392,9 @@ const RegisterAthletePage = () => {
             ) : (
                 <>
                     <Button
+                        className="global-button"
                         type="primary"
-                        className="m-4"
+                        icon={<PlusOutlined />}
                         onClick={() => openModal(null)}
                     >
                         {t('button.registrationNoun')}
@@ -452,7 +454,7 @@ const RegisterAthletePage = () => {
                 editingParticipation={editingParticipation}
                 t={t}
             />
-        </div>
+        </Layout>
     );
 };
 
