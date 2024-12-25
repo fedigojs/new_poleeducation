@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
 import './AthletesDraw.css';
 import { Layout } from 'antd';
+import CustomTable from '../Table/customTable';
 import '../../styles/global.scss';
 
 const AthletesDraw = () => {
@@ -402,6 +403,41 @@ const AthletesDraw = () => {
         '#F5F5F5', // White Smoke
     ];
 
+    const columns = [
+        {
+            title: '№',
+            dataIndex: 'performanceOrder',
+            key: 'performanceOrder',
+        },
+        {
+            title: 'День',
+            dataIndex: 'competitionDay',
+            key: 'competitionDay',
+            render: (day) => `${day} день`,
+        },
+        {
+            title: 'Тайминг',
+            dataIndex: 'timing',
+            key: 'timing',
+        },
+        {
+            title: 'Имя',
+            dataIndex: ['participation', 'Athlete'],
+            key: 'athleteName',
+            render: (athlete) => `${athlete?.firstName || ''} ${athlete?.lastName || ''}`,
+        },
+        {
+            title: 'Разряд',
+            dataIndex: ['participation', 'Level', 'name'],
+            key: 'level',
+        },
+        {
+            title: 'Возрастная категория',
+            dataIndex: ['participation', 'AthleteAge', 'age'],
+            key: 'ageCategory',
+        },
+    ];
+
     return (
         <Layout className="layout">
             <div className="container">
@@ -440,7 +476,7 @@ const AthletesDraw = () => {
                 </div>
                 <div className="trend-container">
                     {tabTrends
-                        .sort((a, b) => a.localeCompare(b)) // Сортировка строк в алфавитном порядке
+                        .sort((a, b) => a.localeCompare(b))
                         .map((trend, index) => {
                             const trendName = trend.split('(')[0].trim();
                             return (
@@ -579,51 +615,14 @@ const AthletesDraw = () => {
                 </button>
             </div>
 
-            <div className="tab-content-container">
-                <div className="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>№</th>
-                                <th>День</th>
-                                <th>Таймінг</th>
-                                <th>Ім`я</th>
-                                <th>Розряд</th>
-                                <th>Вікова категорія</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {participants.map((participant, index) => (
-                                <tr
-                                    key={participant.id}
-                                    style={{
-                                        backgroundColor:
-                                            dayColors[
-                                                (participant.competitionDay -
-                                                    1) %
-                                                    dayColors.length
-                                            ],
-                                    }}
-                                >
-                                    <td>{participant.performanceOrder}</td>
-                                    <td>{participant.competitionDay} день</td>
-                                    <td>{participant.timing}</td>
-                                    <td>{`${participant.participation.Athlete?.firstName} ${participant.participation.Athlete?.lastName}`}</td>
-                                    <td>
-                                        {participant.participation.Level?.name}
-                                    </td>
-                                    <td>
-                                        {
-                                            participant.participation.AthleteAge
-                                                .age
-                                        }
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <CustomTable
+                    dataSource={participants}
+                    columns={columns}
+                    rowKey="id"
+                    pagination={{ pageSize: 100 }}
+                    style={{ marginTop: 0 }}
+                />
+
         </Layout>
     );
 };
