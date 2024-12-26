@@ -18,6 +18,7 @@ const CustomTable = ({
                 className={styles.table}
                 dataSource={dataSource}
                 columns={columns}
+                scroll={{ x: 600 }}
                 pagination={{
                     pageSize: minRows,
                 }}
