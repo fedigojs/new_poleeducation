@@ -12,6 +12,7 @@
         "axios": "^1.6.8",
         "bootstrap": "^5.3.3",
         "dotenv": "^16.4.5",
+        "firebase": "^11.1.0",
         "html2pdf.js": "^0.10.2",
         "i18next": "^23.14.0",
         "jwt-decode": "^4.0.0",
@@ -57,6 +58,7 @@
     "devDependencies": {
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@eslint/js": "^9.13.0",
+        "@iconify/react": "^5.1.0",
         "autoprefixer": "^10.4.20",
         "css-loader": "^7.1.2",
         "eslint-config-prettier": "^9.1.0",

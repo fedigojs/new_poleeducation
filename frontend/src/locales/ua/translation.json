@@ -14,6 +14,7 @@
     "button.delete": "Видалити",
     "button.add": "Додати",
     "button.addParticipant": "Додати спортсмена",
+    "button.loginWithGoogle": "Увійти через Google",
     "option.selectParticipant": "Виберіть учасника",
     "option.selectCompetition": "Виберіть змагання",
     "option.selectDirection": "Виберіть напрям",

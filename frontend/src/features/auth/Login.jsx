@@ -5,6 +5,9 @@ import api from '../../api/api';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import RegisterModal from './RegisterModal';
+import { auth, provider } from "../../firebase-config";
+import { signInWithPopup } from "firebase/auth";
+import { Icon } from "@iconify/react";
 
 const Login = () => {
     const { t } = useTranslation();
@@ -36,6 +39,32 @@ const Login = () => {
         } catch (err) {
             setError(err.response?.data.message || 'An error has occurred');
             console.error('Login error:', err);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const { email } = result.user;
+            // Отправляем данные на сервер для проверки пользователя
+            const response = await api.post('/api/auth/google-login', { email });
+            if (response.data.token) {
+                login(response.data.token);
+                localStorage.setItem('role', response.data.roleName);
+                const role = response.data.roleName;
+                if (role === 'Admin') {
+                    navigate('/admin');
+                } else if (role === 'Judge') {
+                    navigate('/judge');
+                } else if (role === 'Coach') {
+                    navigate('/coach');
+                }
+            } else {
+                setError('User not found or not authorized');
+            }
+        } catch (err) {
+            setError(err.response?.data.message || 'An error has occurred');
+            console.error('Google login error:', err);
         }
     };
 
@@ -86,6 +115,15 @@ const Login = () => {
                             {t('button.login')}
                         </Button>
                     </Form>
+
+                    <Button
+                        variant="outline-primary"
+                        onClick={handleGoogleLogin}
+                        className="w-100 mt-3"
+                    >
+                        <Icon icon="logos:google-icon" width="15" height="15" />
+                        {' '}{t('button.loginWithGoogle')}
+                    </Button>
 
                     {error && (
                         <Alert variant="danger" className="mt-3">

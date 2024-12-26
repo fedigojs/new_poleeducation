@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
     Layout,
-    Table,
     Button,
     Modal,
     Form,
@@ -10,6 +9,7 @@ import {
     Select,
     message,
 } from 'antd';
+import CustomTable from '../Table/customTable';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import api from '../../api/api';
@@ -164,7 +164,7 @@ const AddCompetitionPage = () => {
             >
                 Создать соревнование
             </Button>
-            <Table dataSource={competitions} columns={columns} rowKey="id" />
+            <CustomTable dataSource={competitions} columns={columns} rowKey="id" />
 
             <Modal
                 title={
