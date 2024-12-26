@@ -5,9 +5,9 @@ import api from '../../api/api';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import RegisterModal from './RegisterModal';
-import { auth, provider } from "../../firebase-config";
-import { signInWithPopup } from "firebase/auth";
-import { Icon } from "@iconify/react";
+import { auth, provider } from '../../firebase-config';
+import { signInWithPopup } from 'firebase/auth';
+import { Icon } from '@iconify/react';
 
 const Login = () => {
     const { t } = useTranslation();
@@ -47,7 +47,9 @@ const Login = () => {
             const result = await signInWithPopup(auth, provider);
             const { email } = result.user;
             // Отправляем данные на сервер для проверки пользователя
-            const response = await api.post('/api/auth/google-login', { email });
+            const response = await api.post('/api/auth/google-login', {
+                email,
+            });
             if (response.data.token) {
                 login(response.data.token);
                 localStorage.setItem('role', response.data.roleName);
@@ -121,8 +123,8 @@ const Login = () => {
                         onClick={handleGoogleLogin}
                         className="w-100 mt-3"
                     >
-                        <Icon icon="logos:google-icon" width="15" height="15" />
-                        {' '}{t('button.loginWithGoogle')}
+                        <Icon icon="logos:google-icon" width="15" height="15" />{' '}
+                        {t('button.loginWithGoogle')}
                     </Button>
 
                     {error && (

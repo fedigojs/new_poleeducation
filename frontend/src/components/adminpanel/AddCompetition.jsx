@@ -164,7 +164,11 @@ const AddCompetitionPage = () => {
             >
                 Создать соревнование
             </Button>
-            <CustomTable dataSource={competitions} columns={columns} rowKey="id" />
+            <CustomTable
+                dataSource={competitions}
+                columns={columns}
+                rowKey="id"
+            />
 
             <Modal
                 title={
