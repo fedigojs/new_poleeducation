@@ -245,222 +245,232 @@ const AthleteRegistrationModal = ({
         <Modal onClose={onClose} isVisible={isVisible} className="narrow-modal">
             {isUploading ? (
                 <>
-                <Spinner />
+                    <Spinner />
                 </>
             ) : (
-            <Form onSubmit={handleRegisterSubmit}>
-                <Button
-                    variant="secondary"
-                    className="modal-close-button"
-                    onClick={onClose}
-                >
-                    &times;
-                </Button>
-                <h3 className="text-center mb-4">
-                    {editingParticipation
-                        ? t('h3.editParticipant')
-                        : t('h3.registrationParticipant')}
-                </h3>
-
-                <Form.Group as={Col} controlId="athlete">
-                    <Form.Label>{t('label.addParticipant')}</Form.Label>
-                    <Form.Control
-                        as="select"
-                        value={athleteId}
-                        onChange={(e) => setAthleteId(e.target.value)}
-                        required
-                    >
-                        <option value="">
-                            {t('option.selectParticipant')}
-                        </option>
-                        {athletes
-                            .sort((a, b) =>
-                                a.lastName.localeCompare(b.lastName)
-                            )
-                            .map((athlete) => (
-                                <option key={athlete.id} value={athlete.id}>
-                                    {athlete.lastName} {athlete.firstName}
-                                </option>
-                            ))}
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group as={Col} controlId="competition">
-                    <Form.Label>{t('label.competition')}</Form.Label>
-                    <Form.Control
-                        as="select"
-                        value={competitionId}
-                        onChange={(e) => setCompetitionId(e.target.value)}
-                        required
-                    >
-                        <option value="">
-                            {t('option.selectCompetition')}
-                        </option>
-                        {competitions
-                            .filter(
-                                (competition) =>
-                                    editingParticipation ||
-                                    competition.display !== false
-                            )
-                            .map((competition) => (
-                                <option
-                                    key={competition.id}
-                                    value={competition.id}
-                                >
-                                    {competition.title}
-                                </option>
-                            ))}
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group as={Col} controlId="trends">
-                    <Form.Label>{t('label.direction')}</Form.Label>
-                    <Form.Control
-                        as="select"
-                        value={athleteTrendId}
-                        onChange={(e) => setAthleteTrendId(e.target.value)}
-                        required
-                    >
-                        <option value="">{t('option.selectDirection')}</option>
-                        {athleteTrend.map((trend) => (
-                            <option key={trend.id} value={trend.id}>
-                                {trend.trends}
-                            </option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group as={Col} controlId="ages">
-                    <Form.Label>{t('label.age')}</Form.Label>
-                    <Form.Control
-                        as="select"
-                        value={athleteAgeId}
-                        onChange={(e) => setAthleteAgeId(e.target.value)}
-                        required
-                    >
-                        <option value="">{t('option.selectAge')}</option>
-                        {athleteAge.map((age) => (
-                            <option key={age.id} value={age.id}>
-                                {age.age}
-                            </option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group as={Col} controlId="level">
-                    <Form.Label>{t('label.mastery')}</Form.Label>
-                    <Form.Control
-                        as="select"
-                        value={levelId}
-                        onChange={(e) => setLevelId(e.target.value)}
-                        required
-                    >
-                        <option value="">{t('option.selectMastery')}</option>
-                        {levels.map((level) => (
-                            <option key={level.id} value={level.id}>
-                                {level.name}
-                            </option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group as={Col} controlId="discipline">
-                    <Form.Label>{t('label.discipline')}</Form.Label>
-                    <Form.Control
-                        as="select"
-                        value={disciplineId}
-                        onChange={(e) => setDisciplineId(e.target.value)}
-                        required
-                    >
-                        <option value="">{t('option.selectDiscipline')}</option>
-                        {disciplines.map((discipline) => (
-                            <option key={discipline.id} value={discipline.id}>
-                                {discipline.name}
-                            </option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group as={Col} controlId="exercise">
-                    <Form.Label>{t('label.exercise')}</Form.Label>
-                    <Select
-                        id="exercise"
-                        isMulti
-                        options={filteredExercises}
-                        value={selectedExercises}
-                        onChange={handleExerciseChange}
-                        className="basic-multi-select"
-                        classNamePrefix="select"
-                    />
-                </Form.Group>
-
-                {/* Отображение текущих файлов */}
-                {editingParticipation && currentFiles.length > 0 && (
-                    <div>
-                        <h5>{t('label.currentFiles')}</h5>
-                        <ul className="file-list">
-                            {currentFiles.map((file, index) => (
-                                <li
-                                    key={file.id || file.filePath || index}
-                                    className="file-list-item"
-                                >
-                                    <a
-                                        href={file.filePath}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="file-link"
-                                    >
-                                        {file.fileName ||
-                                            t('label.unknownFile')}
-                                    </a>
-                                    <Button
-                                        variant="danger"
-                                        onClick={() =>
-                                            confirmFileRemove(file.id)
-                                        }
-                                        className="remove-file-button"
-                                    >
-                                        <i className="bi bi-trash"></i>
-                                    </Button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-
-                {/* Загрузка новых файлов */}
-                <Form.Group as={Col} controlId="fileUpload">
-                    <Form.Label>{t('label.uploadFiles')}</Form.Label>
-                    <Dragger {...props}>
-                        <p className="ant-upload-drag-icon">
-                            <InboxOutlined />
-                        </p>
-                        <p className="ant-upload-text">
-                            {t('label.dragOrClickToUpload')}
-                        </p>
-                        <p className="ant-upload-hint">
-                            {t('label.supportedFormats')}: mp3, mp4, jpg, png
-                        </p>
-                    </Dragger>
-                </Form.Group>
-
-                <div className="form-actions d-flex justify-content-between">
-                    <Button className="m-4" type="submit" variant="primary">
-                        {editingParticipation
-                            ? t('button.edit')
-                            : t('button.registrationVerb')}
-                    </Button>
+                <Form onSubmit={handleRegisterSubmit}>
                     <Button
-                        className="m-4"
                         variant="secondary"
+                        className="modal-close-button"
                         onClick={onClose}
                     >
-                        {t('button.cancel')}
+                        &times;
                     </Button>
-                </div>
+                    <h3 className="text-center mb-4">
+                        {editingParticipation
+                            ? t('h3.editParticipant')
+                            : t('h3.registrationParticipant')}
+                    </h3>
 
-                {error && <p className="text-danger mt-2">{error}</p>}
-            </Form>
+                    <Form.Group as={Col} controlId="athlete">
+                        <Form.Label>{t('label.addParticipant')}</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={athleteId}
+                            onChange={(e) => setAthleteId(e.target.value)}
+                            required
+                        >
+                            <option value="">
+                                {t('option.selectParticipant')}
+                            </option>
+                            {athletes
+                                .sort((a, b) =>
+                                    a.lastName.localeCompare(b.lastName)
+                                )
+                                .map((athlete) => (
+                                    <option key={athlete.id} value={athlete.id}>
+                                        {athlete.lastName} {athlete.firstName}
+                                    </option>
+                                ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="competition">
+                        <Form.Label>{t('label.competition')}</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={competitionId}
+                            onChange={(e) => setCompetitionId(e.target.value)}
+                            required
+                        >
+                            <option value="">
+                                {t('option.selectCompetition')}
+                            </option>
+                            {competitions
+                                .filter(
+                                    (competition) =>
+                                        editingParticipation ||
+                                        competition.display !== false
+                                )
+                                .map((competition) => (
+                                    <option
+                                        key={competition.id}
+                                        value={competition.id}
+                                    >
+                                        {competition.title}
+                                    </option>
+                                ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="trends">
+                        <Form.Label>{t('label.direction')}</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={athleteTrendId}
+                            onChange={(e) => setAthleteTrendId(e.target.value)}
+                            required
+                        >
+                            <option value="">
+                                {t('option.selectDirection')}
+                            </option>
+                            {athleteTrend.map((trend) => (
+                                <option key={trend.id} value={trend.id}>
+                                    {trend.trends}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="ages">
+                        <Form.Label>{t('label.age')}</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={athleteAgeId}
+                            onChange={(e) => setAthleteAgeId(e.target.value)}
+                            required
+                        >
+                            <option value="">{t('option.selectAge')}</option>
+                            {athleteAge.map((age) => (
+                                <option key={age.id} value={age.id}>
+                                    {age.age}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="level">
+                        <Form.Label>{t('label.mastery')}</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={levelId}
+                            onChange={(e) => setLevelId(e.target.value)}
+                            required
+                        >
+                            <option value="">
+                                {t('option.selectMastery')}
+                            </option>
+                            {levels.map((level) => (
+                                <option key={level.id} value={level.id}>
+                                    {level.name}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="discipline">
+                        <Form.Label>{t('label.discipline')}</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={disciplineId}
+                            onChange={(e) => setDisciplineId(e.target.value)}
+                            required
+                        >
+                            <option value="">
+                                {t('option.selectDiscipline')}
+                            </option>
+                            {disciplines.map((discipline) => (
+                                <option
+                                    key={discipline.id}
+                                    value={discipline.id}
+                                >
+                                    {discipline.name}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group as={Col} controlId="exercise">
+                        <Form.Label>{t('label.exercise')}</Form.Label>
+                        <Select
+                            id="exercise"
+                            isMulti
+                            options={filteredExercises}
+                            value={selectedExercises}
+                            onChange={handleExerciseChange}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                        />
+                    </Form.Group>
+
+                    {/* Отображение текущих файлов */}
+                    {editingParticipation && currentFiles.length > 0 && (
+                        <div>
+                            <h5>{t('label.currentFiles')}</h5>
+                            <ul className="file-list">
+                                {currentFiles.map((file, index) => (
+                                    <li
+                                        key={file.id || file.filePath || index}
+                                        className="file-list-item"
+                                    >
+                                        <a
+                                            href={file.filePath}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="file-link"
+                                        >
+                                            {file.fileName ||
+                                                t('label.unknownFile')}
+                                        </a>
+                                        <Button
+                                            variant="danger"
+                                            onClick={() =>
+                                                confirmFileRemove(file.id)
+                                            }
+                                            className="remove-file-button"
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </Button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* Загрузка новых файлов */}
+                    <Form.Group as={Col} controlId="fileUpload">
+                        <Form.Label>{t('label.uploadFiles')}</Form.Label>
+                        <Dragger {...props}>
+                            <p className="ant-upload-drag-icon">
+                                <InboxOutlined />
+                            </p>
+                            <p className="ant-upload-text">
+                                {t('label.dragOrClickToUpload')}
+                            </p>
+                            <p className="ant-upload-hint">
+                                {t('label.supportedFormats')}: mp3, mp4, jpg,
+                                png
+                            </p>
+                        </Dragger>
+                    </Form.Group>
+
+                    <div className="form-actions d-flex justify-content-between">
+                        <Button className="m-4" type="submit" variant="primary">
+                            {editingParticipation
+                                ? t('button.edit')
+                                : t('button.registrationVerb')}
+                        </Button>
+                        <Button
+                            className="m-4"
+                            variant="secondary"
+                            onClick={onClose}
+                        >
+                            {t('button.cancel')}
+                        </Button>
+                    </div>
+
+                    {error && <p className="text-danger mt-2">{error}</p>}
+                </Form>
             )}
         </Modal>
     );
