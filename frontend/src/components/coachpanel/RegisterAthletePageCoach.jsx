@@ -7,11 +7,17 @@ import { useTranslation } from 'react-i18next';
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
 import UploadedFilesModal from '../modal/UploadedFilesModal';
-import "../../styles/global.scss";
+import '../../styles/global.scss';
 
 // Ant Design импорты
 import { Table, Button, Row, Col, Typography, Grid, Layout } from 'antd';
-import { FileTextOutlined, FileFilled, EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+    FileTextOutlined,
+    FileFilled,
+    EditOutlined,
+    DeleteOutlined,
+    PlusOutlined,
+} from '@ant-design/icons';
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
@@ -30,9 +36,11 @@ const RegisterAthletePageCoach = () => {
     const [error, setError] = useState('');
     const [allExercises, setAllExercises] = useState([]);
     const [detailExercises, setDetailExercises] = useState([]);
-    const [selectedParticipationDetails, setSelectedParticipationDetails] = useState(null);
+    const [selectedParticipationDetails, setSelectedParticipationDetails] =
+        useState(null);
 
-    const [isRegistrationModalVisible, setIsRegistrationModalVisible] = useState(false);
+    const [isRegistrationModalVisible, setIsRegistrationModalVisible] =
+        useState(false);
     const [isFilesModalVisible, setIsFilesModalVisible] = useState(false);
     const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
 
@@ -122,7 +130,11 @@ const RegisterAthletePageCoach = () => {
                     formData
                 );
                 setParticipations((prev) =>
-                    prev.map((item) => (item.id === editingParticipation.id ? response.data : item))
+                    prev.map((item) =>
+                        item.id === editingParticipation.id
+                            ? response.data
+                            : item
+                    )
                 );
             } else {
                 await api.post('/api/comp-part', formData);
@@ -133,14 +145,17 @@ const RegisterAthletePageCoach = () => {
             window.location.reload();
         } catch (err) {
             setError(
-                err.response?.data.message || 'An error occurred during registration'
+                err.response?.data.message ||
+                    'An error occurred during registration'
             );
         }
     };
 
     const loadParticipations = async () => {
         try {
-            const response = await api.get(`/api/comp-part/by-coach/${user.userId}`);
+            const response = await api.get(
+                `/api/comp-part/by-coach/${user.userId}`
+            );
             const initialPayStatus = response.data.reduce((acc, part) => {
                 acc[part.id] = part.isPaid;
                 return acc;
@@ -159,9 +174,13 @@ const RegisterAthletePageCoach = () => {
                 await api.delete(`/api/comp-part/${participationId}`);
                 loadParticipations();
             } catch (error) {
-                console.error('Error when deleting competition participation', error);
+                console.error(
+                    'Error when deleting competition participation',
+                    error
+                );
                 setError(
-                    error.response?.data.message || 'An error occurred during deletion'
+                    error.response?.data.message ||
+                        'An error occurred during deletion'
                 );
             }
         }
@@ -181,7 +200,8 @@ const RegisterAthletePageCoach = () => {
     const handleDetailsClick = (participationId) => {
         setDetailExercises((currentDetails) => {
             const details = currentDetails.filter(
-                (detail) => detail.competitionParticipationId === participationId
+                (detail) =>
+                    detail.competitionParticipationId === participationId
             );
             setSelectedParticipationDetails(details);
             setIsDetailsModalVisible(true);
@@ -197,10 +217,11 @@ const RegisterAthletePageCoach = () => {
             athleteAgeId: participation.athleteAgeId || '',
             athleteTrendId: participation.athleteTrendId || '',
             levelId: participation.levelId || '',
-            selectedExercises: participation.exercises?.map((ex) => ({
-                value: ex.id,
-                label: ex.name,
-            })) || [],
+            selectedExercises:
+                participation.exercises?.map((ex) => ({
+                    value: ex.id,
+                    label: ex.name,
+                })) || [],
             disciplineId: participation.disciplineId || '',
             uploadedFiles: participation.uploadedFiles || [],
         });
@@ -280,43 +301,49 @@ const RegisterAthletePageCoach = () => {
             key: 'actions',
             width: screens.xs ? 180 : 220,
             render: (text, participation) => {
-              // Проверяем, есть ли у спортсмена файлы
-              const hasFiles = participation.uploadedFiles?.length > 0;
+                // Проверяем, есть ли у спортсмена файлы
+                const hasFiles = participation.uploadedFiles?.length > 0;
 
-              return (
-                <>
-                  <Button
-                    type="default"
-                    icon={<FileTextOutlined />}
-                    style={{ marginRight: 5, marginBottom: 5 }}
-                    onClick={() => handleDetailsClick(participation.id)}
-                  />
-                  <Button
-                    // Меняем цвет кнопки в зависимости от наличия файлов
-                    type={hasFiles ? 'primary' : 'default'}
-                    icon={<FileFilled />}
-                    style={{ marginRight: 5, marginBottom: 5 }}
-                    onClick={() =>
-                      handleShowFiles(participation.uploadedFiles, participation)
-                    }
-                  />
-                  <Button
-                    type="default"
-                    icon={<EditOutlined />}
-                    style={{ marginRight: 5, marginBottom: 5 }}
-                    onClick={() => openEditModal(participation)}
-                  />
-                  <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    style={{ marginBottom: 5 }}
-                    onClick={() => handleDeleteAthleteRegistration(participation.id)}
-                  />
-                </>
-              );
+                return (
+                    <>
+                        <Button
+                            type="default"
+                            icon={<FileTextOutlined />}
+                            style={{ marginRight: 5, marginBottom: 5 }}
+                            onClick={() => handleDetailsClick(participation.id)}
+                        />
+                        <Button
+                            // Меняем цвет кнопки в зависимости от наличия файлов
+                            type={hasFiles ? 'primary' : 'default'}
+                            icon={<FileFilled />}
+                            style={{ marginRight: 5, marginBottom: 5 }}
+                            onClick={() =>
+                                handleShowFiles(
+                                    participation.uploadedFiles,
+                                    participation
+                                )
+                            }
+                        />
+                        <Button
+                            type="default"
+                            icon={<EditOutlined />}
+                            style={{ marginRight: 5, marginBottom: 5 }}
+                            onClick={() => openEditModal(participation)}
+                        />
+                        <Button
+                            danger
+                            icon={<DeleteOutlined />}
+                            style={{ marginBottom: 5 }}
+                            onClick={() =>
+                                handleDeleteAthleteRegistration(
+                                    participation.id
+                                )
+                            }
+                        />
+                    </>
+                );
             },
-          },
-
+        },
     ];
 
     return (

@@ -4,7 +4,6 @@ import ModalVotingDetails from '../ModalVotingDetails';
 import ModalVoting from '../ModalVoting';
 import { AuthContext } from '../../context/AuthContext';
 
-
 const AthletesInCompetitionCoach = () => {
     const [participants, setParticipants] = useState([]);
     const [tabTrends, setTabTrends] = useState([]);

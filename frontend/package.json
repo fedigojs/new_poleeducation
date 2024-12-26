@@ -34,8 +34,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "eslint 'src/**/*.{js,jsx}'",
-        "format": "prettier --write 'src/**/*.{js,jsx,json,css,scss,md}'",
-        "prettier": "prettier --write ."
+        "format": "prettier --write 'src/**/*.{js,jsx,json,css,scss,md}'"
     },
     "eslintConfig": {
         "extends": [
