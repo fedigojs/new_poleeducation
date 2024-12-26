@@ -19,14 +19,14 @@ build-and-deploy:
 	sudo systemctl reload nginx || { echo "Failed to reload Nginx after deployment"; exit 1; }
 	@echo "Деплой завершён."
 
-# Бэкап базы данных
+# Бэкап базы данных с добавлением даты и времени в имя файла
 backup-db:
 	@echo "Создание бэкапа базы данных..."
 	docker run --rm \
 	  -v $(VOLUME_NAME):/data \
 	  -v $(BACKUP_DIR):/backup \
-	  busybox tar czf /backup/poleeducation_db_backup.tar.gz -C /data . || { echo "Failed to create database backup"; exit 1; }
-	@echo "Бэкап базы данных создан в $(BACKUP_DIR)/poleeducation_db_backup.tar.gz"
+	  busybox sh -c "tar czf /backup/poleeducation_db_backup_\`date +%Y-%m-%d_%H-%M-%S\`.tar.gz -C /data ." || { echo "Failed to create database backup"; exit 1; }
+	@echo "Бэкап базы данных создан в $(BACKUP_DIR)/poleeducation_db_backup_`date +%Y-%m-%d_%H-%M-%S`.tar.gz"
 
 # Восстановление базы данных из бэкапа
 restore-db:
