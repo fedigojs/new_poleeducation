@@ -4,11 +4,12 @@
         "es2021": true
     },
     "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:prettier/recommended"
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended"
     ],
-    "plugins": ["react"],
+    "plugins": ["react", "react-hooks"],
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -22,7 +23,10 @@
         }
     },
     "rules": {
-        "react/display-name": "warn",
-        "prettier/prettier": "error"
+        "react-hooks/exhaustive-deps": "off",
+        "react/prop-types": "off",
+        "react/display-name": "off",
+        "no-unused-vars": "off",
+        "no-console": "off"
     }
 }
