@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 import Modal from '../Modal';
+import Spinner from '../Spinner/Spinner';
 import { Form, Button, Col } from 'react-bootstrap';
 import { Upload, message, Spin } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
@@ -44,6 +45,7 @@ const AthleteRegistrationModal = ({
     const [filteredExercises, setFilteredExercises] = useState([]);
     const [allExercises, setAllExercises] = useState([]);
     const [currentFiles, setCurrentFiles] = useState([]);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         setAthleteId(initialValues.athleteId || '');
@@ -102,6 +104,7 @@ const AthleteRegistrationModal = ({
 
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
+        setIsUploading(true);
 
         const formData = new FormData();
         formData.append('athleteId', athleteId);
@@ -140,6 +143,8 @@ const AthleteRegistrationModal = ({
                 err.response?.data.message ||
                     'There was an error during registration!'
             );
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -238,6 +243,11 @@ const AthleteRegistrationModal = ({
 
     return (
         <Modal onClose={onClose} isVisible={isVisible} className="narrow-modal">
+            {isUploading ? (
+                <>
+                <Spinner />
+                </>
+            ) : (
             <Form onSubmit={handleRegisterSubmit}>
                 <Button
                     variant="secondary"
@@ -451,6 +461,7 @@ const AthleteRegistrationModal = ({
 
                 {error && <p className="text-danger mt-2">{error}</p>}
             </Form>
+            )}
         </Modal>
     );
 };
