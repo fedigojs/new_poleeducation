@@ -6,9 +6,9 @@
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:react-hooks/recommended",
         "plugin:prettier/recommended"
     ],
+    "plugins": ["react"],
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -22,11 +22,7 @@
         }
     },
     "rules": {
-        "prettier/prettier": "error",
-        "no-unused-vars": "off",
-        "no-console": "off",
-        "react/prop-types": "off",
-        "react/react-in-jsx-scope": "off",
-        "no-debugger": "warn"
+        "react/display-name": "warn",
+        "prettier/prettier": "error"
     }
 }
