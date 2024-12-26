@@ -12,12 +12,22 @@ body {
 
     .layout {
         padding: 30px;
-        height: 100%;
+        min-height: 88vh;
 
         .global-button {
             max-width: 300px;
             margin: 0 0 25px 0;
         }
+
+
+        @media (max-width: 768px) {
+            padding: 15px;
+          }
+
+
+          @media (max-width: 576px) {
+            padding: 10px;
+          }
     }
 }
 

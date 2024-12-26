@@ -3,7 +3,7 @@ import api from '../../api/api';
 import ModalVotingDetails from '../ModalVotingDetails';
 import ModalVoting from '../ModalVoting';
 import { AuthContext } from '../../context/AuthContext';
-import '../adminpanel/AthletesDraw.css';
+
 
 const AthletesInCompetitionCoach = () => {
     const [participants, setParticipants] = useState([]);

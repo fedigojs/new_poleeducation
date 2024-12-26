@@ -2,14 +2,24 @@ import React, { useState, useEffect, useContext } from 'react';
 import api from '../../api/api';
 import { AuthContext } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+
+// Предполагается, что внутри этих модалок вы тоже замените react-bootstrap на Ant Design
 import AthleteRegistrationModal from '../modal/AthleteRegistrationModal';
 import ExerciseDetailsModal from '../modal/ExerciseDetailsModal';
 import UploadedFilesModal from '../modal/UploadedFilesModal';
-import { Button, Col, Container } from 'react-bootstrap';
-import './RegisterAthletePageCoach.css';
+import "../../styles/global.scss";
+
+// Ant Design импорты
+import { Table, Button, Row, Col, Typography, Grid, Layout } from 'antd';
+import { FileTextOutlined, FileFilled, EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+
+const { Title } = Typography;
+const { useBreakpoint } = Grid;
 
 const RegisterAthletePageCoach = () => {
     const { t } = useTranslation();
+    const { user } = useContext(AuthContext);
+
     const [competitions, setCompetitions] = useState([]);
     const [athletes, setAthletes] = useState([]);
     const [athleteAge, setAthleteAge] = useState([]);
@@ -20,15 +30,16 @@ const RegisterAthletePageCoach = () => {
     const [error, setError] = useState('');
     const [allExercises, setAllExercises] = useState([]);
     const [detailExercises, setDetailExercises] = useState([]);
-    const [selectedParticipationDetails, setSelectedParticipationDetails] =
-        useState(null);
-    const [isRegistrationModalVisible, setIsRegistrationModalVisible] =
-        useState(false);
+    const [selectedParticipationDetails, setSelectedParticipationDetails] = useState(null);
+
+    const [isRegistrationModalVisible, setIsRegistrationModalVisible] = useState(false);
     const [isFilesModalVisible, setIsFilesModalVisible] = useState(false);
     const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
+
     const [editingParticipation, setEditingParticipation] = useState(null);
     const [coaches, setCoaches] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
+
     const [initialValues, setInitialValues] = useState({
         athleteId: '',
         competitionId: '',
@@ -42,7 +53,8 @@ const RegisterAthletePageCoach = () => {
 
     const [payCompetitions, setPayCompetitions] = useState({});
 
-    const { user } = useContext(AuthContext);
+    // Для адаптивности antd
+    const screens = useBreakpoint();
 
     useEffect(() => {
         loadInitialData();
@@ -51,6 +63,7 @@ const RegisterAthletePageCoach = () => {
 
     useEffect(() => {
         loadParticipations();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [participations.length]);
 
     const loadInitialData = async () => {
@@ -74,6 +87,7 @@ const RegisterAthletePageCoach = () => {
                 api.get('/api/exercise'),
                 api.get('/api/exercise-details'),
             ]);
+
             setCompetitions(competitionsResponse.data);
             setAthletes(athletesResponse.data);
             setAthleteAge(athleteAgeResponse.data);
@@ -90,6 +104,7 @@ const RegisterAthletePageCoach = () => {
 
     const loadCoaches = async () => {
         try {
+            // В вашем случае один тренер = user
             const oneCoach = [user];
             setCoaches(oneCoach);
         } catch (err) {
@@ -107,42 +122,25 @@ const RegisterAthletePageCoach = () => {
                     formData
                 );
                 setParticipations((prev) =>
-                    prev.map((item) =>
-                        item.id === editingParticipation.id
-                            ? response.data
-                            : item
-                    )
+                    prev.map((item) => (item.id === editingParticipation.id ? response.data : item))
                 );
             } else {
                 await api.post('/api/comp-part', formData);
             }
 
             closeModal();
+            // Обновим страницу или можно заново запросить loadParticipations()
             window.location.reload();
         } catch (err) {
             setError(
-                err.response?.data.message ||
-                    'An error occurred during registration'
+                err.response?.data.message || 'An error occurred during registration'
             );
         }
     };
 
-    const handleShowFiles = (uploadedFiles, participation) => {
-        setSelectedFiles(uploadedFiles);
-        setIsFilesModalVisible(true);
-        setEditingParticipation(participation);
-    };
-
-    const closeFilesModal = () => {
-        setIsFilesModalVisible(false);
-        setSelectedFiles([]);
-    };
-
     const loadParticipations = async () => {
         try {
-            const response = await api.get(
-                `/api/comp-part/by-coach/${user.userId}`
-            );
+            const response = await api.get(`/api/comp-part/by-coach/${user.userId}`);
             const initialPayStatus = response.data.reduce((acc, part) => {
                 acc[part.id] = part.isPaid;
                 return acc;
@@ -161,23 +159,29 @@ const RegisterAthletePageCoach = () => {
                 await api.delete(`/api/comp-part/${participationId}`);
                 loadParticipations();
             } catch (error) {
-                console.error(
-                    'Error when deleting competition participation',
-                    error
-                );
+                console.error('Error when deleting competition participation', error);
                 setError(
-                    error.response?.data.message ||
-                        'An error occurred during deletion'
+                    error.response?.data.message || 'An error occurred during deletion'
                 );
             }
         }
     };
 
+    const handleShowFiles = (uploadedFiles, participation) => {
+        setSelectedFiles(uploadedFiles);
+        setIsFilesModalVisible(true);
+        setEditingParticipation(participation);
+    };
+
+    const closeFilesModal = () => {
+        setIsFilesModalVisible(false);
+        setSelectedFiles([]);
+    };
+
     const handleDetailsClick = (participationId) => {
         setDetailExercises((currentDetails) => {
             const details = currentDetails.filter(
-                (detail) =>
-                    detail.competitionParticipationId === participationId
+                (detail) => detail.competitionParticipationId === participationId
             );
             setSelectedParticipationDetails(details);
             setIsDetailsModalVisible(true);
@@ -187,22 +191,19 @@ const RegisterAthletePageCoach = () => {
 
     const openEditModal = (participation) => {
         setEditingParticipation(participation);
-
         setInitialValues({
             athleteId: participation.athleteId || '',
             competitionId: participation.competitionId || '',
             athleteAgeId: participation.athleteAgeId || '',
             athleteTrendId: participation.athleteTrendId || '',
             levelId: participation.levelId || '',
-            selectedExercises:
-                participation.exercises?.map((ex) => ({
-                    value: ex.id,
-                    label: ex.name,
-                })) || [],
+            selectedExercises: participation.exercises?.map((ex) => ({
+                value: ex.id,
+                label: ex.name,
+            })) || [],
             disciplineId: participation.disciplineId || '',
             uploadedFiles: participation.uploadedFiles || [],
         });
-
         setIsRegistrationModalVisible(true);
     };
 
@@ -220,14 +221,16 @@ const RegisterAthletePageCoach = () => {
             levelId: '',
             selectedExercises: [],
             disciplineId: '',
+            uploadedFiles: [],
         });
         setEditingParticipation(null);
     };
 
-    const sortParticipations = (participations) => {
-        return participations.sort((a, b) => {
-            const lastNameA = a.Athlete?.lastName.toLowerCase() || '';
-            const lastNameB = b.Athlete?.lastName.toLowerCase() || '';
+    // Сортировка регистраций по фамилии
+    const sortParticipations = (participationsData) => {
+        return participationsData.sort((a, b) => {
+            const lastNameA = a.Athlete?.lastName?.toLowerCase() || '';
+            const lastNameB = b.Athlete?.lastName?.toLowerCase() || '';
             if (lastNameA < lastNameB) return -1;
             if (lastNameA > lastNameB) return 1;
             return 0;
@@ -236,20 +239,104 @@ const RegisterAthletePageCoach = () => {
 
     const sortedParticipations = sortParticipations(participations);
 
-    return (
-        <Container>
-            <Col>
-                <h1 className="my-4">{t('h1.athleteRegistration')}</h1>
-            </Col>
-            <Col className="text-center">
-                <Button
-                    variant="success"
-                    onClick={() => setIsRegistrationModalVisible(true)}
-                >
-                    {t('button.registrationNoun')}
-                </Button>
-            </Col>
+    // Определяем колонки для антовской таблицы
+    const columns = [
+        {
+            title: '№',
+            key: 'index',
+            render: (text, record, index) => index + 1,
+            width: 60,
+            // responsive: ["xs","sm","md","lg"] — можно добавить,
+            // но по умолчанию колонка отображается на всех размерах
+        },
+        {
+            title: t('table.athlete'),
+            dataIndex: ['Athlete', 'lastName'],
+            key: 'athlete',
+            render: (lastName, record) => (
+                <>
+                    {record.Athlete?.lastName} {record.Athlete?.firstName}
+                </>
+            ),
+        },
+        {
+            title: t('table.competition'),
+            dataIndex: ['Competition', 'title'],
+            key: 'competition',
+        },
+        {
+            title: t('table.direction'),
+            dataIndex: ['AthleteTrend', 'trends'],
+            key: 'trend',
+        },
+        {
+            title: t('table.age'),
+            dataIndex: ['AthleteAge', 'age'],
+            key: 'age',
+            width: 100,
+        },
+        {
+            title: t('table.actions'),
+            key: 'actions',
+            width: screens.xs ? 180 : 220,
+            render: (text, participation) => {
+              // Проверяем, есть ли у спортсмена файлы
+              const hasFiles = participation.uploadedFiles?.length > 0;
 
+              return (
+                <>
+                  <Button
+                    type="default"
+                    icon={<FileTextOutlined />}
+                    style={{ marginRight: 5, marginBottom: 5 }}
+                    onClick={() => handleDetailsClick(participation.id)}
+                  />
+                  <Button
+                    // Меняем цвет кнопки в зависимости от наличия файлов
+                    type={hasFiles ? 'primary' : 'default'}
+                    icon={<FileFilled />}
+                    style={{ marginRight: 5, marginBottom: 5 }}
+                    onClick={() =>
+                      handleShowFiles(participation.uploadedFiles, participation)
+                    }
+                  />
+                  <Button
+                    type="default"
+                    icon={<EditOutlined />}
+                    style={{ marginRight: 5, marginBottom: 5 }}
+                    onClick={() => openEditModal(participation)}
+                  />
+                  <Button
+                    danger
+                    icon={<DeleteOutlined />}
+                    style={{ marginBottom: 5 }}
+                    onClick={() => handleDeleteAthleteRegistration(participation.id)}
+                  />
+                </>
+              );
+            },
+          },
+
+    ];
+
+    return (
+        <Layout className="layout">
+            <Row justify="center" style={{ marginBottom: 24 }}>
+                <Col span={24} style={{ textAlign: 'center' }}>
+                    <Title level={2}>{t('h1.athleteRegistration')}</Title>
+                </Col>
+                <Col style={{ textAlign: 'center', marginTop: 16 }}>
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setIsRegistrationModalVisible(true)}
+                    >
+                        {t('button.registrationNoun')}
+                    </Button>
+                </Col>
+            </Row>
+
+            {/* Модалка регистрации спортсмена/редактирования */}
             {isRegistrationModalVisible && (
                 <AthleteRegistrationModal
                     isVisible={isRegistrationModalVisible}
@@ -268,6 +355,7 @@ const RegisterAthletePageCoach = () => {
                 />
             )}
 
+            {/* Модалка деталей упражнений */}
             {isDetailsModalVisible && selectedParticipationDetails && (
                 <ExerciseDetailsModal
                     isVisible={isDetailsModalVisible}
@@ -277,90 +365,7 @@ const RegisterAthletePageCoach = () => {
                 />
             )}
 
-            <div className="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>№</th>
-                            <th>{t('table.athlete')}</th>
-                            <th>{t('table.competition')}</th>
-                            <th>{t('table.direction')}</th>
-                            <th>{t('table.age')}</th>
-                            <th>{t('table.actions')}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sortedParticipations.map((participation, index) => (
-                            <tr
-                                className={
-                                    payCompetitions[participation.id]
-                                        ? 'paid-row'
-                                        : ''
-                                }
-                                key={participation.id}
-                            >
-                                <td>{index + 1}</td>
-                                <td>
-                                    {participation.Athlete?.lastName}{' '}
-                                    {participation.Athlete?.firstName}
-                                </td>
-                                <td>{participation.Competition?.title}</td>
-                                <td>{participation.AthleteTrend?.trends}</td>
-                                <td>{participation.AthleteAge?.age}</td>
-                                <td>
-                                    <Button
-                                        className="m-1"
-                                        variant="info"
-                                        onClick={() => {
-                                            handleDetailsClick(
-                                                participation.id
-                                            );
-                                        }}
-                                    >
-                                        <i className="bi bi-file-earmark-text"></i>{' '}
-                                    </Button>
-                                    <Button
-                                        className="m-1"
-                                        variant="primary"
-                                        onClick={() =>
-                                            handleShowFiles(
-                                                participation.uploadedFiles,
-                                                participation
-                                            )
-                                        }
-                                    >
-                                        <i className="bi bi-file-arrow-down-fill"></i>{' '}
-                                    </Button>
-
-                                    <Button
-                                        className="m-1"
-                                        variant="warning"
-                                        onClick={() =>
-                                            openEditModal(participation)
-                                        }
-                                    >
-                                        <i className="bi bi-pencil"></i>{' '}
-                                        {/* Иконка редактирования */}
-                                    </Button>
-                                    <Button
-                                        className="m-1"
-                                        variant="danger"
-                                        onClick={() =>
-                                            handleDeleteAthleteRegistration(
-                                                participation.id
-                                            )
-                                        }
-                                    >
-                                        <i className="bi bi-trash"></i>{' '}
-                                        {/* Иконка удаления */}
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
+            {/* Модалка для просмотра/загрузки файлов */}
             <UploadedFilesModal
                 isVisible={isFilesModalVisible}
                 onClose={closeFilesModal}
@@ -368,7 +373,26 @@ const RegisterAthletePageCoach = () => {
                 editingParticipation={editingParticipation}
                 t={t}
             />
-        </Container>
+
+            {/* Таблица регистраций */}
+            <Table
+                columns={columns}
+                dataSource={sortedParticipations}
+                rowKey="id"
+                // Добавляем горизонтальный скролл для мобилок
+                scroll={{ x: 600 }}
+                // Выделение цветом оплаченных (пример)
+                rowClassName={(record) =>
+                    payCompetitions[record.id] ? 'paid-row' : ''
+                }
+                pagination={{
+                    pageSize: 10, // размер страницы
+                    responsive: true, // адаптивная пагинация
+                    showSizeChanger: true, // пользователь может менять размер
+                    pageSizeOptions: ['5', '10', '20', '50'],
+                }}
+            />
+        </Layout>
     );
 };
 
