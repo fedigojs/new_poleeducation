@@ -1,3 +1,18 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+
+# Закрыть API маршруты
+Disallow: /api/
+
+# Закрыть админку и страницы входа
+Disallow: /admin/
+Disallow: /login
+Disallow: /signup
+
+# Закрыть любые URL с параметрами (например, /search?query=test)
+Disallow: /*?
+
+# Разрешить всё остальное
+Allow: /
+
+Sitemap: https://poleeducation.in.ua/sitemap.xml
