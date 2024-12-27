@@ -8,6 +8,7 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /login
 Disallow: /signup
+Disallow: / cgi-bin
 
 # Закрыть любые URL с параметрами (например, /search?query=test)
 Disallow: /*?
