@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Space } from 'antd';
+import { Modal, Button } from 'antd';
 import api from '../../../api/api';
 import ModalJudgementProtocol from './ModalJudgementProtocol';
 import ModalJudgementExercise from './ModalJudgementExercise';
@@ -162,7 +162,7 @@ const ModalJudgement = ({ isOpen, onClose, participant, judgeId }) => {
 						Закрыть
 					</Button>,
 				]}
-				width={800}>
+				width='35%'>
 				<div className='button-container'>
 					{protocols.map((protocol) => (
 						<Button
@@ -216,27 +216,15 @@ const ModalJudgement = ({ isOpen, onClose, participant, judgeId }) => {
 				protocolTypeId={selectedProtocol?.protocolTypeId}
 			/>
 
-			<Modal
-				title='Детали Упражнения'
-				open={isExerciseModalOpen}
-				onCancel={closeExerciseModal}
-				footer={[
-					<Button
-						key='close'
-						onClick={closeExerciseModal}>
-						Закрыть
-					</Button>,
-				]}>
-				<ModalJudgementExercise
-					isOpen={isExerciseModalOpen}
-					onClose={closeExerciseModal}
-					protocol={selectedExerciseProtocol}
-					errorMessage={exerciseErrorMessage}
-					competitionParticipationId={
-						participant?.competitionParticipationId
-					}
-				/>
-			</Modal>
+			<ModalJudgementExercise
+				isOpen={isExerciseModalOpen}
+				onClose={closeExerciseModal}
+				protocol={selectedExerciseProtocol}
+				errorMessage={exerciseErrorMessage}
+				competitionParticipationId={
+					participant?.competitionParticipationId
+				}
+			/>
 		</>
 	);
 };

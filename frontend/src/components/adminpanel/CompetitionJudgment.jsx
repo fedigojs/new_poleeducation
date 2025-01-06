@@ -23,7 +23,6 @@ const CompetitionJudgment = () => {
 		useState(false);
 	const [selectedParticipant, setSelectedParticipant] = useState(null);
 	const [isJudgementModalOpen, setIsJudgementModalOpen] = useState(false);
-	// console.log('selectedParticipant:', selectedParticipant);
 
 	const {
 		data: competitionList = [],
@@ -83,7 +82,6 @@ const CompetitionJudgment = () => {
 		},
 	}));
 
-	// Получаем уникальные значения для фильтров Level и AgeGroup
 	const distinctLevels = [
 		...new Set(dataTable.map((item) => item.level)),
 	].filter(Boolean);
