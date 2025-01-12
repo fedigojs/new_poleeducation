@@ -4,133 +4,251 @@ import './ModalJudgementDetails.css';
 import CustomTable from '../../Table/customTable';
 import api from '../../../api/api';
 import PropTypes from 'prop-types';
+import Spinner from '../../Spinner/Spinner';
+import { useTranslation } from 'react-i18next';
 
 const ModalJudgementDetails = ({
-    isOpen,
-    onClose,
-    competitionParticipationId,
+	isOpen,
+	onClose,
+	competitionParticipationId,
 }) => {
-    const [dataTableList, setDataTableList] = useState([]);
-    const [loading, setLoading] = useState(false);
+	const { t } = useTranslation();
+	const [elementResults, setElementResults] = useState([]);
+	const [exerciseProtocols, setExerciseProtocols] = useState([]);
+	const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (competitionParticipationId && isOpen) {
-            const fetchExerciseProtocolDetails = async () => {
-                try {
-                    setLoading(true);
-                    const response = await api.get(
-                        `/api/draw-judgement-result/participation/${competitionParticipationId}`
-                    );
+	// Загрузка данных при открытии модального окна
+	useEffect(() => {
+		if (competitionParticipationId && isOpen) {
+			const fetchJudgementDetails = async () => {
+				try {
+					setLoading(true);
+					const response = await api.get(
+						`/api/draw-judgement-result/participation/${competitionParticipationId}`
+					);
 
-                    setDataTableList(response.data || []);
-                } catch (error) {
-                    console.error(
-                        'Error fetching exercise protocol details:',
-                        error
-                    );
-                    setDataTableList([]);
-                } finally {
-                    setLoading(false);
-                }
-            };
+					// Проверяем и распределяем данные
+					if (response.data) {
+						setElementResults(response.data.elementResults || []);
+						setExerciseProtocols(
+							response.data.exerciseProtocols.map((exercise) => ({
+								...exercise,
+								name: exercise.exercise?.name || 'Unknown',
+								descriptions:
+									exercise.exercise?.descriptions || '',
+								image: exercise.exercise?.image || '',
+								judge: exercise.judgeId || 'Unknown',
+							})) || []
+						);
+					}
+				} catch (error) {
+					console.error('Error fetching judgement details:', error);
+					setElementResults([]);
+					setExerciseProtocols([]);
+				} finally {
+					setLoading(false);
+				}
+			};
 
-            fetchExerciseProtocolDetails();
-        }
-    }, [competitionParticipationId, isOpen]);
+			fetchJudgementDetails();
+		}
+	}, [competitionParticipationId, isOpen]);
 
-    const handleClose = () => {
-        setDataTableList([]);
-        onClose();
-    };
+	// Закрытие модального окна
+	const handleClose = () => {
+		setElementResults([]);
+		setExerciseProtocols([]);
+		onClose();
+	};
 
-    const columns = [
-        {
-            title: 'No',
-            dataIndex: 'number',
-            key: 'number',
-        },
-        {
-            title: 'Element',
-            dataIndex: 'element',
-            key: 'element',
-        },
-        {
-            title: 'Max Score',
-            dataIndex: 'max_score',
-            key: 'max_score',
-        },
-        {
-            title: 'Score',
-            dataIndex: 'score',
-            key: 'score',
-        },
-        {
-            title: 'Comment',
-            dataIndex: 'comment',
-            key: 'comment',
-        },
-    ];
+	// Колонки для CustomTable (для elementResults)
+	const elementColumns = [
+		{
+			title: 'No',
+			dataIndex: 'number',
+			key: 'number',
+		},
+		{
+			title: 'Element',
+			dataIndex: 'element',
+			key: 'element',
+		},
+		{
+			title: 'Max Score',
+			dataIndex: 'max_score',
+			key: 'max_score',
+		},
+		{
+			title: 'Score',
+			dataIndex: 'score',
+			key: 'score',
+		},
+		{
+			title: 'Comment',
+			dataIndex: 'comment',
+			key: 'comment',
+		},
+	];
 
-    const groupedData = dataTableList.reduce((acc, item) => {
-        const protocolTypeName = item.detail.protocolType.name;
-        const judgeId = item.judgeId;
+	// Колонки для CustomTable (для exerciseProtocols)
+	const exerciseColumns = [
+		{
+			title: 'Упражнение',
+			dataIndex: 'name',
+			key: 'name',
+		},
+		{
+			title: 'Описание',
+			dataIndex: 'descriptions',
+			key: 'descriptions',
+		},
+		{
+			title: 'Изображение',
+			dataIndex: 'image',
+			key: 'image',
+			render: (image, record) =>
+				image ? (
+					<img
+						src={image}
+						alt={record.name}
+						style={{ width: '100px' }}
+					/>
+				) : (
+					'Нет изображения'
+				),
+		},
+		{
+			title: 'Выполнено',
+			dataIndex: 'result',
+			key: 'completed',
+			render: (result) => (
+				<input
+					type='checkbox'
+					checked={!!result}
+				/>
+			),
+		},
+	];
 
-        if (!acc[protocolTypeName]) {
-            acc[protocolTypeName] = {};
-        }
+	// Группировка elementResults для отображения
+	const groupedElementResults = elementResults.reduce((acc, item) => {
+		const protocolTypeName = item.detail?.protocolType?.name || 'Unknown';
+		const judgeId = item.judgeId;
 
-        if (!acc[protocolTypeName][judgeId]) {
-            acc[protocolTypeName][judgeId] = [];
-        }
+		if (!acc[protocolTypeName]) {
+			acc[protocolTypeName] = { totalScore: 0, judges: {} };
+		}
 
-        acc[protocolTypeName][judgeId].push({
-            key: item.id,
-            number: acc[protocolTypeName][judgeId].length + 1,
-            element: item.detail.elementName,
-            score: item.score,
-            max_score: item.detail.maxScore,
-            comment: item.comment,
-        });
+		if (!acc[protocolTypeName].judges[judgeId]) {
+			acc[protocolTypeName].judges[judgeId] = [];
+		}
 
-        return acc;
-    }, {});
+		acc[protocolTypeName].judges[judgeId].push({
+			key: item.id,
+			number: acc[protocolTypeName].judges[judgeId].length + 1,
+			element: item.detail?.elementName || 'N/A',
+			score: item.score,
+			max_score: item.detail?.maxScore || 0,
+			comment: item.comment || '',
+		});
 
-    return (
-        <Modal open={isOpen} onCancel={handleClose} footer={null} width={1200}>
-            <h2>Judgement Details</h2>
-            <b>Sportsman:</b>{' '}
-            {dataTableList[0]?.participation?.Athlete?.firstName +
-                dataTableList[0]?.participation?.Athlete?.lastName || ''}{' '}
-            <br></br>
-            <b>Age Category:</b>{' '}
-            {dataTableList[0]?.participation?.AthleteAge?.age || ''}{' '}
-            {Object.entries(groupedData).map(([protocolType, judges]) => (
-                <div key={protocolType} style={{ marginBottom: '30px' }}>
-                    <h3>{protocolType}</h3>
-                    {Object.entries(judges).map(([judgeId, data]) => (
-                        <div key={judgeId} style={{ marginBottom: '20px' }}>
-                            <h4>Judge ID: {judgeId}</h4>
-                            <CustomTable
-                                dataSource={data}
-                                columns={columns}
-                                rowKey="key"
-                                pagination={false}
-                            />
-                        </div>
-                    ))}
-                </div>
-            ))}
-        </Modal>
-    );
+		acc[protocolTypeName].totalScore += item.score;
+
+		return acc;
+	}, {});
+
+	// Вычисляем TotalScore для exerciseProtocols
+	const totalExerciseScore = exerciseProtocols.reduce(
+		(sum, protocol) => sum + (protocol.result || 0),
+		0
+	);
+
+	const athleteInfo = elementResults[0]?.participation?.Athlete || {};
+
+	return (
+		<Modal
+			open={isOpen}
+			onCancel={handleClose}
+			footer={null}
+			width={1200}>
+			{loading ? (
+				<Spinner />
+			) : (
+				<>
+					<h1>{t('h2.judgement_details')}</h1>
+					<h3>
+						{t('table.athlete')}:{' '}
+						<b>
+							{athleteInfo.firstName || ''}{' '}
+							{athleteInfo.lastName || ''}
+						</b>
+					</h3>
+					{/* Отображение elementResults */}
+					{Object.entries(groupedElementResults).map(
+						([protocolType, protocolData]) => (
+							<div
+								key={protocolType}
+								style={{ marginBottom: '30px' }}>
+								<h3>{protocolType}</h3>
+								<h5>
+									<b>{t('h4.total_score')}:</b>{' '}
+									{protocolData.totalScore.toFixed(2)}
+								</h5>
+								{Object.entries(protocolData.judges).map(
+									([judgeId, judgeData]) => (
+										<div
+											key={judgeId}
+											style={{
+												marginBottom: '20px',
+											}}>
+											<h5>
+												{t('h5.judge')}: {judgeId}
+											</h5>
+											<CustomTable
+												dataSource={judgeData}
+												columns={elementColumns}
+												rowKey='key'
+												pagination={false}
+											/>
+										</div>
+									)
+								)}
+							</div>
+						)
+					)}
+					{/* Отображение exerciseProtocols */}
+					{exerciseProtocols.length > 0 && (
+						<div>
+							<h3>{t('h3.exercise_protocol')}</h3>
+							<h5>
+								<b>{t('h4.total_score')}:</b>{' '}
+								{totalExerciseScore}
+							</h5>
+							<h5>
+								{t('h5.judge')}:{' '}
+								{exerciseProtocols[0]?.judge || 'Unknown'}
+							</h5>
+							<CustomTable
+								dataSource={exerciseProtocols}
+								columns={exerciseColumns}
+								rowKey='id'
+								pagination={false}
+							/>
+						</div>
+					)}
+				</>
+			)}
+		</Modal>
+	);
 };
 
 ModalJudgementDetails.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    competitionParticipationId: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-    ]).isRequired,
+	isOpen: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	competitionParticipationId: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.number,
+	]).isRequired,
 };
 
 export default ModalJudgementDetails;

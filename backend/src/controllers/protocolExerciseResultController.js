@@ -7,14 +7,6 @@ exports.saveProtocolExerciseResults = async (req, res) => {
 	try {
 		const sessionDate = new Date();
 
-		console.log('Saving protocol with:', {
-			results,
-			judgeId,
-			athleteId,
-			competitionParticipationId,
-			sessionDate,
-		});
-
 		const savedResults = await Promise.all(
 			results.map((result) =>
 				ProtocolExerciseResult.upsert({
@@ -40,14 +32,6 @@ exports.updateProtocolExerciseResults = async (req, res) => {
 
 	try {
 		const sessionDate = new Date();
-
-		console.log('Updating protocol with:', {
-			results,
-			competitionParticipationId,
-			athleteId,
-			judgeId,
-			sessionDate,
-		});
 
 		const updatedResults = await Promise.all(
 			results.map((result) =>
@@ -133,6 +117,7 @@ exports.getProtocolsByCompetitionParticipationId = async (req, res) => {
 		res.status(500).json({ message: 'Error fetching protocols' });
 	}
 };
+
 exports.getProtocolExerciseDetails = async (req, res) => {
 	const { competitionParticipationId } = req.params;
 
