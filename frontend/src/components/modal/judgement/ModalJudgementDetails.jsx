@@ -37,7 +37,7 @@ const ModalJudgementDetails = ({
 								descriptions:
 									exercise.exercise?.descriptions || '',
 								image: exercise.exercise?.image || '',
-								judge: exercise.judgeId || 'Unknown',
+								judge: exercise.judge || 'Unknown',
 							})) || []
 						);
 					}
@@ -61,7 +61,6 @@ const ModalJudgementDetails = ({
 		onClose();
 	};
 
-	// Колонки для CustomTable (для elementResults)
 	const elementColumns = [
 		{
 			title: 'No',
@@ -90,7 +89,6 @@ const ModalJudgementDetails = ({
 		},
 	];
 
-	// Колонки для CustomTable (для exerciseProtocols)
 	const exerciseColumns = [
 		{
 			title: 'Упражнение',
@@ -133,19 +131,19 @@ const ModalJudgementDetails = ({
 	// Группировка elementResults для отображения
 	const groupedElementResults = elementResults.reduce((acc, item) => {
 		const protocolTypeName = item.detail?.protocolType?.name || 'Unknown';
-		const judgeId = item.judgeId;
+		const judge = item.judge.lastName + ' ' + item.judge.firstName;
 
 		if (!acc[protocolTypeName]) {
 			acc[protocolTypeName] = { totalScore: 0, judges: {} };
 		}
 
-		if (!acc[protocolTypeName].judges[judgeId]) {
-			acc[protocolTypeName].judges[judgeId] = [];
+		if (!acc[protocolTypeName].judges[judge]) {
+			acc[protocolTypeName].judges[judge] = [];
 		}
 
-		acc[protocolTypeName].judges[judgeId].push({
+		acc[protocolTypeName].judges[judge].push({
 			key: item.id,
-			number: acc[protocolTypeName].judges[judgeId].length + 1,
+			number: acc[protocolTypeName].judges[judge].length + 1,
 			element: item.detail?.elementName || 'N/A',
 			score: item.score,
 			max_score: item.detail?.maxScore || 0,
@@ -195,14 +193,14 @@ const ModalJudgementDetails = ({
 									{protocolData.totalScore.toFixed(2)}
 								</h5>
 								{Object.entries(protocolData.judges).map(
-									([judgeId, judgeData]) => (
+									([judge, judgeData]) => (
 										<div
-											key={judgeId}
+											key={judge}
 											style={{
 												marginBottom: '20px',
 											}}>
 											<h5>
-												{t('h5.judge')}: {judgeId}
+												{t('h5.judge')}: {judge}
 											</h5>
 											<CustomTable
 												dataSource={judgeData}
@@ -226,7 +224,10 @@ const ModalJudgementDetails = ({
 							</h5>
 							<h5>
 								{t('h5.judge')}:{' '}
-								{exerciseProtocols[0]?.judge || 'Unknown'}
+								{exerciseProtocols[0]?.judge.lastName +
+									' ' +
+									exerciseProtocols[0]?.judge.firstName ||
+									'Unknown'}
 							</h5>
 							<CustomTable
 								dataSource={exerciseProtocols}

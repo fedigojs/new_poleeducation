@@ -6,13 +6,13 @@ const {
 	Athlete,
 	ProtocolExerciseResult,
 	Exercise,
+	User,
 } = require('../../models');
 
 exports.getResultsByParticipation = async (req, res) => {
 	const { participationId } = req.params;
 
 	try {
-		// Получение ProtocolElementResult с необходимыми связями
 		const elementResults = await ProtocolElementResult.findAll({
 			where: { competitionParticipationId: participationId },
 			include: [
@@ -36,16 +36,14 @@ exports.getResultsByParticipation = async (req, res) => {
 						},
 					],
 				},
+				{
+					model: User,
+					as: 'judge',
+					attributes: ['firstName', 'lastName'],
+				},
 			],
 		});
 
-		// Логируем результаты ProtocolElementResult
-		console.log(
-			'ProtocolElementResult:',
-			JSON.stringify(elementResults, null, 2)
-		);
-
-		// Получение ProtocolExerciseResult
 		const exerciseProtocols = await ProtocolExerciseResult.findAll({
 			where: { competitionParticipationId: participationId },
 			include: [
@@ -53,14 +51,13 @@ exports.getResultsByParticipation = async (req, res) => {
 					model: Exercise,
 					as: 'exercise',
 				},
+				{
+					model: User,
+					as: 'judge',
+					attributes: ['firstName', 'lastName'],
+				},
 			],
 		});
-
-		// Логируем результаты ProtocolExerciseResult
-		console.log(
-			'ProtocolExerciseResult:',
-			JSON.stringify(exerciseProtocols, null, 2)
-		);
 
 		// Объединение результатов в один ответ
 		res.status(200).json({

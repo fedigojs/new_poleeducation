@@ -30,12 +30,12 @@ module.exports = (sequelize, DataTypes) => {
 		// Ассоциации
 		User.belongsTo(models.Role, { foreignKey: 'roleId' });
 		User.hasMany(models.Athlete, {
-			foreignKey: 'coachId', // Указываем внешний ключ для связи
-			as: 'athletes', // Указываем псевдоним для доступа к атлетам через экземпляр тренера
+			foreignKey: 'coachId',
+			as: 'athletes',
 		});
 		User.hasMany(models.ProtocolElementResult, {
 			foreignKey: 'judgeId',
-			as: 'protocols', // Протоколы, заполненные судьей
+			as: 'protocols',
 		});
 	};
 

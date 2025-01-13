@@ -88,14 +88,14 @@ const AthletesDraw = () => {
 						competitionParticipationId:
 							participant.competitionParticipationId,
 					});
-					const totalScore = await calculateTotalScore(
-						participant.participation.athleteId,
-						participant.participation.id
-					);
+					// const totalScore = await calculateTotalScore(
+					// 	participant.participation.athleteId,
+					// 	participant.participation.id
+					// );
 					return {
 						...participant,
 						protocolStatuses,
-						totalScore,
+						// totalScore,
 					};
 				})
 			);
@@ -329,75 +329,75 @@ const AthletesDraw = () => {
 		}
 	};
 
-	const calculateTotalScore = async (
-		athleteId,
-		competitionParticipationId
-	) => {
-		try {
-			const [protocolData, exerciseData] = await Promise.all([
-				fetchProtocolDetails(athleteId, competitionParticipationId),
-				fetchExerciseProtocolDetails(competitionParticipationId),
-			]);
+	// const calculateTotalScore = async (
+	// 	athleteId,
+	// 	competitionParticipationId
+	// ) => {
+	// 	try {
+	// 		const [protocolData, exerciseData] = await Promise.all([
+	// 			fetchProtocolDetails(athleteId, competitionParticipationId),
+	// 			fetchExerciseProtocolDetails(competitionParticipationId),
+	// 		]);
 
-			const protocolScores = protocolData.reduce((acc, detail) => {
-				const protocolTypeId = detail.detail?.protocolTypeId;
-				if (!acc[protocolTypeId]) {
-					acc[protocolTypeId] = { score: 0, judges: new Set() };
-				}
-				acc[protocolTypeId].score += detail.score;
-				acc[protocolTypeId].judges.add(detail.judgeId);
-				return acc;
-			}, {});
+	// 		const protocolScores = protocolData.reduce((acc, detail) => {
+	// 			const protocolTypeId = detail.detail?.protocolTypeId;
+	// 			if (!acc[protocolTypeId]) {
+	// 				acc[protocolTypeId] = { score: 0, judges: new Set() };
+	// 			}
+	// 			acc[protocolTypeId].score += detail.score;
+	// 			acc[protocolTypeId].judges.add(detail.judgeId);
+	// 			return acc;
+	// 		}, {});
 
-			const averageScores = Object.values(protocolScores).map(
-				({ score, judges }) => score / judges.size
-			);
+	// 		const averageScores = Object.values(protocolScores).map(
+	// 			({ score, judges }) => score / judges.size
+	// 		);
 
-			const exerciseScores = exerciseData.filter(
-				(item) => item.result === 1
-			).length;
+	// 		const exerciseScores = exerciseData.filter(
+	// 			(item) => item.result === 1
+	// 		).length;
 
-			const totalAverageScore =
-				averageScores.reduce((sum, avg) => sum + avg, 0) +
-				exerciseScores;
+	// 		const totalAverageScore =
+	// 			averageScores.reduce((sum, avg) => sum + avg, 0) +
+	// 			exerciseScores;
 
-			console.log('Вычисленный общий балл:', totalAverageScore);
-			return totalAverageScore;
-		} catch (error) {
-			console.error('Ошибка при расчете общего балла:', error);
-			return 0;
-		}
-	};
+	// 		console.log('Вычисленный общий балл:', totalAverageScore);
+	// 		return totalAverageScore;
+	// 	} catch (error) {
+	// 		console.error('Ошибка при расчете общего балла:', error);
+	// 		return 0;
+	// 	}
+	// };
 
-	const fetchProtocolDetails = async (
-		athleteId,
-		competitionParticipationId
-	) => {
-		try {
-			const response = await api.get(
-				`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}`
-			);
-			return response.data;
-		} catch (error) {
-			console.error('Ошибка при получении данных протокола:', error);
-			return [];
-		}
-	};
+	// const fetchProtocolDetails = async (
+	// 	athleteId,
+	// 	competitionParticipationId
+	// ) => {
+	// 	try {
+	// 		const response = await api.get(
+	// 			`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}`
+	// 		);
+	// 		return response.data;
+	// 	} catch (error) {
+	// 		console.error('Ошибка при получении данных протокола:', error);
+	// 		return [];
+	// 	}
+	// };
 
-	const fetchExerciseProtocolDetails = async (competitionParticipationId) => {
-		try {
-			const response = await api.get(
-				`/api/protocol-exercise-result/participation/${competitionParticipationId}`
-			);
-			return response.data.exercises || [];
-		} catch (error) {
-			console.error(
-				'Ошибка при получении данных протокола упражнений:',
-				error
-			);
-			return [];
-		}
-	};
+	// const fetchExerciseProtocolDetails = async (competitionParticipationId) => {
+	// 	try {
+	// 		const response = await api.get(
+	// 			`/api/protocol-exercise-result/participation/${competitionParticipationId}`
+	// 		);
+	// 		return response.data.exercises || [];
+	// 	} catch (error) {
+	// 		console.error(
+	// 			'Ошибка при получении данных протокола упражнений:',
+	// 			error
+	// 		);
+	// 		return [];
+	// 	}
+	// };
 
 	const dayColors = [
 		'#F0F8FF', // Alice Blue
