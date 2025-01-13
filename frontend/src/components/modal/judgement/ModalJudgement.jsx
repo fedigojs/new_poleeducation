@@ -56,7 +56,6 @@ const ModalJudgement = ({ isOpen, onClose, participant, judgeId }) => {
 				);
 				setProtocols(updatedProtocols);
 				setShouldUpdate(!shouldUpdate);
-				console.log('Updated Protocols:', updatedProtocols);
 			} catch (error) {
 				console.error('Error fetching protocols:', error);
 				setProtocols([]);
@@ -79,9 +78,19 @@ const ModalJudgement = ({ isOpen, onClose, participant, judgeId }) => {
 
 			const response = await api.get(url);
 
-			if (response.data.length > 0) return true;
+			if (protocolTypeId === 7) {
+				// Проверьте, есть ли данные об упражнениях
+				return (
+					response.data &&
+					response.data.exercises &&
+					response.data.exercises.length > 0
+				);
+			}
+
+			// Для других типов протоколов
+			return response.data.length > 0;
 		} catch (error) {
-			console.error('Error checking protocol filled status:', error);
+			console.error('Error in checkIfProtocolIsFilled:', error);
 			return false;
 		}
 	};
