@@ -61,6 +61,11 @@
 	"select.athlete": "Сопртсмен",
 	"select.coach": "Тренер",
 	"title.addedFiles": "Додані файли",
+	"title.element": "Елемент",
+	"title.maximum_score": "Максимальний бал",
+	"title.step": "Крок",
+	"title.score": "Бал",
+	"title.comment": "Коментар",
 	"p.filesIsNotAdded": "Файли не додані",
 	"modal.confirmDeleteFile": "Ви впевнені, що хочете видалити цей файл?"
 }

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Modal, Button, Table, Select, Input, Space, message } from 'antd';
 import api from '../../../api/api';
 import { AuthContext } from '../../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const ModalJudgementProtocol = ({
 	isOpen,
@@ -14,6 +15,7 @@ const ModalJudgementProtocol = ({
 	protocolId,
 	athleteId,
 }) => {
+	const { t } = useTranslation();
 	const { user } = useContext(AuthContext);
 	const [protocolTypeId, setProtocolTypeId] = useState(initialProtocolTypeId);
 	const [isExistingProtocol, setIsExistingProtocol] = useState(false);
@@ -204,46 +206,55 @@ const ModalJudgementProtocol = ({
 
 	const columns = [
 		{
-			title: 'Элемент',
+			title: t('title.element'),
 			dataIndex: 'elementName',
 			key: 'elementName',
 			width: '40%',
 		},
 		{
-			title: 'Максимальный балл',
+			title: t('title.maximum_score'),
 			dataIndex: 'maxScore',
 			key: 'maxScore',
 			width: '15%',
 		},
 		{
-			title: 'Шаг',
+			title: t('title.step'),
 			dataIndex: 'step',
 			key: 'step',
 			width: '8%',
 		},
+		...(scores.some((record) => record.maxScore !== 0 || record.step !== 0)
+			? [
+					{
+						title: t('title.score'),
+						key: 'score',
+						width: '10%',
+						render: (_, record, index) => {
+							const min =
+								record.maxScore < 0 ? record.maxScore : 0;
+							const max =
+								record.maxScore < 0 ? 0 : record.maxScore;
+							const step = record.step;
+							if (record.maxScore === 0 && record.step === 0) {
+								return null;
+							}
+							const options = generateOptions(min, max, step);
+							return (
+								<Select
+									options={options}
+									value={record.score}
+									onChange={(value) =>
+										handleChange(index, 'score', value)
+									}
+									style={{ width: '100%' }}
+								/>
+							);
+						},
+					},
+			  ]
+			: []),
 		{
-			title: 'Оценка',
-			key: 'score',
-			width: '10%',
-			render: (_, record, index) => {
-				const min = record.maxScore < 0 ? record.maxScore : 0;
-				const max = record.maxScore < 0 ? 0 : record.maxScore;
-				const step = record.step;
-				const options = generateOptions(min, max, step);
-				return (
-					<Select
-						options={options}
-						value={record.score}
-						onChange={(value) =>
-							handleChange(index, 'score', value)
-						}
-						style={{ width: '100%' }}
-					/>
-				);
-			},
-		},
-		{
-			title: 'Комментарий',
+			title: t('title.comment'),
 			key: 'comment',
 			render: (_, record, index) => (
 				<Input
