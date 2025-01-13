@@ -23,70 +23,100 @@ import AddAthleteCoach from './components/coachpanel/AddAthleteCoach';
 import CompetitionJudgement from './components/adminpanel/CompetitionJudgment';
 
 const AppRoutes = () => (
-    <Router>
-        <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/test-elements" element={<TestExerciseHomePage />} />
+	<Router>
+		<Routes>
+			<Route
+				path='/'
+				element={<HomePage />}
+			/>
+			<Route
+				path='/login'
+				element={<Login />}
+			/>
+			<Route
+				path='/test-elements'
+				element={<TestExerciseHomePage />}
+			/>
 
-            <Route
-                path="/admin/*"
-                element={
-                    <ProtectedRoute>
-                        <AdminPage />
-                    </ProtectedRoute>
-                }
-            >
-                <Route path="" element={<HomeAdmin />} />
-                <Route path="add-user" element={<AddUserPage />} />
-                <Route path="add-athletes" element={<AddAthletesPage />} />
-                <Route
-                    path="add-competition"
-                    element={<AddCompetitionPage />}
-                />
-                <Route
-                    path="register-athletes"
-                    element={<RegisterAthletePage />}
-                />
-                <Route path="athletes-draw" element={<AthletesDraw />} />
-                <Route
-                    path="athletes-judgement"
-                    element={<CompetitionJudgement />}
-                />
-            </Route>
-            <Route
-                path="/judge/*"
-                element={
-                    <ProtectedRoute>
-                        <JudgePage />
-                    </ProtectedRoute>
-                }
-            >
-                <Route path="" element={<HomeJudge />} />
-                <Route path="athletes-draw" element={<AthletesDrawJudge />} />
-            </Route>
+			<Route
+				path='/admin/*'
+				element={
+					<ProtectedRoute>
+						<AdminPage />
+					</ProtectedRoute>
+				}>
+				<Route
+					path=''
+					element={<HomeAdmin />}
+				/>
+				<Route
+					path='add-user'
+					element={<AddUserPage />}
+				/>
+				<Route
+					path='add-athletes'
+					element={<AddAthletesPage />}
+				/>
+				<Route
+					path='add-competition'
+					element={<AddCompetitionPage />}
+				/>
+				<Route
+					path='register-athletes'
+					element={<RegisterAthletePage />}
+				/>
+				<Route
+					path='athletes-draw'
+					element={<AthletesDraw />}
+				/>
+				<Route
+					path='athletes-judgement'
+					element={<CompetitionJudgement />}
+				/>
+			</Route>
+			<Route
+				path='/judge/*'
+				element={
+					<ProtectedRoute>
+						<JudgePage />
+					</ProtectedRoute>
+				}>
+				<Route
+					path=''
+					element={<HomeJudge />}
+				/>
+				<Route
+					path='athletes-judgement'
+					element={<CompetitionJudgement />}
+				/>
+			</Route>
 
-            <Route
-                path="/coach/*"
-                element={
-                    <ProtectedRoute>
-                        <CoachPage />
-                    </ProtectedRoute>
-                }
-            >
-                <Route path="" element={<HomeCoach />} />
-                <Route
-                    path="athletes-competitions"
-                    element={<AthletesInCompetitionCoach />}
-                />
-                <Route
-                    path="add-registration"
-                    element={<RegisterAthletePageCoach />}
-                />
-                <Route path="add-athlete-coach" element={<AddAthleteCoach />} />
-            </Route>
-        </Routes>
-    </Router>
+			<Route
+				path='/coach/*'
+				element={
+					<ProtectedRoute>
+						<CoachPage />
+					</ProtectedRoute>
+				}>
+				<Route
+					path=''
+					element={<HomeCoach />}
+				/>
+				<Route
+					path='athletes-competitions'
+					element={<AthletesInCompetitionCoach />}
+				/>
+				<Route
+					path='add-registration'
+					element={<RegisterAthletePageCoach />}
+				/>
+				<Route
+					path='add-athlete-coach'
+					element={<AddAthleteCoach />}
+				/>
+			</Route>
+		</Routes>
+	</Router>
 );
 
 export default AppRoutes;

@@ -4,8 +4,10 @@ import api from '../../../api/api';
 import ModalJudgementProtocol from './ModalJudgementProtocol';
 import ModalJudgementExercise from './ModalJudgementExercise';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 const ModalJudgement = ({ isOpen, onClose, participant, judgeId }) => {
+	const { t } = useTranslation();
 	const [protocols, setProtocols] = useState([]);
 	const [isProtocolModalOpen, setIsProtocolModalOpen] = useState(false);
 	const [selectedProtocol, setSelectedProtocol] = useState(null);
@@ -54,23 +56,32 @@ const ModalJudgement = ({ isOpen, onClose, participant, judgeId }) => {
 				);
 				setProtocols(updatedProtocols);
 				setShouldUpdate(!shouldUpdate);
+				console.log('Updated Protocols:', updatedProtocols);
 			} catch (error) {
 				console.error('Error fetching protocols:', error);
 				setProtocols([]);
 			}
 		}
 	};
+
 	const checkIfProtocolIsFilled = async (
 		protocolTypeId,
 		athleteId,
 		competitionParticipationId
 	) => {
 		try {
-			const response = await api.get(
-				`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}`
-			);
-			return response.data && response.data.length > 0;
+			let url;
+			if (protocolTypeId === 7) {
+				url = `/api/protocol-exercise-result/participation/${competitionParticipationId}`;
+			} else {
+				url = `/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}`;
+			}
+
+			const response = await api.get(url);
+
+			if (response.data.length > 0) return true;
 		} catch (error) {
+			console.error('Error checking protocol filled status:', error);
 			return false;
 		}
 	};
@@ -82,11 +93,21 @@ const ModalJudgement = ({ isOpen, onClose, participant, judgeId }) => {
 		judgeId
 	) => {
 		try {
-			const response = await api.get(
-				`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}/judge/${judgeId}`
-			);
+			let url;
+			if (protocolTypeId === 7) {
+				url = `/api/protocol-exercise-result/participation/${competitionParticipationId}/judge/${judgeId}`;
+			} else {
+				url = `/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}/judge/${judgeId}`;
+			}
+
+			const response = await api.get(url);
+
 			return response.data && response.data.length > 0;
 		} catch (error) {
+			console.error(
+				'Error checking protocol filled by current judge:',
+				error
+			);
 			return false;
 		}
 	};
@@ -152,14 +173,16 @@ const ModalJudgement = ({ isOpen, onClose, participant, judgeId }) => {
 	return (
 		<>
 			<Modal
-				title={`Голосование за ${participant?.participation?.Athlete?.firstName} ${participant?.participation?.Athlete?.lastName}`}
+				title={`${t('label.voting_for')} ${
+					participant?.participation?.Athlete?.firstName
+				} ${participant?.participation?.Athlete?.lastName}`}
 				open={isOpen}
 				onCancel={onClose}
 				footer={[
 					<Button
 						key='close'
 						onClick={onClose}>
-						Закрыть
+						{t('button.close')}
 					</Button>,
 				]}
 				width='35%'>

@@ -4,6 +4,7 @@ const {
 	Athlete,
 	Level,
 	AthleteAge,
+	AthleteTrend,
 } = require('../../models');
 
 exports.getAllJudgementList = async (req, res) => {
@@ -16,11 +17,15 @@ exports.getAllJudgementList = async (req, res) => {
 					include: [
 						{
 							model: Athlete,
-							attributes: ['firstName', 'lastName'], // Указываем только необходимые поля
+							attributes: ['firstName', 'lastName'],
 						},
 						{
 							model: AthleteAge,
 							attributes: ['age'],
+						},
+						{
+							model: AthleteTrend,
+							attributes: ['trends'],
 						},
 					],
 				},

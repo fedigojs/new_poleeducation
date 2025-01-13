@@ -12,6 +12,7 @@ import {
 	LikeOutlined,
 	SoundOutlined,
 	MessageOutlined,
+	SearchOutlined,
 } from '@ant-design/icons';
 import Spinner from '../Spinner/Spinner';
 
@@ -63,13 +64,14 @@ const CompetitionJudgment = () => {
 
 	const dataTable = competitionList.map((item, index) => ({
 		key: item.participation.id,
-		no: index + 1,
+		no: item.performanceOrder,
+		performanceOrder: item.performanceOrder,
 		timings: `${item.timing} - day ${item.competitionDay}`,
 		sportsman: `${item.participation.Athlete.firstName} ${item.participation.Athlete.lastName}`,
 		level: item.level.name,
 		ageGroup: item.participation.AthleteAge.age,
+		athleteTrendName: item.participation.AthleteTrend.trends,
 		totalScore: item.totalscore,
-		protocols: item.protocol,
 		competitionParticipationId: item.competitionParticipationId,
 		participation: {
 			AthleteTrend: item.participation.athleteTrendId,
@@ -80,6 +82,14 @@ const CompetitionJudgment = () => {
 				lastName: item.participation.Athlete.lastName,
 			},
 		},
+	}));
+
+	const distinctTrends = [
+		...new Set(dataTable.map((item) => item.athleteTrendName)),
+	].filter(Boolean);
+	const trendsFilters = distinctTrends.map((trend) => ({
+		text: trend,
+		value: trend,
 	}));
 
 	const distinctLevels = [
@@ -118,22 +128,80 @@ const CompetitionJudgment = () => {
 			title: 'No',
 			dataIndex: 'no',
 			key: 'no',
-			render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
+			sorter: (a, b) => a.no - b.no,
+			// render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
 		},
 		{
 			title: 'Timings',
 			dataIndex: 'timings',
 			key: 'timings',
+			// sorter: (a, b) => a.timings.localeCompare(b.timings),
 		},
 		{
 			title: 'Sportsman',
 			dataIndex: 'sportsman',
 			key: 'sportsman',
+			// sorter: (a, b) => a.sportsman.localeCompare(b.sportsman),
+			filterDropdown: ({
+				setSelectedKeys,
+				selectedKeys,
+				confirm,
+				clearFilters,
+			}) => (
+				<div style={{ padding: 8 }}>
+					<input
+						placeholder='Search Sportsman'
+						value={selectedKeys[0]}
+						onChange={(e) =>
+							setSelectedKeys(
+								e.target.value ? [e.target.value] : []
+							)
+						}
+						onPressEnter={() => confirm()} // Поиск при нажатии Enter
+						style={{
+							width: 188,
+							marginBottom: 8,
+							display: 'block',
+						}}
+					/>
+					<Space>
+						<Button
+							type='primary'
+							onClick={() => confirm()}
+							icon={<SearchOutlined />}
+							size='small'
+							style={{ width: 90 }}>
+							Search
+						</Button>
+						<Button
+							onClick={() => {
+								clearFilters();
+								confirm();
+							}}
+							size='small'
+							style={{ width: 90 }}>
+							Reset
+						</Button>
+					</Space>
+				</div>
+			),
+			onFilter: (value, record) =>
+				record.sportsman.toLowerCase().includes(value.toLowerCase()), // Фильтрация по совпадению текста
+		},
+		{
+			title: 'AthleteTrend',
+			dataIndex: 'athleteTrendName',
+			key: 'athleteTrendName',
+			sorter: (a, b) =>
+				a.athleteTrendName.localeCompare(b.athleteTrendName),
+			filters: trendsFilters,
+			onFilter: (value, record) => record.athleteTrendName === value,
 		},
 		{
 			title: 'Level',
 			dataIndex: 'level',
 			key: 'level',
+			sorter: (a, b) => a.level.localeCompare(b.level),
 			filters: levelFilters,
 			onFilter: (value, record) => record.level === value,
 		},
@@ -141,6 +209,7 @@ const CompetitionJudgment = () => {
 			title: 'AgeGroup',
 			dataIndex: 'ageGroup',
 			key: 'ageGroup',
+			sorter: (a, b) => a.ageGroup - b.ageGroup,
 			filters: ageFilters,
 			onFilter: (value, record) => record.ageGroup === value,
 		},
@@ -148,11 +217,6 @@ const CompetitionJudgment = () => {
 			title: 'TotalScore',
 			dataIndex: 'totalScore',
 			key: 'totalScore',
-		},
-		{
-			title: 'Protocols',
-			dataIndex: 'protocols',
-			key: 'protocols',
 		},
 		{
 			title: 'Action',

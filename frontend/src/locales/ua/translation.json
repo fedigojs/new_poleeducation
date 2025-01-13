@@ -54,6 +54,7 @@
 	"label.dragOrClickToUpload": "Натисніть або перетягніть файли сюди",
 	"label.supportedFormats": "Підтримуємі формати:",
 	"label.currentFiles": "Завантажені файли",
+	"label.voting_for": "Голосування за",
 	"modal.title.editAthlete": "Редагувати спортсмена",
 	"modal.title.addAthlete": "Додати спортсмена",
 	"select.chooseRole": "Виберіть вашу роль",
