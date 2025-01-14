@@ -73,7 +73,7 @@ const CompetitionJudgment = () => {
 		athleteTrendName: item.participation.AthleteTrend.trends,
 		totalScore: item.participation.totalResult
 			? item.participation.totalResult.totalScore
-			: 0,
+			: null,
 		competitionParticipationId: item.competitionParticipationId,
 		participation: {
 			AthleteTrend: item.participation.athleteTrendId,
