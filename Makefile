@@ -11,6 +11,9 @@ build-and-deploy:
 	$(DOCKER_COMPOSE) down --remove-orphans || { echo "Failed to stop containers"; exit 1; }
 	docker system prune -a --volumes=false || { echo "Failed to prune Docker caches"; exit 1; }
 	sudo rm -rf /var/www/html/* || { echo "Failed to clear /var/www/html"; exit 1; }
+	if ! sudo systemctl is-active --quiet nginx; then \
+		sudo systemctl start nginx || { echo "Failed to start Nginx"; exit 1; }; \
+	fi
 	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
 	$(DOCKER_COMPOSE) up --build -d db_auth backend || { echo "Failed to start backend containers"; exit 1; }
 	$(DOCKER_COMPOSE) run --rm frontend-builder sh -c "rm -rf /frontend/build/* && rm -f pnpm-lock.yaml && pnpm install --no-frozen-lockfile && pnpm run build" || { echo "Frontend build failed"; exit 1; }
@@ -18,6 +21,7 @@ build-and-deploy:
 	$(DOCKER_COMPOSE) rm -f frontend-builder || { echo "Failed to remove frontend-builder container"; exit 1; }
 	sudo systemctl reload nginx || { echo "Failed to reload Nginx after deployment"; exit 1; }
 	@echo "Деплой завершён."
+
 
 # Бэкап базы данных с добавлением даты и времени в имя файла
 backup-db:
