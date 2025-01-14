@@ -1,26 +1,65 @@
-const { ProtocolExerciseResult, Exercise } = require('../models');
+const {
+	sequelize,
+	ProtocolElementResult,
+	ProtocolExerciseResult,
+	TotalCompetitionResults,
+	Exercise,
+} = require('../models');
+
+const { calculateElementScores } = require('./utils/scoreCalculator');
 
 exports.saveProtocolExerciseResults = async (req, res) => {
 	const { results, judgeId, athleteId, competitionParticipationId } =
 		req.body;
+
+	const transaction = await sequelize.transaction();
 
 	try {
 		const sessionDate = new Date();
 
 		const savedResults = await Promise.all(
 			results.map((result) =>
-				ProtocolExerciseResult.upsert({
-					...result,
-					sessionDate,
-					judgeId,
-					athleteId,
-					competitionParticipationId,
-				})
+				ProtocolExerciseResult.upsert(
+					{
+						...result,
+						sessionDate,
+						judgeId,
+						athleteId,
+						competitionParticipationId,
+					},
+					{ transaction }
+				)
 			)
 		);
 
+		// Суммирование `score` из ProtocolElementResult
+		const elementScores =
+			(await calculateElementScores(
+				competitionParticipationId,
+				transaction
+			)) || 0;
+
+		const exerciseScores =
+			(await ProtocolExerciseResult.sum('result', {
+				where: { competitionParticipationId },
+				transaction,
+			})) || 0;
+
+		const totalSum = elementScores + exerciseScores;
+
+		// Обновление TotalCompetitionResults
+		await TotalCompetitionResults.upsert(
+			{
+				competitionParticipationId,
+				totalScore: totalSum || 0,
+			},
+			{ transaction }
+		);
+
+		await transaction.commit();
 		res.status(201).json(savedResults);
 	} catch (error) {
+		await transaction.rollback();
 		console.error('Error saving exercise results:', error);
 		res.status(500).json({ message: 'Error saving exercise results' });
 	}
@@ -30,23 +69,54 @@ exports.updateProtocolExerciseResults = async (req, res) => {
 	const { results, competitionParticipationId, athleteId } = req.body;
 	const { judgeId } = req.params;
 
+	const transaction = await sequelize.transaction();
+
 	try {
 		const sessionDate = new Date();
 
 		const updatedResults = await Promise.all(
 			results.map((result) =>
-				ProtocolExerciseResult.upsert({
-					...result,
-					sessionDate,
-					judgeId,
-					athleteId,
-					competitionParticipationId,
-				})
+				ProtocolExerciseResult.upsert(
+					{
+						...result,
+						sessionDate,
+						judgeId,
+						athleteId,
+						competitionParticipationId,
+					},
+					{ transaction }
+				)
 			)
 		);
 
+		// Суммирование `score` из ProtocolElementResult
+		const elementScores =
+			(await calculateElementScores(
+				competitionParticipationId,
+				transaction
+			)) || 0;
+
+		const exerciseScores =
+			(await ProtocolExerciseResult.sum('result', {
+				where: { competitionParticipationId },
+				transaction,
+			})) || 0;
+
+		const totalSum = elementScores + exerciseScores;
+
+		// Обновление TotalCompetitionResults
+		await TotalCompetitionResults.upsert(
+			{
+				competitionParticipationId,
+				totalScore: totalSum || 0,
+			},
+			{ transaction }
+		);
+
+		await transaction.commit();
 		res.status(200).json(updatedResults);
 	} catch (error) {
+		await transaction.rollback();
 		console.error('Error updating exercise results:', error);
 		res.status(500).json({ message: 'Error updating exercise results' });
 	}
@@ -55,13 +125,42 @@ exports.updateProtocolExerciseResults = async (req, res) => {
 exports.deleteProtocolExerciseResults = async (req, res) => {
 	const { competitionParticipationId, judgeId } = req.params;
 
+	const transaction = await sequelize.transaction();
+
 	try {
 		const deletedCount = await ProtocolExerciseResult.destroy({
 			where: {
 				competitionParticipationId,
 				judgeId,
 			},
+			transaction,
 		});
+
+		// Суммирование `score` из ProtocolElementResult
+		const elementScores =
+			(await calculateElementScores(
+				competitionParticipationId,
+				transaction
+			)) || 0;
+
+		const exerciseScores =
+			(await ProtocolExerciseResult.sum('result', {
+				where: { competitionParticipationId },
+				transaction,
+			})) || 0;
+
+		const totalSum = elementScores + exerciseScores;
+
+		// Обновление TotalCompetitionResults
+		await TotalCompetitionResults.upsert(
+			{
+				competitionParticipationId,
+				totalScore: totalSum || 0,
+			},
+			{ transaction }
+		);
+
+		await transaction.commit();
 
 		if (deletedCount > 0) {
 			res.status(200).json({ message: 'Protocol successfully deleted' });
@@ -69,6 +168,7 @@ exports.deleteProtocolExerciseResults = async (req, res) => {
 			res.status(404).json({ message: 'Protocol not found' });
 		}
 	} catch (error) {
+		await transaction.rollback();
 		console.error('Error deleting exercise results:', error);
 		res.status(500).json({ message: 'Error deleting exercise results' });
 	}

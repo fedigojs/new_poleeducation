@@ -5,6 +5,7 @@ const {
 	Level,
 	AthleteAge,
 	AthleteTrend,
+	TotalCompetitionResults,
 } = require('../../models');
 
 exports.getAllJudgementList = async (req, res) => {
@@ -26,6 +27,11 @@ exports.getAllJudgementList = async (req, res) => {
 						{
 							model: AthleteTrend,
 							attributes: ['trends'],
+						},
+						{
+							model: TotalCompetitionResults,
+							as: 'totalResult',
+							attributes: ['totalScore'],
 						},
 					],
 				},

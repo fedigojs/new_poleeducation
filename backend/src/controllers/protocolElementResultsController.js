@@ -1,10 +1,15 @@
 const {
+	sequelize,
 	ProtocolElementResult,
+	ProtocolExerciseResult,
 	ProtocolDetail,
 	ProtocolType,
 	CompetitionsParticipation,
+	TotalCompetitionResults,
 	Athlete,
 } = require('../models');
+
+const { calculateElementScores } = require('./utils/scoreCalculator');
 
 // Получение всех записей по атлету, участию в соревнованиях и типу протокола
 exports.findAllByAthleteParticipationAndType = async (req, res) => {
@@ -31,8 +36,6 @@ exports.findAllByAthleteParticipationAndType = async (req, res) => {
 			],
 		});
 
-		console.log('Query results:', results);
-
 		if (results.length === 0) {
 			console.log('No results found');
 			return res.status(404).send({ message: 'No results found' });
@@ -52,7 +55,6 @@ exports.findAllByAthleteParticipationAndType = async (req, res) => {
 // Получение всех записей по атлету
 exports.findAllByAthlete = async (req, res) => {
 	const { athleteId } = req.params;
-	console.log(`Received athleteId: ${athleteId}`);
 	try {
 		const results = await ProtocolElementResult.findAll({
 			where: { athleteId: parseInt(athleteId, 10) },
@@ -66,8 +68,6 @@ exports.findAllByAthlete = async (req, res) => {
 				{ model: Athlete, as: 'athlete' },
 			],
 		});
-
-		console.log('Query results:', results);
 
 		if (results.length === 0) {
 			console.log('No results found');
@@ -109,8 +109,6 @@ exports.findAllByAthleteParticipationAndJudge = async (req, res) => {
 			],
 		});
 
-		console.log('Query results:', results);
-
 		if (results.length === 0) {
 			console.log('No results found');
 			return res.status(404).send({ message: 'No results found' });
@@ -149,8 +147,6 @@ exports.findAllByAthleteAndParticipation = async (req, res) => {
 				{ model: Athlete, as: 'athlete' },
 			],
 		});
-
-		console.log('Query results:', results);
 
 		if (results.length === 0) {
 			console.log('No results found');
@@ -193,8 +189,6 @@ exports.findAllByAthleteParticipationTypeAndJudge = async (req, res) => {
 				{ model: Athlete, as: 'athlete' },
 			],
 		});
-
-		console.log('Query results:', results);
 
 		if (results.length === 0) {
 			console.log('No results found');
@@ -288,10 +282,44 @@ exports.create = async (req, res) => {
 		return;
 	}
 
+	const { competitionParticipationId } = req.body[0];
+
+	const transaction = await sequelize.transaction();
+
 	try {
-		const results = await ProtocolElementResult.bulkCreate(req.body);
+		const results = await ProtocolElementResult.bulkCreate(req.body, {
+			individualHooks: true,
+			transaction,
+		});
+
+		// Суммирование `score` из ProtocolElementResult
+		const elementScores = await calculateElementScores(
+			competitionParticipationId,
+			transaction
+		);
+
+		const exerciseScores =
+			(await ProtocolExerciseResult.sum('result', {
+				where: { competitionParticipationId },
+				transaction,
+			})) || 0;
+
+		const totalSum = elementScores + exerciseScores;
+
+		// Обновление TotalCompetitionResults
+		await TotalCompetitionResults.upsert(
+			{
+				competitionParticipationId,
+				totalScore: totalSum || 0,
+			},
+			{ transaction }
+		);
+
+		await transaction.commit();
 		res.status(201).send(results);
 	} catch (error) {
+		await transaction.rollback();
+		console.error('Ошибка при создании записей:', error);
 		res.status(500).send({
 			message:
 				error.message ||
@@ -304,19 +332,14 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
 	const { protocolTypeId, competitionParticipationId, judgeId } = req.params;
 
+	const transaction = await sequelize.transaction();
+
 	try {
 		if (!protocolTypeId || !competitionParticipationId || !judgeId) {
 			return res
 				.status(400)
 				.send({ message: 'Необходимые параметры не указаны' });
 		}
-
-		console.log('Parameters:', {
-			protocolTypeId,
-			competitionParticipationId,
-			judgeId,
-		});
-		console.log('Request body:', req.body);
 
 		const results = await ProtocolElementResult.findAll({
 			where: {
@@ -327,14 +350,13 @@ exports.update = async (req, res) => {
 				),
 				judgeId: parseInt(judgeId, 10),
 			},
+			transaction,
 		});
 
 		if (!results || results.length === 0) {
 			console.log('No results found with provided parameters');
 			return res.status(404).send({ message: 'Результат не найден.' });
 		}
-
-		console.log('Found results:', results);
 
 		const updatePromises = results.map((result) => {
 			const updatedData = req.body.find(
@@ -347,21 +369,45 @@ exports.update = async (req, res) => {
 					'with data:',
 					updatedData
 				);
-				return result.update(updatedData);
+				return result.update(updatedData, { transaction });
 			} else {
 				return Promise.resolve(result);
 			}
 		});
 
-		const updatedResults = await Promise.all(updatePromises);
+		await Promise.all(updatePromises);
 
-		console.log('Updated results:', updatedResults);
+		// Пересчитываем общий результат
+		const elementScores =
+			(await calculateElementScores(
+				competitionParticipationId,
+				transaction
+			)) || 0;
+
+		const exerciseScores =
+			(await ProtocolExerciseResult.sum('result', {
+				where: { competitionParticipationId },
+				transaction,
+			})) || 0;
+
+		const totalSum = elementScores + exerciseScores;
+
+		// Обновляем общий результат
+		await TotalCompetitionResults.upsert(
+			{
+				competitionParticipationId,
+				totalScore: totalSum || 0,
+			},
+			{ transaction }
+		);
+
+		await transaction.commit();
 
 		res.send({
 			message: 'Результаты успешно обновлены!',
-			data: updatedResults,
 		});
 	} catch (error) {
+		await transaction.rollback();
 		console.error('Ошибка при обновлении результатов:', error);
 		res.status(500).send({
 			message: 'Не удалось обновить результаты.',
@@ -373,18 +419,14 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
 	const { protocolTypeId, competitionParticipationId, judgeId } = req.params;
 
+	const transaction = await sequelize.transaction();
+
 	try {
 		if (!protocolTypeId || !competitionParticipationId || !judgeId) {
 			return res
 				.status(400)
 				.send({ message: 'Необходимые параметры не указаны' });
 		}
-
-		console.log('Parameters:', {
-			protocolTypeId,
-			competitionParticipationId,
-			judgeId,
-		});
 
 		const results = await ProtocolElementResult.findAll({
 			where: {
@@ -395,14 +437,13 @@ exports.delete = async (req, res) => {
 				),
 				judgeId: parseInt(judgeId, 10),
 			},
+			transaction,
 		});
 
 		if (!results || results.length === 0) {
 			console.log('No results found with provided parameters');
 			return res.status(404).send({ message: 'Результат не найден.' });
 		}
-
-		console.log('Found results:', results);
 
 		await ProtocolElementResult.destroy({
 			where: {
@@ -413,10 +454,37 @@ exports.delete = async (req, res) => {
 				),
 				judgeId: parseInt(judgeId, 10),
 			},
+			transaction,
 		});
+		// Пересчитываем общий результат
+		const elementScores =
+			(await calculateElementScores(
+				competitionParticipationId,
+				transaction
+			)) || 0;
+
+		const exerciseScores =
+			(await ProtocolExerciseResult.sum('result', {
+				where: { competitionParticipationId },
+				transaction,
+			})) || 0;
+
+		const totalSum = elementScores + exerciseScores;
+
+		// Обновляем общий результат
+		await TotalCompetitionResults.upsert(
+			{
+				competitionParticipationId,
+				totalScore: totalSum || 0,
+			},
+			{ transaction }
+		);
+
+		await transaction.commit();
 
 		res.send({ message: 'Результат успешно удален!' });
 	} catch (error) {
+		await transaction.rollback();
 		console.error('Ошибка при удалении результата:', error);
 		res.status(500).send({
 			message: 'Не удалось удалить результат.',

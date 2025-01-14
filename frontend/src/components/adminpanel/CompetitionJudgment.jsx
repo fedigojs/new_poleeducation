@@ -71,7 +71,9 @@ const CompetitionJudgment = () => {
 		level: item.level.name,
 		ageGroup: item.participation.AthleteAge.age,
 		athleteTrendName: item.participation.AthleteTrend.trends,
-		totalScore: item.totalscore,
+		totalScore: item.participation.totalResult
+			? item.participation.totalResult.totalScore
+			: 0,
 		competitionParticipationId: item.competitionParticipationId,
 		participation: {
 			AthleteTrend: item.participation.athleteTrendId,
@@ -217,6 +219,7 @@ const CompetitionJudgment = () => {
 			title: 'TotalScore',
 			dataIndex: 'totalScore',
 			key: 'totalScore',
+			sorter: (a, b) => a.totalScore - b.totalScore,
 		},
 		{
 			title: 'Action',

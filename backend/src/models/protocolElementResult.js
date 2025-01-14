@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		sessionDate: {
 			type: DataTypes.DATE,
-			allowNull: false, // Убедитесь, что дата сессии всегда указывается
+			allowNull: false,
 		},
 		athleteId: {
 			type: DataTypes.INTEGER,

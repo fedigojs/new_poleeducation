@@ -73,7 +73,6 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'disciplineId',
 			as: 'discipline',
 		});
-
 		CompetitionsParticipation.belongsToMany(models.Exercise, {
 			through: 'DetailExercises',
 			foreignKey: 'competitionParticipationId',
@@ -87,6 +86,10 @@ module.exports = (sequelize, DataTypes) => {
 		CompetitionsParticipation.hasMany(models.UploadedFile, {
 			foreignKey: 'competitionParticipationId',
 			as: 'uploadedFiles',
+		});
+		CompetitionsParticipation.hasOne(models.TotalCompetitionResults, {
+			foreignKey: 'competitionParticipationId',
+			as: 'totalResult',
 		});
 	};
 	return CompetitionsParticipation;
