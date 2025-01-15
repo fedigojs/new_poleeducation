@@ -68,22 +68,22 @@ const ModalJudgementDetails = ({
 			key: 'number',
 		},
 		{
-			title: 'Element',
+			title: t('title.element'),
 			dataIndex: 'element',
 			key: 'element',
 		},
 		{
-			title: 'Max Score',
+			title: t('title.maximum_score'),
 			dataIndex: 'max_score',
 			key: 'max_score',
 		},
 		{
-			title: 'Score',
+			title: t('title.score'),
 			dataIndex: 'score',
 			key: 'score',
 		},
 		{
-			title: 'Comment',
+			title: t('title.comment'),
 			dataIndex: 'comment',
 			key: 'comment',
 		},
@@ -91,17 +91,17 @@ const ModalJudgementDetails = ({
 
 	const exerciseColumns = [
 		{
-			title: 'Упражнение',
+			title: t('title.exercise'),
 			dataIndex: 'name',
 			key: 'name',
 		},
 		{
-			title: 'Описание',
+			title: t('title.description'),
 			dataIndex: 'descriptions',
 			key: 'descriptions',
 		},
 		{
-			title: 'Изображение',
+			title: t('title.image'),
 			dataIndex: 'image',
 			key: 'image',
 			render: (image, record) =>
@@ -116,7 +116,7 @@ const ModalJudgementDetails = ({
 				),
 		},
 		{
-			title: 'Выполнено',
+			title: t('title.completed'),
 			dataIndex: 'result',
 			key: 'completed',
 			render: (result) => (

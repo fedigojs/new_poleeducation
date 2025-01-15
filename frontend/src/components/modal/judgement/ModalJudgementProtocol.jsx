@@ -143,10 +143,10 @@ const ModalJudgementProtocol = ({
 				filteredScores
 			);
 			if (response.status === 201) {
-				message.success('Оценки успешно отправлены!');
+				message.success(t('common.results_successfully_preserved'));
 				onClose();
 			} else {
-				throw new Error('Не удалось отправить оценки');
+				throw new Error(t('common.could_not_save_results'));
 			}
 		} catch (error) {
 			console.error('Ошибка при отправке оценок:', error.message);
@@ -158,7 +158,7 @@ const ModalJudgementProtocol = ({
 		try {
 			if (!protocolTypeId || !competitionParticipationId || !judgeId) {
 				throw new Error(
-					'Необходимые параметры для удаления протокола не найдены'
+					t('common.required_protocol_removal_parameters_not_found')
 				);
 			}
 
@@ -166,7 +166,7 @@ const ModalJudgementProtocol = ({
 				`/api/protocol-result/type/${protocolTypeId}/participation/${competitionParticipationId}/judge/${judgeId}`
 			);
 			if (response.status === 200) {
-				message.success('Протокол успешно удален!');
+				message.success(t('common.protocol_successfully_removed'));
 				onClose();
 			} else {
 				throw new Error('Не удалось удалить протокол');

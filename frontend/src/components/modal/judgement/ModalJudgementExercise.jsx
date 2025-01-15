@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Modal, Button, Table, Spin, notification } from 'antd';
 import api from '../../../api/api';
 import { AuthContext } from '../../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const ModalJudgementExercise = ({
 	isOpen,
@@ -10,6 +11,7 @@ const ModalJudgementExercise = ({
 	errorMessage,
 	competitionParticipationId,
 }) => {
+	const { t } = useTranslation();
 	const { user } = useContext(AuthContext);
 	const [selectedParticipationDetails, setSelectedParticipationDetails] =
 		useState([]);
@@ -115,8 +117,8 @@ const ModalJudgementExercise = ({
 
 			if (response.status === 201) {
 				notification.success({
-					message: 'Успех',
-					description: 'Результаты успешно сохранены!',
+					message: t('common.success'),
+					description: t('common.results_successfully_preserved'),
 					placement: 'topRight',
 				});
 				onClose();
@@ -125,7 +127,7 @@ const ModalJudgementExercise = ({
 			}
 		} catch (error) {
 			notification.error({
-				message: 'Ошибка',
+				message: t('common.error'),
 				description: `Ошибка при сохранении результатов: ${
 					error.response?.data?.message || error.message
 				}`,
@@ -147,8 +149,8 @@ const ModalJudgementExercise = ({
 			);
 			if (response.status === 200) {
 				notification.success({
-					message: 'Успех',
-					description: 'Протокол успешно удален!',
+					message: t('common.success'),
+					description: t('common.protocol_successfully_removed'),
 					placement: 'topRight',
 				});
 				onClose();
@@ -184,8 +186,8 @@ const ModalJudgementExercise = ({
 			);
 			if (response.status === 200) {
 				notification.success({
-					message: 'Успех',
-					description: 'Протокол успешно обновлен!',
+					message: t('common.success'),
+					description: t('common.protocol_successfully_updated'),
 					placement: 'topRight',
 				});
 				onClose();
@@ -205,17 +207,17 @@ const ModalJudgementExercise = ({
 
 	const columns = [
 		{
-			title: 'Упражнение',
+			title: t('title.exercise'),
 			dataIndex: 'name',
 			key: 'name',
 		},
 		{
-			title: 'Описание',
+			title: t('title.description'),
 			dataIndex: 'descriptions',
 			key: 'descriptions',
 		},
 		{
-			title: 'Изображение',
+			title: t('title.image'),
 			dataIndex: 'image',
 			key: 'image',
 			render: (image, record) =>
@@ -230,7 +232,7 @@ const ModalJudgementExercise = ({
 				),
 		},
 		{
-			title: 'Выполнено',
+			title: t('title.completed'),
 			dataIndex: 'id',
 			key: 'completed',
 			render: (id) => (
@@ -250,12 +252,12 @@ const ModalJudgementExercise = ({
 			open={isOpen}
 			onCancel={onClose}
 			width={1200}
-			title='Детали упражнений'
+			title={t('title.exercises_details')}
 			footer={[
 				<Button
 					key='close'
 					onClick={onClose}>
-					Закрыть
+					{t('button.close')}
 				</Button>,
 			]}>
 			{loading ? (
@@ -263,7 +265,7 @@ const ModalJudgementExercise = ({
 			) : errorMessage ? (
 				<p className='error-message'>{errorMessage}</p>
 			) : selectedParticipationDetails.length === 0 ? (
-				<p>Данные отсутствуют.</p>
+				<p>{t('p.data_are_not_available')}</p>
 			) : (
 				<>
 					<h3>
@@ -277,15 +279,17 @@ const ModalJudgementExercise = ({
 					/>
 					<div style={{ textAlign: 'center', marginTop: '20px' }}>
 						<div>
-							<h3>Общая сумма баллов: {calculateTotalScore()}</h3>
+							<h3>
+								{t('h3.total points')}: {calculateTotalScore()}
+							</h3>
 						</div>
 						{isExistingProtocol ? (
 							<>
 								<Button onClick={handleUpdate}>
-									Обновить результаты
+									{t('button.edit')}
 								</Button>
 								<Button onClick={handleDelete}>
-									Удалить протокол
+									{t('button.delete')}
 								</Button>
 							</>
 						) : (
@@ -293,7 +297,7 @@ const ModalJudgementExercise = ({
 								type='primary'
 								onClick={handleSubmit}
 								style={{ marginRight: '10px' }}>
-								Сохранить результаты
+								{t('button.save')}
 							</Button>
 						)}
 					</div>
