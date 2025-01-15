@@ -282,6 +282,12 @@ exports.create = async (req, res) => {
 		return;
 	}
 
+	if (!Array.isArray(req.body) || req.body.length === 0) {
+		return res.status(400).send({
+			message: 'Invalid request body: expected a non-empty array.',
+		});
+	}
+
 	const { competitionParticipationId } = req.body[0];
 
 	const transaction = await sequelize.transaction();
