@@ -5,7 +5,13 @@
 		"database": "poleeducation_db",
 		"host": "db_auth",
 		"port": "5432",
-		"dialect": "postgres"
+		"dialect": "postgres",
+		"pool": {
+			"max": 10,
+			"min": 0,
+			"acquire": 30000,
+			"idle": 10000
+		}
 	},
 	"test": {
 		"username": "root",
