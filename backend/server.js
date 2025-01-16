@@ -103,6 +103,7 @@ app.use('/api/role', roleRoute);
 app.use('/api/score', scoreRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/admin', adminRoute);
+app.use('/api/draw-result', drawResultsRoute);
 app.use('/api/draw-judgement', judgementRoute);
 app.use('/api/draw-judgement-result', judgementResultDetailsRoute);
 
