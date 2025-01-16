@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Modal } from 'antd';
 import './ModalJudgementDetails.css';
 import CustomTable from '../../Table/customTable';
@@ -6,6 +6,7 @@ import api from '../../../api/api';
 import PropTypes from 'prop-types';
 import Spinner from '../../Spinner/Spinner';
 import { useTranslation } from 'react-i18next';
+import { AuthContext } from '../../../context/AuthContext';
 
 const ModalJudgementDetails = ({
 	isOpen,
@@ -13,6 +14,7 @@ const ModalJudgementDetails = ({
 	competitionParticipationId,
 }) => {
 	const { t } = useTranslation();
+	const { user } = useContext(AuthContext);
 	const [elementResults, setElementResults] = useState([]);
 	const [exerciseProtocols, setExerciseProtocols] = useState([]);
 	const [loading, setLoading] = useState(false);
@@ -199,9 +201,12 @@ const ModalJudgementDetails = ({
 											style={{
 												marginBottom: '20px',
 											}}>
-											<h5>
-												{t('h5.judge')}: {judge}
-											</h5>
+											{(user?.roleName === 'Admin' ||
+												user?.roleName === 'Judge') && (
+												<h5>
+													{t('h5.judge')}: {judge}
+												</h5>
+											)}
 											<CustomTable
 												dataSource={judgeData}
 												columns={elementColumns}
@@ -222,13 +227,16 @@ const ModalJudgementDetails = ({
 								<b>{t('h4.total_score')}:</b>{' '}
 								{totalExerciseScore}
 							</h5>
-							<h5>
-								{t('h5.judge')}:{' '}
-								{exerciseProtocols[0]?.judge.lastName +
-									' ' +
-									exerciseProtocols[0]?.judge.firstName ||
-									'Unknown'}
-							</h5>
+							{(user?.role === 'Admin' ||
+								user?.role === 'Judge') && (
+								<h5>
+									{t('h5.judge')}:{' '}
+									{exerciseProtocols[0]?.judge.lastName +
+										' ' +
+										exerciseProtocols[0]?.judge.firstName ||
+										'Unknown'}
+								</h5>
+							)}
 							<CustomTable
 								dataSource={exerciseProtocols}
 								columns={exerciseColumns}

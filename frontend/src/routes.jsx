@@ -16,11 +16,11 @@ import AthletesDraw from './components/adminpanel/AthletesDraw';
 import AthletesDrawJudge from './components/judgepanel/AthletesDrawJudge';
 import HomeJudge from './components/judgepanel/HomeJudge';
 import HomeCoach from './components/coachpanel/HomeCoach';
-import AthletesInCompetitionCoach from './components/coachpanel/AthletesInCompetitionCoach';
 import RegisterAthletePageCoach from './components/coachpanel/RegisterAthletePageCoach';
 import TestExerciseHomePage from './pages/HomePage/TestExerciseHomePage';
 import AddAthleteCoach from './components/coachpanel/AddAthleteCoach';
 import CompetitionJudgement from './components/adminpanel/CompetitionJudgment';
+import CompetitionJudgementCoach from './components/coachpanel/CompetitionJudgmentCoach';
 
 const AppRoutes = () => (
 	<Router>
@@ -103,8 +103,8 @@ const AppRoutes = () => (
 					element={<HomeCoach />}
 				/>
 				<Route
-					path='athletes-competitions'
-					element={<AthletesInCompetitionCoach />}
+					path='athletes-judgement-coach'
+					element={<CompetitionJudgementCoach />}
 				/>
 				<Route
 					path='add-registration'

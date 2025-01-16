@@ -267,8 +267,6 @@ exports.getDrawResultsByCoach = async (req, res) => {
 	try {
 		const { userId } = req.params; // Получаем userId из параметров маршрута
 
-		console.log('Received userId:', userId); // Логируем userId
-
 		if (!userId) {
 			return res.status(400).json({
 				message: 'UserId is required',
