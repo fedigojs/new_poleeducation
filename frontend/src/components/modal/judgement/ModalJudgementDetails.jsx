@@ -227,8 +227,8 @@ const ModalJudgementDetails = ({
 								<b>{t('h4.total_score')}:</b>{' '}
 								{totalExerciseScore}
 							</h5>
-							{(user?.role === 'Admin' ||
-								user?.role === 'Judge') && (
+							{(user?.roleName === 'Admin' ||
+								user?.roleName === 'Judge') && (
 								<h5>
 									{t('h5.judge')}:{' '}
 									{exerciseProtocols[0]?.judge.lastName +
