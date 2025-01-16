@@ -220,6 +220,10 @@ const CompetitionJudgment = () => {
 			dataIndex: 'totalScore',
 			key: 'totalScore',
 			sorter: (a, b) => a.totalScore - b.totalScore,
+			render: (totalScore) =>
+				totalScore !== null && totalScore !== undefined
+					? parseFloat(totalScore).toFixed(2)
+					: '',
 		},
 		{
 			title: 'Action',
