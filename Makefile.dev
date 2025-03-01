@@ -4,6 +4,8 @@ BACKUP_DIR = /var/www/poleeducation/backup
 VOLUME_NAME = poleeducation_db_data
 REMOTE_SERVER = user@your-server.com
 LOCAL_BACKUP_PATH = ./poleeducation_db_backup.tar.gz
+DOMAIN = poleeducation.in.ua
+EMAIL = fedigo.sj@gmail.com
 
 # Основная команда для деплоя
 build-and-deploy:
