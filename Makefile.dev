@@ -20,6 +20,21 @@ build-and-deploy:
 	sudo systemctl reload nginx || { echo "Failed to reload Nginx after deployment"; exit 1; }
 	@echo "Деплой завершён."
 
+# SSL Certificate Generation and Installation
+generate-ssl:
+	@echo "Generating SSL certificate for $(DOMAIN)..."
+	sudo apt update && sudo apt install -y certbot python3-certbot-nginx || { echo "Failed to install Certbot"; exit 1; }
+	sudo certbot --nginx -d $(DOMAIN) --email $(EMAIL) --agree-tos --non-interactive || { echo "Failed to generate SSL certificate"; exit 1; }
+	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
+	@echo "SSL certificate installed successfully!"
+
+# Auto-renew SSL Certificate
+renew-ssl:
+	@echo "Renewing SSL certificate..."
+	sudo certbot renew --quiet || { echo "Failed to renew SSL certificate"; exit 1; }
+	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
+	@echo "SSL certificate renewed successfully."
+
 # Бэкап базы данных
 backup-db:
 	@echo "Создание бэкапа базы данных..."
