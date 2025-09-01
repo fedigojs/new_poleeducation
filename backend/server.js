@@ -31,12 +31,12 @@ const judgementResultDetailsRoute = require('./src/routes/n1/judgementResultDeta
 
 // Sync database
 sequelize
-	.sync({ force: false }) // Note: { force: true } drops existing tables and recreates them
+	.authenticate()
 	.then(() => {
-		console.log('Database synchronized');
+		console.log('Database connected');
 	})
 	.catch((error) => {
-		console.error('Error synchronizing database:', error);
+		console.error('Error connecting to the database:', error);
 	});
 
 // Middleware
