@@ -32,47 +32,6 @@ const AthletesDraw = () => {
 		}
 	}, [selectedCompetition]);
 
-	const fetchProtocolStatuses = async (participant) => {
-		const { athleteId, competitionParticipationId } = participant;
-
-		if (!athleteId || !competitionParticipationId) {
-			console.error('Missing athleteId or competitionParticipationId');
-			return [];
-		}
-
-		try {
-			const response = await api.get(
-				`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}`
-			);
-
-			if (response.data && response.data.length > 0) {
-				const uniqueProtocolResults = Array.from(
-					new Set(
-						response.data.map((result) => result.protocolTypeId)
-					)
-				).map((protocolTypeId) => {
-					return response.data.find(
-						(result) => result.protocolTypeId === protocolTypeId
-					);
-				});
-
-				return uniqueProtocolResults.map((result) => ({
-					protocolTypeId: result.protocolTypeId,
-					isFilled: result.isFilled,
-				}));
-			} else {
-				return [];
-			}
-		} catch (error) {
-			if (error.response && error.response.status === 404) {
-				return [];
-			} else {
-				console.error('Error fetching protocol statuses:', error);
-				return [];
-			}
-		}
-	};
-
 	const fetchData = async () => {
 		setLoading(true);
 		try {
@@ -81,27 +40,8 @@ const AthletesDraw = () => {
 				(a, b) => a.performanceOrder - b.performanceOrder
 			);
 
-			const updatedParticipants = await Promise.all(
-				sortedData.map(async (participant) => {
-					const protocolStatuses = await fetchProtocolStatuses({
-						athleteId: participant.participation.athleteId,
-						competitionParticipationId:
-							participant.competitionParticipationId,
-					});
-					// const totalScore = await calculateTotalScore(
-					// 	participant.participation.athleteId,
-					// 	participant.participation.id
-					// );
-					return {
-						...participant,
-						protocolStatuses,
-						// totalScore,
-					};
-				})
-			);
-
-			setAllParticipants(updatedParticipants); // Сохраняем всех участников, отсортированных
-			setParticipants(updatedParticipants); // Обновляем текущее состояние участников
+			setAllParticipants(sortedData); // Сохраняем всех участников, отсортированных
+			setParticipants(sortedData); // Обновляем текущее состояние участников
 
 			const responseCompetition = await api.get('/api/competition');
 			setCompetitions(responseCompetition.data);
@@ -156,39 +96,17 @@ const AthletesDraw = () => {
 		}
 
 		try {
-			const newDrawResponse = await api.post(
+			await api.post(
 				`/api/draw-result/draw/${selectedCompetition}`
 			);
 
-			if (newDrawResponse.data && newDrawResponse.data.drawResults) {
-				const participants = newDrawResponse.data.drawResults.map(
-					(result) => ({
-						...result,
-						participation: result.participation,
-					})
-				);
-				const sortedParticipants = participants.sort(
-					(a, b) => a.performanceOrder - b.performanceOrder
-				);
+			// Полностью перезагружаем данные с сервера
+			await fetchData();
 
-				setAllParticipants(sortedParticipants); // Обновляем всех участников
-				setParticipants(sortedParticipants); // Обновляем текущих участников
-
-				const trends = Array.from(
-					new Set(
-						participants.map((item) =>
-							item.participation?.AthleteTrend?.trends
-								.split('(')[0]
-								.trim()
-						)
-					)
-				);
-				setTabTrends(trends); // Обновляем направления без скобок
-			} else {
-				console.error('Expected participants data is not available');
-			}
+			alert('Жеребьёвка успешно проведена');
 		} catch (error) {
 			console.error('Ошибка при проведении жеребьёвки:', error);
+			alert('Не удалось провести жеребьёвку: ' + error.message);
 		}
 	};
 
@@ -289,24 +207,20 @@ const AthletesDraw = () => {
 			};
 		});
 
-		setParticipants(updatedParticipants);
-		console.log('Calculated timings:', updatedParticipants);
-
 		// Обновление времени на сервере
 		try {
-			const response = await api.put(
+			await api.put(
 				`/api/draw-result/update-timing/${selectedCompetition}`,
 				updatedParticipants
 			);
-			if (response.status === 200) {
-				console.log('Timings successfully updated:', response.data);
-				const transformedData = response.data.results.map(
-					(item) => item[0]
-				);
-				setParticipants(transformedData);
-			}
+
+			// Полностью перезагружаем данные с сервера
+			await fetchData();
+
+			alert('Таймінг успішно розраховано');
 		} catch (error) {
 			console.error('Error updating timings:', error);
+			alert('Не вдалося розрахувати таймінг: ' + error.message);
 		}
 	};
 
@@ -317,12 +231,10 @@ const AthletesDraw = () => {
 			);
 			console.log(response.data.message); // Логирование сообщения об успешном удалении
 
-			// Обновление состояния для удаления всех результатов жеребьёвки данного соревнования
-			const updatedParticipants = allParticipants.filter(
-				(participant) => participant.competitionId !== competitionId
-			);
-			setParticipants(updatedParticipants);
-			setAllParticipants(updatedParticipants); // Обновляем состояние всех участников
+			// Полностью перезагружаем данные с сервера
+			await fetchData();
+
+			alert('Результаты жеребьёвки успешно удалены');
 		} catch (error) {
 			console.error('Ошибка при удалении результатов жеребьёвки:', error);
 			alert('Не удалось удалить результаты жеребьёвки: ' + error.message);
@@ -434,10 +346,8 @@ const AthletesDraw = () => {
 		},
 		{
 			title: 'AthleteTrend',
-			dataIndex: 'athleteTrendName',
+			dataIndex: ['participation', 'AthleteTrend', 'trends'],
 			key: 'athleteTrendName',
-			// filters: trendsFilters,
-			// onFilter: (value, record) => record.athleteTrendName === value,
 		},
 		{
 			title: 'Разряд',

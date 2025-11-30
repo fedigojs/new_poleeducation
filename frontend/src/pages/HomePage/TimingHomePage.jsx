@@ -11,9 +11,18 @@ const TimingHomePage = () => {
     const [trendOrder, setTrendOrder] = useState([]);
     const [selectedCompetition, setSelectedCompetition] = useState('');
     const [activeTrend, setActiveTrend] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetchData();
+
+        // Автообновление каждые 10 секунд
+        const interval = setInterval(() => {
+            fetchData();
+        }, 10000);
+
+        return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
@@ -65,6 +74,8 @@ const TimingHomePage = () => {
 
     const fetchData = async () => {
         try {
+            setIsLoading(true);
+            setError(null);
             const responseDraw = await api.get('/api/draw-result');
             const sortedData = responseDraw.data.sort(
                 (a, b) => a.performanceOrder - b.performanceOrder
@@ -81,6 +92,12 @@ const TimingHomePage = () => {
                         participant.participation.athleteId,
                         participant.participation.id
                     );
+
+                    // Сохраняем totalScore в БД
+                    if (totalScore !== participant.totalScore) {
+                        await updateParticipantTotalScore(participant.id, totalScore);
+                    }
+
                     return {
                         ...participant,
                         protocolStatuses,
@@ -112,6 +129,9 @@ const TimingHomePage = () => {
             setTabTrends(Array.from(uniqueTrends)); // Преобразуем Set в массив и сохраняем в состояние
         } catch (error) {
             console.error('Ошибка при получении данных:', error);
+            setError('Ошибка при загрузке данных. Попробуйте обновить страницу.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -315,13 +335,6 @@ const TimingHomePage = () => {
                     totalScore,
                 }
             );
-            setParticipants((prevParticipants) =>
-                prevParticipants.map((participant) =>
-                    participant.participation.id === participantId
-                        ? { ...participant, totalScore }
-                        : participant
-                )
-            );
         } catch (error) {
             console.error('Ошибка при обновлении общего балла:', error);
         }
@@ -338,6 +351,16 @@ const TimingHomePage = () => {
 
     return (
         <div>
+            {error && (
+                <div style={{ padding: '10px', backgroundColor: '#ffebee', color: '#c62828', marginBottom: '10px', borderRadius: '4px' }}>
+                    {error}
+                </div>
+            )}
+            {isLoading && (
+                <div style={{ padding: '10px', textAlign: 'center', color: '#666' }}>
+                    Загрузка данных...
+                </div>
+            )}
             <div className="tabs">
                 {tabTrends.map((trend, index) => (
                     <button
@@ -393,8 +416,9 @@ const TimingHomePage = () => {
                                         }
                                     </td>
                                     <td>
-                                        {/* {participant.totalScore}{' '} */}cc
-                                        {/* Отображаем общую сумму баллов */}
+                                        {participant.totalScore !== undefined && participant.totalScore !== null
+                                            ? participant.totalScore.toFixed(2)
+                                            : '0.00'}
                                     </td>
                                 </tr>
                             ))}

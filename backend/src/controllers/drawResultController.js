@@ -9,6 +9,7 @@ const {
 	AthleteAge,
 	AthleteTrend,
 	Level,
+	sequelize,
 } = require('../models');
 
 exports.conductDraw = async (req, res) => {
@@ -194,12 +195,15 @@ exports.getAllDrawResults = async (req, res) => {
 						},
 						{
 							model: Level,
+							as: 'Level',
 						},
 						{
 							model: AthleteAge,
+							as: 'AthleteAge',
 						},
 						{
 							model: AthleteTrend,
+							as: 'AthleteTrend',
 						},
 					],
 				},
