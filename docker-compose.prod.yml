@@ -38,6 +38,7 @@ services:
             - POSTGRES_PASSWORD=Igor18052008
         volumes:
             - db_data:/var/lib/postgresql/data
+            - ./db_backups:/backups
 
 volumes:
     db_data:

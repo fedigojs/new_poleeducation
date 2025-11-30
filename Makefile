@@ -73,3 +73,32 @@ download-backup:
 	@echo "Скачивание последнего бэкапа с сервера..."
 	scp $(REMOTE_SERVER):$(BACKUP_DIR)/poleeducation_db_backup.tar.gz $(LOCAL_BACKUP_PATH) || { echo "Failed to download backup"; exit 1; }
 	@echo "Последний бэкап скачан в $(LOCAL_BACKUP_PATH)"
+
+# Восстановление базы данных из бэкапа для dev окружения
+restore-db-dev:
+	@echo "Восстановление базы данных из бэкапа для dev окружения..."
+	@LATEST_BACKUP=$$(ls -t ./db_backups/*.tar.gz 2>/dev/null | head -1); \
+	if [ -z "$$LATEST_BACKUP" ]; then \
+		echo "Бэкапы не найдены в ./db_backups/"; \
+		exit 1; \
+	fi; \
+	echo "Используется бэкап: $$LATEST_BACKUP"; \
+	docker-compose -f docker-compose.dev.yml stop db_auth || { echo "Failed to stop database"; exit 1; }; \
+	docker run --rm \
+		-v poleeducationinua_db_data:/var/lib/postgresql/data \
+		-v $$(pwd)/db_backups:/backups \
+		busybox sh -c "rm -rf /var/lib/postgresql/data/* && tar xzf /backups/$$(basename $$LATEST_BACKUP) -C /var/lib/postgresql/data" || { echo "Failed to restore backup"; exit 1; }; \
+	docker-compose -f docker-compose.dev.yml start db_auth || { echo "Failed to start database"; exit 1; }; \
+	sleep 3; \
+	docker logs poleeducation_db; \
+	echo "Восстановление базы данных завершено."
+
+# Создание бэкапа для dev окружения
+backup-db-dev:
+	@echo "Создание бэкапа базы данных для dev окружения..."
+	@mkdir -p ./db_backups
+	docker run --rm \
+		-v poleeducationinua_db_data:/data \
+		-v $$(pwd)/db_backups:/backups \
+		busybox sh -c "tar czf /backups/poleeducation_db_backup_$$(date +%Y-%m-%d_%H-%M-%S).tar.gz -C /data ." || { echo "Failed to create backup"; exit 1; }
+	@echo "Бэкап создан в ./db_backups/poleeducation_db_backup_$$(date +%Y-%m-%d_%H-%M-%S).tar.gz"

@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button, Table, Select, Input, Space, message } from 'antd';
+import { Modal, Button, Table, Radio, Input, Space, message } from 'antd';
 import api from '../../../api/api';
 import { AuthContext } from '../../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import './ModalJudgementProtocol.css';
 
 const ModalJudgementProtocol = ({
 	isOpen,
@@ -21,11 +22,16 @@ const ModalJudgementProtocol = ({
 	const [isExistingProtocol, setIsExistingProtocol] = useState(false);
 	const [judgeId, setJudgeId] = useState(null);
 	const [scores, setScores] = useState([]);
+	const [generalComment, setGeneralComment] = useState('');
+	const [isInitialized, setIsInitialized] = useState(false);
+	const [isProtocolLoaded, setIsProtocolLoaded] = useState(false);
 
 	const resetData = () => {
 		setProtocolTypeId(initialProtocolTypeId);
 		setIsExistingProtocol(false);
 		setScores([]);
+		setIsInitialized(false);
+		setIsProtocolLoaded(false);
 	};
 
 	useEffect(() => {
@@ -37,7 +43,7 @@ const ModalJudgementProtocol = ({
 	}, [protocol]);
 
 	useEffect(() => {
-		if (protocol && user) {
+		if (protocol && user && !isInitialized) {
 			const additionalData = {
 				judgeId: user.userId,
 				competitionParticipationId,
@@ -57,14 +63,13 @@ const ModalJudgementProtocol = ({
 
 			setScores(newScores);
 			setJudgeId(user.userId);
-		} else {
-			setScores([]);
+			setIsInitialized(true);
 		}
-	}, [protocol, user]);
+	}, [protocol, user, isInitialized, competitionParticipationId, athleteId]);
 
 	useEffect(() => {
 		const loadExistingProtocol = async () => {
-			if (isOpen && protocolTypeId && judgeId) {
+			if (isOpen && protocolTypeId && judgeId && !isProtocolLoaded) {
 				try {
 					const response = await api.get(
 						`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}/judge/${judgeId}`
@@ -80,19 +85,21 @@ const ModalJudgementProtocol = ({
 
 						setScores(existingProtocol);
 						setIsExistingProtocol(true);
+						setIsProtocolLoaded(true);
 					} else {
-						console.log('No existing protocol found');
+						setIsProtocolLoaded(true);
 					}
 				} catch (error) {
 					console.error(
 						'Ошибка при загрузке существующего протокола:',
 						error
 					);
+					setIsProtocolLoaded(true);
 				}
 			}
 		};
 
-		if (isOpen && judgeId) {
+		if (isOpen && judgeId && !isProtocolLoaded) {
 			loadExistingProtocol();
 		}
 	}, [
@@ -102,14 +109,16 @@ const ModalJudgementProtocol = ({
 		competitionParticipationId,
 		protocolTypeId,
 		judgeId,
+		isProtocolLoaded,
 	]);
 
 	const generateOptions = (min, max, step) => {
 		const options = [];
 		for (let value = min; value <= max; value += step) {
+			const roundedValue = Math.round(value * 10) / 10;
 			options.push({
-				value,
-				label: value.toFixed(1),
+				value: roundedValue,
+				label: roundedValue.toFixed(1),
 			});
 		}
 		return options;
@@ -118,7 +127,7 @@ const ModalJudgementProtocol = ({
 	const handleChange = (index, field, value) => {
 		const updatedScores = scores.map((score, i) => {
 			if (i === index) {
-				return { ...score, [field]: value || 0 };
+				return { ...score, [field]: value };
 			}
 			return score;
 		});
@@ -209,26 +218,14 @@ const ModalJudgementProtocol = ({
 			title: t('title.element'),
 			dataIndex: 'elementName',
 			key: 'elementName',
-			width: '40%',
-		},
-		{
-			title: t('title.maximum_score'),
-			dataIndex: 'maxScore',
-			key: 'maxScore',
-			width: '15%',
-		},
-		{
-			title: t('title.step'),
-			dataIndex: 'step',
-			key: 'step',
-			width: '8%',
+			width: '30%',
 		},
 		...(scores.some((record) => record.maxScore !== 0 || record.step !== 0)
 			? [
 					{
 						title: t('title.score'),
 						key: 'score',
-						width: '10%',
+						width: '70%',
 						render: (_, record, index) => {
 							const min =
 								record.maxScore < 0 ? record.maxScore : 0;
@@ -239,38 +236,40 @@ const ModalJudgementProtocol = ({
 								return null;
 							}
 							const options = generateOptions(min, max, step);
+							const currentScore = Math.round(record.score * 10) / 10;
 							return (
-								<Select
-									options={options}
-									value={record.score}
-									onChange={(value) =>
-										handleChange(index, 'score', value)
-									}
-									style={{ width: '100%' }}
-								/>
+								<Radio.Group
+									value={currentScore}
+									onChange={(e) => {
+										handleChange(index, 'score', e.target.value);
+									}}
+									buttonStyle="solid"
+									size="small"
+								>
+									{options.map((option) => (
+										<Radio.Button
+											key={option.value}
+											value={option.value}
+										>
+											{option.label}
+										</Radio.Button>
+									))}
+								</Radio.Group>
 							);
 						},
 					},
 			  ]
 			: []),
-		{
-			title: t('title.comment'),
-			key: 'comment',
-			render: (_, record, index) => (
-				<Input
-					value={record.comment}
-					onChange={(e) =>
-						handleChange(index, 'comment', e.target.value)
-					}
-				/>
-			),
-		},
 	];
 
 	return (
 		<Modal
 			open={isOpen}
-			onCancel={onClose}
+			onCancel={() => {
+				setIsInitialized(false);
+				setIsProtocolLoaded(false);
+				onClose();
+			}}
 			footer={null}
 			title={protocol?.[0]?.protocolType?.name || 'Протокол'}
 			width='80%'>
@@ -284,6 +283,17 @@ const ModalJudgementProtocol = ({
 						rowKey='protocolDetailId'
 						pagination={false}
 					/>
+					<div style={{ marginTop: 16 }}>
+						<label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>
+							{t('title.comment') || 'Комментарий'}:
+						</label>
+						<Input.TextArea
+							value={generalComment}
+							onChange={(e) => setGeneralComment(e.target.value)}
+							placeholder="Введите общий комментарий..."
+							rows={4}
+						/>
+					</div>
 					<Space style={{ marginTop: 16 }}>
 						{isExistingProtocol ? (
 							<>
@@ -311,7 +321,11 @@ const ModalJudgementProtocol = ({
 								Сохранить протокол
 							</Button>
 						)}
-						<Button onClick={onClose}>Закрыть</Button>
+						<Button onClick={() => {
+							setIsInitialized(false);
+							setIsProtocolLoaded(false);
+							onClose();
+						}}>Закрыть</Button>
 					</Space>
 				</>
 			)}

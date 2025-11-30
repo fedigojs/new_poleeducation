@@ -74,3 +74,20 @@
     font-size: 16px;
     margin-bottom: 20px;
 }
+
+/* Score buttons styling */
+.ant-radio-group-solid .ant-radio-button-wrapper-checked {
+    background: #1890ff;
+    border-color: #1890ff;
+}
+
+.ant-radio-button-wrapper {
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+.ant-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
