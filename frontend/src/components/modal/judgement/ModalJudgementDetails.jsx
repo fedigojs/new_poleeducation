@@ -84,11 +84,6 @@ const ModalJudgementDetails = ({
 			dataIndex: 'score',
 			key: 'score',
 		},
-		{
-			title: t('title.comment'),
-			dataIndex: 'comment',
-			key: 'comment',
-		},
 	];
 
 	const exerciseColumns = [
@@ -213,6 +208,12 @@ const ModalJudgementDetails = ({
 												rowKey='key'
 												pagination={false}
 											/>
+											{judgeData[0]?.comment && (
+												<div style={{ marginTop: '12px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+													<strong>{t('title.comment') || 'Комментарий'}:</strong>
+													<div style={{ marginTop: '4px' }}>{judgeData[0].comment}</div>
+												</div>
+											)}
 										</div>
 									)
 								)}
