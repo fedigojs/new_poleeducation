@@ -4,6 +4,8 @@ const router = express.Router();
 const drawResultController = require('../controllers/drawResultController');
 
 router.get('/by-coach/:userId', drawResultController.getDrawResultsByCoach);
+router.get('/competition/:competitionId', drawResultController.getDrawResultsByCompetition);
+router.get('/competition/:competitionId/coach/:userId', drawResultController.getDrawResultsByCompetitionAndCoach);
 router.post('/draw/:competitionId', drawResultController.conductDraw);
 router.put('/update-timing/:competitionId', drawResultController.updateTiming);
 router.get('/', drawResultController.getAllDrawResults);

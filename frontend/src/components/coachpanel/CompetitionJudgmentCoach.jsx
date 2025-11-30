@@ -6,7 +6,7 @@ import api from '../../api/api';
 import CustomTable from '../Table/customTable';
 import ModalJudgementDetails from '../modal/judgement/ModalJudgementDetails';
 import ModalJudgement from '../modal/judgement/ModalJudgement';
-import { Button, Space, Layout } from 'antd';
+import { Button, Space, Layout, Select } from 'antd';
 import { SolutionOutlined, SearchOutlined } from '@ant-design/icons';
 import Spinner from '../Spinner/Spinner';
 
@@ -19,19 +19,31 @@ const CompetitionJudgmentCouch = () => {
 		useState(false);
 	const [selectedParticipant, setSelectedParticipant] = useState(null);
 	const [isJudgementModalOpen, setIsJudgementModalOpen] = useState(false);
+	const [selectedCompetition, setSelectedCompetition] = useState('');
+
+	const { data: competitions = [] } = useQuery({
+		queryKey: ['competitions'],
+		queryFn: async () => {
+			const response = await api.get('/api/competition');
+			return response.data;
+		},
+	});
 
 	const {
 		data: competitionList = [],
 		isLoading,
 		error,
 	} = useQuery({
-		queryKey: ['competitionList'],
-		queryFn: async () =>
-			await CompetitionJudgementAPI.listJudgementByCoach(user.userId),
+		queryKey: ['competitionList', selectedCompetition, user.userId],
+		queryFn: async () => {
+			if (!selectedCompetition) return [];
+			const response = await api.get(
+				`/api/draw-result/competition/${selectedCompetition}/coach/${user.userId}`
+			);
+			return response.data;
+		},
+		enabled: !!selectedCompetition && !!user?.userId,
 	});
-
-	if (isLoading) return <Spinner />;
-	if (error) return <p>Error loading data: {error.message}</p>;
 
 	const handleJudgeSubmit = async (e) => {
 		e.preventDefault(); // Предотвращаем стандартное поведение формы
@@ -58,13 +70,13 @@ const CompetitionJudgmentCouch = () => {
 		}
 	};
 
-	const dataTable = competitionList.map((item, index) => ({
+	const dataTable = competitionList.map((item) => ({
 		key: item.participation.id,
 		no: item.performanceOrder,
 		performanceOrder: item.performanceOrder,
 		timings: `${item.timing} - day ${item.competitionDay}`,
 		sportsman: `${item.participation.Athlete.firstName} ${item.participation.Athlete.lastName}`,
-		level: item.level.name,
+		level: item.level?.name,
 		ageGroup: item.participation.AthleteAge.age,
 		athleteTrendName: item.participation.AthleteTrend.trends,
 		totalScore: item.participation.totalResult
@@ -244,18 +256,75 @@ const CompetitionJudgmentCouch = () => {
 	return (
 		<Layout className='layout'>
 			<h1>Competition Judgment</h1>
-			<CustomTable
-				dataSource={dataTable}
-				columns={columns}
-				rowKey='key'
-				pagination={{
-					pageSize,
-					onChange: (page, size) => {
-						setCurrentPage(page);
-						setPageSize(size);
-					},
-				}}
-			/>
+
+			<div
+				style={{
+					marginBottom: '20px',
+					display: 'flex',
+					gap: '10px',
+					alignItems: 'center',
+				}}>
+				<span style={{ fontWeight: 'bold' }}>Змагання:</span>
+				<Select
+					style={{ width: 300 }}
+					placeholder='Виберіть змагання'
+					value={selectedCompetition || undefined}
+					onChange={(value) => setSelectedCompetition(value)}
+					allowClear
+					onClear={() => setSelectedCompetition('')}>
+					{competitions.map((competition) => (
+						<Select.Option
+							key={competition.id}
+							value={competition.id}>
+							{competition.title}
+						</Select.Option>
+					))}
+				</Select>
+				{selectedCompetition && (
+					<span style={{ color: '#666' }}>
+						Показано: {dataTable.length} учасників
+					</span>
+				)}
+			</div>
+
+			{!selectedCompetition && (
+				<div
+					style={{
+						textAlign: 'center',
+						padding: '60px 20px',
+						backgroundColor: '#f5f5f5',
+						borderRadius: '8px',
+					}}>
+					<p style={{ fontSize: '16px', color: '#666', margin: 0 }}>
+						Будь ласка, виберіть змагання для відображення учасників
+					</p>
+				</div>
+			)}
+
+			{selectedCompetition && (
+				<>
+					{isLoading && <Spinner />}
+					{error && (
+						<p style={{ color: 'red' }}>
+							Помилка завантаження даних: {error.message}
+						</p>
+					)}
+					{!isLoading && !error && (
+						<CustomTable
+							dataSource={dataTable}
+							columns={columns}
+							rowKey='key'
+							pagination={{
+								pageSize,
+								onChange: (page, size) => {
+									setCurrentPage(page);
+									setPageSize(size);
+								},
+							}}
+						/>
+					)}
+				</>
+			)}
 
 			<ModalJudgementDetails
 				isOpen={isDetailJudgementModalOpen}

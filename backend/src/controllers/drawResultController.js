@@ -9,8 +9,8 @@ const {
 	AthleteAge,
 	AthleteTrend,
 	Level,
-	sequelize,
 } = require('../models');
+const { Op } = require('sequelize');
 
 exports.conductDraw = async (req, res) => {
 	try {
@@ -142,7 +142,7 @@ exports.updateTiming = async (req, res) => {
 		// Получаем обновленные данные после изменения
 		const updatedResults = await DrawResult.findAll({
 			where: {
-				id: { [sequelize.Op.in]: updates.map((u) => u.id) },
+				id: { [Op.in]: updates.map((u) => u.id) },
 			},
 			include: [
 				{
@@ -343,6 +343,74 @@ exports.updateTotalScore = async (req, res) => {
 		console.error('Error updating totalScore:', error);
 		res.status(400).json({
 			message: 'Error updating totalScore',
+			error: error.message,
+		});
+	}
+};
+
+exports.getDrawResultsByCompetition = async (req, res) => {
+	try {
+		const { competitionId } = req.params;
+
+		const drawResults = await DrawResult.findAll({
+			where: { competitionId },
+			include: [
+				{
+					model: CompetitionsParticipation,
+					as: 'participation',
+					include: [
+						{ model: Athlete, as: 'Athlete' },
+						{ model: Discipline, as: 'discipline' },
+						{ model: Exercise, as: 'exercises' },
+						{ model: Level, as: 'Level' },
+						{ model: AthleteAge, as: 'AthleteAge' },
+						{ model: AthleteTrend, as: 'AthleteTrend' },
+					],
+				},
+			],
+		});
+
+		res.status(200).json(drawResults);
+	} catch (error) {
+		console.error('Error retrieving draw results by competition:', error);
+		res.status(500).json({
+			message: 'Error retrieving draw results by competition',
+			error: error.message,
+		});
+	}
+};
+
+exports.getDrawResultsByCompetitionAndCoach = async (req, res) => {
+	try {
+		const { competitionId, userId } = req.params;
+
+		const drawResults = await DrawResult.findAll({
+			where: { competitionId },
+			include: [
+				{
+					model: CompetitionsParticipation,
+					as: 'participation',
+					include: [
+						{
+							model: Athlete,
+							as: 'Athlete',
+							where: { coachId: userId },
+						},
+						{ model: Discipline, as: 'discipline' },
+						{ model: Exercise, as: 'exercises' },
+						{ model: Level, as: 'Level' },
+						{ model: AthleteAge, as: 'AthleteAge' },
+						{ model: AthleteTrend, as: 'AthleteTrend' },
+					],
+				},
+			],
+		});
+
+		res.status(200).json(drawResults);
+	} catch (error) {
+		console.error('Error retrieving draw results by competition and coach:', error);
+		res.status(500).json({
+			message: 'Error retrieving draw results by competition and coach',
 			error: error.message,
 		});
 	}

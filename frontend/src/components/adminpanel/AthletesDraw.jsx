@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../api/api';
 import './AthletesDraw.css';
 import { Layout } from 'antd';
@@ -89,25 +89,112 @@ const AthletesDraw = () => {
 		}
 	};
 
-	const handleDraw = async () => {
+
+	const handleDrawAndTiming = async () => {
 		if (!selectedCompetition) {
-			alert('Пожалуйста, выберите соревнование.');
+			alert('Будь ласка, виберіть змагання.');
 			return;
 		}
 
+		setLoading(true);
 		try {
-			await api.post(
-				`/api/draw-result/draw/${selectedCompetition}`
-			);
+			// Сначала проводим жеребьевку
+			await api.post(`/api/draw-result/draw/${selectedCompetition}`);
 
-			// Полностью перезагружаем данные с сервера
+			// Перезагружаем данные чтобы получить участников
 			await fetchData();
 
-			alert('Жеребьёвка успешно проведена');
+			// Применяем порядок направлений перед расчетом тайминга
+			let participantsForTiming = [...allParticipants];
+
+			if (trendOrder.length > 0) {
+				// Сортируем участников согласно выбранному порядку направлений
+				const orderedTrends = trendOrder.map((item) => item.trend);
+				participantsForTiming = participantsForTiming.sort((a, b) => {
+					const trendA = a.participation.AthleteTrend.trends
+						.split('(')[0]
+						.trim();
+					const trendB = b.participation.AthleteTrend.trends
+						.split('(')[0]
+						.trim();
+					const positionA = orderedTrends.indexOf(trendA);
+					const positionB = orderedTrends.indexOf(trendB);
+
+					if (positionA !== -1 && positionB !== -1) {
+						return positionA - positionB;
+					} else if (positionA !== -1) {
+						return -1;
+					} else if (positionB !== -1) {
+						return 1;
+					}
+					return a.performanceOrder - b.performanceOrder;
+				});
+
+				// Обновляем performanceOrder
+				participantsForTiming = participantsForTiming.map((p, index) => ({
+					...p,
+					performanceOrder: index + 1,
+				}));
+
+				// Сохраняем обновленный порядок
+				setAllParticipants(participantsForTiming);
+				setParticipants(participantsForTiming);
+			}
+
+			// Затем автоматически рассчитываем тайминг
+			await calculateTimingInternal(participantsForTiming);
+
+			alert('Жеребкування та таймінг успішно розраховані');
 		} catch (error) {
-			console.error('Ошибка при проведении жеребьёвки:', error);
-			alert('Не удалось провести жеребьёвку: ' + error.message);
+			console.error('Помилка:', error);
+			alert('Не вдалося виконати операцію: ' + error.message);
+		} finally {
+			setLoading(false);
 		}
+	};
+
+	const calculateTimingInternal = async (participantsData = null) => {
+		if (!selectedCompetition) {
+			return;
+		}
+
+		const dataToUse = participantsData || participants;
+
+		let currentTime = new Date(`2024-01-01T${startTime}:00Z`);
+		const endTimeOfDay = new Date(`2024-01-01T${endTime}:00Z`);
+		const lunchStartTime = new Date(`2024-01-01T${lunchBreakStart}:00Z`);
+		const lunchEndTime = new Date(`2024-01-01T${lunchBreakEnd}:00Z`);
+
+		let currentDay = 1;
+
+		const updatedParticipants = dataToUse.map((participant) => {
+			if (currentTime >= lunchStartTime && currentTime < lunchEndTime) {
+				currentTime = new Date(lunchEndTime);
+			}
+			if (currentTime >= endTimeOfDay) {
+				currentTime = new Date(`2024-01-01T${startTime}:00Z`);
+				currentDay++;
+			}
+
+			const timeStr = currentTime.toISOString().substring(11, 16);
+			const dayStr = currentDay;
+
+			currentTime = new Date(
+				currentTime.getTime() +
+					(performanceDuration + breakDuration) * 60000
+			);
+
+			return {
+				...participant,
+				timing: timeStr,
+				competitionDay: dayStr,
+			};
+		});
+
+		await api.put(
+			`/api/draw-result/update-timing/${selectedCompetition}`,
+			updatedParticipants
+		);
 	};
 
 	// Функция для изменения порядка направлений
@@ -170,57 +257,20 @@ const AthletesDraw = () => {
 
 	const calculateTiming = async () => {
 		if (!selectedCompetition) {
-			alert('Please select a competition before calculating timings.');
+			alert('Будь ласка, виберіть змагання.');
 			return;
 		}
 
-		let currentTime = new Date(`2024-01-01T${startTime}:00Z`);
-		const endTimeOfDay = new Date(`2024-01-01T${endTime}:00Z`);
-		const lunchStartTime = new Date(`2024-01-01T${lunchBreakStart}:00Z`);
-		const lunchEndTime = new Date(`2024-01-01T${lunchBreakEnd}:00Z`);
-
-		let currentDay = 1; // Начинаем с первого дня
-
-		const updatedParticipants = participants.map((participant) => {
-			// Обработка обеденного перерыва
-			if (currentTime >= lunchStartTime && currentTime < lunchEndTime) {
-				currentTime = new Date(lunchEndTime);
-			}
-			// Обработка окончания дня
-			if (currentTime >= endTimeOfDay) {
-				currentTime = new Date(`2024-01-01T${startTime}:00Z`);
-				currentDay++; // Переход на следующий день
-			}
-
-			const timeStr = currentTime.toISOString().substring(11, 16);
-			const dayStr = currentDay; // Отображение текущего дня
-
-			currentTime = new Date(
-				currentTime.getTime() +
-					(performanceDuration + breakDuration) * 60000
-			);
-
-			return {
-				...participant,
-				timing: timeStr,
-				competitionDay: dayStr,
-			};
-		});
-
-		// Обновление времени на сервере
+		setLoading(true);
 		try {
-			await api.put(
-				`/api/draw-result/update-timing/${selectedCompetition}`,
-				updatedParticipants
-			);
-
-			// Полностью перезагружаем данные с сервера
+			await calculateTimingInternal();
 			await fetchData();
-
-			alert('Таймінг успішно розраховано');
+			alert('Таймінг успішно перераховано');
 		} catch (error) {
 			console.error('Error updating timings:', error);
 			alert('Не вдалося розрахувати таймінг: ' + error.message);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -311,15 +361,6 @@ const AthletesDraw = () => {
 	// 	}
 	// };
 
-	const dayColors = [
-		'#F0F8FF', // Alice Blue
-		'#FAEBD7', // Antique White
-		'#F5F5DC', // Beige
-		'#FFEFD5', // Papaya Whip
-		'#FFF5EE', // SeaShell
-		'#F5F5F5', // White Smoke
-	];
-
 	const columns = [
 		{
 			title: '№',
@@ -387,192 +428,232 @@ const AthletesDraw = () => {
 									</option>
 								))}
 							</select>
-							<button
-								className='edit-button'
-								onClick={() => {
-									handleDraw(selectedCompetition);
-								}}>
-								Провести жеребкування
-							</button>
-							<button
-								className='delete-button'
-								onClick={() => {
-									deleteAllDrawResultsForCompetition(
-										selectedCompetition
-									);
-								}}>
-								Видалити жеребкування
-							</button>
 						</div>
-						<div className='trend-container'>
-							{tabTrends
-								.sort((a, b) => a.localeCompare(b))
-								.map((trend, index) => {
-									const trendName = trend
-										.split('(')[0]
-										.trim();
-									return (
-										<div
-											className='trend-item'
-											key={index}>
-											<label>{trendName}</label>
-											<select
-												value={
-													trendOrder.find(
-														(item) =>
-															item.trend ===
-															trendName
-													)?.position || ''
-												}
-												onChange={(e) =>
-													handleTrendOrderChange(
-														trendName,
-														e.target.value
-													)
-												}>
-												<option value=''>
-													Встановити
-												</option>
-												{Array.from(
-													{
-														length: tabTrends.length,
-													},
-													(_, i) => (
-														<option
-															key={i}
-															value={i + 1}>
-															{i + 1}
-														</option>
-													)
-												)}
-											</select>
+
+						{selectedCompetition && tabTrends.length > 0 && (
+							<>
+								<div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+									<h3 style={{ marginTop: 0 }}>Налаштування порядку напрямків</h3>
+									<p style={{ margin: '10px 0', color: '#666', fontSize: '14px' }}>
+										Встановіть порядок виходу напрямків. Це вплине на порядок виступів у жеребкуванні.
+									</p>
+									<div className='trend-container'>
+										{tabTrends
+											.sort((a, b) => a.localeCompare(b))
+											.map((trend, index) => {
+												const trendName = trend
+													.split('(')[0]
+													.trim();
+												return (
+													<div
+														className='trend-item'
+														key={index}>
+														<label>{trendName}</label>
+														<select
+															value={
+																trendOrder.find(
+																	(item) =>
+																		item.trend ===
+																		trendName
+																)?.position || ''
+															}
+															onChange={(e) =>
+																handleTrendOrderChange(
+																	trendName,
+																	e.target.value
+																)
+															}>
+															<option value=''>
+																Встановити
+															</option>
+															{Array.from(
+																{
+																	length: tabTrends.length,
+																},
+																(_, i) => (
+																	<option
+																		key={i}
+																		value={i + 1}>
+																		{i + 1}
+																	</option>
+																)
+															)}
+														</select>
+													</div>
+												);
+											})}
+									</div>
+								</div>
+
+								<div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+									<h3 style={{ marginTop: 0 }}>Налаштування таймінгу</h3>
+									<div className='form-group'>
+										<div className='row'>
+											<div className='col'>
+												<label htmlFor='start-time'>
+													Час початку:
+												</label>
+												<input
+													id='start-time'
+													type='time'
+													value={startTime}
+													onChange={(e) =>
+														setStartTime(e.target.value)
+													}
+												/>
+											</div>
+											<div className='col'>
+												<label htmlFor='end-time'>
+													Час закінчення дня:
+												</label>
+												<input
+													id='end-time'
+													type='time'
+													value={endTime}
+													onChange={(e) =>
+														setEndTime(e.target.value)
+													}
+												/>
+											</div>
+											<div className='col'>
+												<label htmlFor='performance-duration'>
+													Тривалість виступу (хв):
+												</label>
+												<input
+													id='performance-duration'
+													type='number'
+													value={performanceDuration}
+													onChange={(e) =>
+														setPerformanceDuration(
+															Number(e.target.value)
+														)
+													}
+												/>
+											</div>
 										</div>
-									);
-								})}
-						</div>
 
-						<div className='form-group'>
-							<div className='row'>
-								<div className='col'>
-									<label htmlFor='start-time'>
-										Час початку:
-									</label>
-									<input
-										id='start-time'
-										type='time'
-										value={startTime}
-										onChange={(e) =>
-											setStartTime(e.target.value)
-										}
-									/>
+										<div className='row'>
+											<div className='col'>
+												<label htmlFor='break-duration'>
+													Тривалість перерви (хв):
+												</label>
+												<input
+													id='break-duration'
+													type='number'
+													value={breakDuration}
+													onChange={(e) =>
+														setBreakDuration(
+															Number(e.target.value)
+														)
+													}
+												/>
+											</div>
+											<div className='col'>
+												<label htmlFor='lunch-start-time'>
+													Обідня перерва початок:
+												</label>
+												<input
+													id='lunch-start-time'
+													type='time'
+													value={lunchBreakStart}
+													onChange={(e) =>
+														setLunchBreakStart(e.target.value)
+													}
+												/>
+											</div>
+											<div className='col'>
+												<label htmlFor='lunch-end-time'>
+													Обідня перерва кінець:
+												</label>
+												<input
+													id='lunch-end-time'
+													type='time'
+													value={lunchBreakEnd}
+													onChange={(e) =>
+														setLunchBreakEnd(e.target.value)
+													}
+												/>
+											</div>
+										</div>
+									</div>
 								</div>
-								<div className='col'>
-									<label htmlFor='end-time'>
-										Час закінчення дня:
-									</label>
-									<input
-										id='end-time'
-										type='time'
-										value={endTime}
-										onChange={(e) =>
-											setEndTime(e.target.value)
-										}
-									/>
+							</>
+						)}
+
+						{participants.length > 0 && (
+							<>
+								<div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'center' }}>
+									<button
+										className='calculate-button'
+										onClick={calculateTiming}>
+										Перерахувати таймінг
+									</button>
+									<button
+										className='delete-button'
+										onClick={() => {
+											deleteAllDrawResultsForCompetition(
+												selectedCompetition
+											);
+										}}>
+										Видалити жеребкування
+									</button>
 								</div>
-								<div className='col'>
-									<label htmlFor='performance-duration'>
-										Тривалість виступу (хв):
-									</label>
-									<input
-										id='performance-duration'
-										type='number'
-										value={performanceDuration}
-										onChange={(e) =>
-											setPerformanceDuration(
-												Number(e.target.value)
-											)
-										}
-									/>
-								</div>
+							</>
+						)}
+
+						{!selectedCompetition && (
+							<div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+								<p style={{ fontSize: '16px' }}>Виберіть змагання для початку роботи</p>
 							</div>
+						)}
 
-							<div className='row'>
-								<div className='col'>
-									<label htmlFor='break-duration'>
-										Тривалість перерви (хв):
-									</label>
-									<input
-										id='break-duration'
-										type='number'
-										value={breakDuration}
-										onChange={(e) =>
-											setBreakDuration(
-												Number(e.target.value)
-											)
-										}
-									/>
+						{selectedCompetition && participants.length === 0 && (
+							<>
+								<div style={{ textAlign: 'center', padding: '40px', backgroundColor: '#fff3cd', borderRadius: '8px', marginTop: '20px' }}>
+									<p style={{ fontSize: '16px', color: '#856404', margin: 0, marginBottom: '15px' }}>
+										Немає учасників жеребкування. Натисніть кнопку нижче, щоб провести жеребкування та розрахувати таймінг.
+									</p>
 								</div>
-								<div className='col'>
-									<label htmlFor='lunch-start-time'>
-										Обідня перерва початок:
-									</label>
-									<input
-										id='lunch-start-time'
-										type='time'
-										value={lunchBreakStart}
-										onChange={(e) =>
-											setLunchBreakStart(e.target.value)
-										}
-									/>
+								<div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'center' }}>
+									<button
+										className='edit-button'
+										onClick={handleDrawAndTiming}>
+										Провести жеребкування та розрахувати таймінг
+									</button>
 								</div>
-								<div className='col'>
-									<label htmlFor='lunch-end-time'>
-										Обідня перерва кінець:
-									</label>
-									<input
-										id='lunch-end-time'
-										type='time'
-										value={lunchBreakEnd}
-										onChange={(e) =>
-											setLunchBreakEnd(e.target.value)
-										}
-									/>
-								</div>
-							</div>
-						</div>
-
-						<button
-							className='calculate-button'
-							onClick={calculateTiming}>
-							Розрахувати таймінг
-						</button>
+							</>
+						)}
 					</div>
 
-					<div className='tabs'>
-						{tabTrends.map((trend, index) => (
-							<button
-								key={index}
-								className={`tab-link ${
-									trend === activeTrend ? 'active' : ''
-								}`}
-								onClick={() => handleTabClick(trend)}>
-								{trend}
-							</button>
-						))}
-						<button
-							className='tab-link reset-button'
-							onClick={resetFilter}>
-							Скинути фільтр
-						</button>
-					</div>
+					{participants.length > 0 && (
+						<>
+							<div className='tabs'>
+								{tabTrends.map((trend, index) => (
+									<button
+										key={index}
+										className={`tab-link ${
+											trend === activeTrend ? 'active' : ''
+										}`}
+										onClick={() => handleTabClick(trend)}>
+										{trend}
+									</button>
+								))}
+								<button
+									className='tab-link reset-button'
+									onClick={resetFilter}>
+									Скинути фільтр
+								</button>
+							</div>
 
-					<CustomTable
-						dataSource={participants}
-						columns={columns}
-						rowKey='id'
-						pagination={{ pageSize: 100 }}
-						style={{ marginTop: 0 }}
-					/>
+							<CustomTable
+								dataSource={participants}
+								columns={columns}
+								rowKey='id'
+								pagination={{ pageSize: 100 }}
+								style={{ marginTop: 0 }}
+							/>
+						</>
+					)}
 				</>
 			)}
 		</Layout>
