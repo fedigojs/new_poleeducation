@@ -32,6 +32,7 @@ const ModalJudgementProtocol = ({
 		setScores([]);
 		setIsInitialized(false);
 		setIsProtocolLoaded(false);
+		setGeneralComment('');
 	};
 
 	useEffect(() => {
@@ -61,6 +62,11 @@ const ModalJudgementProtocol = ({
 				comment: element.comment || '',
 			}));
 
+			// Установить общий комментарий из первого элемента
+			if (protocol[0]?.comment) {
+				setGeneralComment(protocol[0].comment);
+			}
+
 			setScores(newScores);
 			setJudgeId(user.userId);
 			setIsInitialized(true);
@@ -82,6 +88,11 @@ const ModalJudgementProtocol = ({
 							step: item.detail.step,
 							comment: item.comment || '',
 						}));
+
+						// Установить общий комментарий из первого элемента
+						if (response.data[0]?.comment) {
+							setGeneralComment(response.data[0].comment);
+						}
 
 						setScores(existingProtocol);
 						setIsExistingProtocol(true);
@@ -137,9 +148,11 @@ const ModalJudgementProtocol = ({
 	const handleSubmit = async () => {
 		const sessionDate = new Date().toISOString();
 
-		const scoresWithDate = scores.map((score) => ({
+		const scoresWithDate = scores.map((score, index) => ({
 			...score,
 			sessionDate,
+			// Добавить общий комментарий к первому элементу
+			comment: index === 0 ? generalComment : '',
 		}));
 
 		const filteredScores = scoresWithDate.map(
@@ -188,9 +201,11 @@ const ModalJudgementProtocol = ({
 	const handleUpdate = async () => {
 		const sessionDate = new Date().toISOString();
 
-		const scoresWithDate = scores.map((score) => ({
+		const scoresWithDate = scores.map((score, index) => ({
 			...score,
 			sessionDate,
+			// Добавить общий комментарий к первому элементу
+			comment: index === 0 ? generalComment : '',
 		}));
 
 		const filteredScores = scoresWithDate.map(
@@ -218,14 +233,14 @@ const ModalJudgementProtocol = ({
 			title: t('title.element'),
 			dataIndex: 'elementName',
 			key: 'elementName',
-			width: '30%',
+			width: '50%',
 		},
 		...(scores.some((record) => record.maxScore !== 0 || record.step !== 0)
 			? [
 					{
 						title: t('title.score'),
 						key: 'score',
-						width: '70%',
+						width: '50%',
 						render: (_, record, index) => {
 							const min =
 								record.maxScore < 0 ? record.maxScore : 0;

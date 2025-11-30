@@ -91,3 +91,9 @@
     flex-wrap: wrap;
     gap: 4px;
 }
+
+/* Table cell vertical alignment */
+.ant-table-tbody > tr > td {
+    vertical-align: top !important;
+    padding-top: 16px !important;
+}
