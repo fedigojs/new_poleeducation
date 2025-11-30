@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../../context/AuthContext';
 import CompetitionJudgementAPI from '../../api/CompetitionJudgementAPI';
 import api from '../../api/api';
@@ -12,6 +12,7 @@ import Spinner from '../Spinner/Spinner';
 
 const CompetitionJudgmentCouch = () => {
 	const { user } = useContext(AuthContext);
+	const queryClient = useQueryClient();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(100);
 	const [isDetailJudgementModalOpen, setIsDetailJudgementModalOpen] =
@@ -114,10 +115,14 @@ const CompetitionJudgmentCouch = () => {
 
 	const closeDetailsModal = () => {
 		setIsDetailJudgementModalOpen(false);
+		// Обновляем данные после закрытия деталей
+		queryClient.invalidateQueries({ queryKey: ['competitionList'] });
 	};
 
 	const closeJudgementModal = () => {
 		setIsJudgementModalOpen(false);
+		// Обновляем данные после голосования
+		queryClient.invalidateQueries({ queryKey: ['competitionList'] });
 	};
 
 	const columns = [

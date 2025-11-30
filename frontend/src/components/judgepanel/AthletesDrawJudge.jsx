@@ -33,8 +33,17 @@ const AthletesDrawJudge = () => {
         setIsDetailsModalOpen(true);
     };
 
-    const closeDetailsModal = () => {
+    const closeDetailsModal = async () => {
         setIsDetailsModalOpen(false);
+        const currentTrend = activeTrend;
+        // Обновляем данные после закрытия деталей
+        await fetchData();
+        // Применяем фильтр заново, если был активный тренд
+        if (currentTrend) {
+            setTimeout(() => {
+                handleTabClick(currentTrend);
+            }, 100);
+        }
     };
 
     const openVotingModal = (participant) => {
@@ -42,8 +51,18 @@ const AthletesDrawJudge = () => {
         setIsVotingModalOpen(true);
     };
 
-    const closeVotingModal = () => {
+    const closeVotingModal = async () => {
         setIsVotingModalOpen(false);
+        const currentTrend = activeTrend;
+        // Обновляем данные после голосования
+        await fetchData();
+        // Применяем фильтр заново, если был активный тренд
+        if (currentTrend) {
+            // Используем setTimeout чтобы дать React обновить state после fetchData
+            setTimeout(() => {
+                handleTabClick(currentTrend);
+            }, 100);
+        }
     };
 
     const fetchProtocolStatuses = async (participant) => {
