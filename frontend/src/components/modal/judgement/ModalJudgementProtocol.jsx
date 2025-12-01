@@ -35,6 +35,15 @@ const ModalJudgementProtocol = ({
 		setGeneralComment('');
 	};
 
+	// Очистка данных при смене участника
+	useEffect(() => {
+		setScores([]);
+		setGeneralComment('');
+		setIsInitialized(false);
+		setIsProtocolLoaded(false);
+		setIsExistingProtocol(false);
+	}, [competitionParticipationId, athleteId, isOpen]);
+
 	useEffect(() => {
 		if (protocol && protocol.length > 0) {
 			setProtocolTypeId(protocol[0].protocolTypeId);

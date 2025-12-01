@@ -22,6 +22,10 @@ const ModalJudgementDetails = ({
 	// Загрузка данных при открытии модального окна
 	useEffect(() => {
 		if (competitionParticipationId && isOpen) {
+			// Очищаем старые данные сразу при смене участника
+			setElementResults([]);
+			setExerciseProtocols([]);
+
 			const fetchJudgementDetails = async () => {
 				try {
 					setLoading(true);
