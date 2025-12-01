@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../../context/AuthContext';
 import CompetitionJudgementAPI from '../../api/CompetitionJudgementAPI';
@@ -15,6 +15,9 @@ import {
 	SearchOutlined,
 } from '@ant-design/icons';
 import Spinner from '../Spinner/Spinner';
+
+const STORAGE_KEY = 'competitionJudgment_selectedCompetition';
+const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 1 день в миллисекундах
 
 const CompetitionJudgment = () => {
 	const { user } = useContext(AuthContext);
@@ -34,6 +37,42 @@ const CompetitionJudgment = () => {
 			return response.data;
 		},
 	});
+
+	// Восстановление выбранного соревнования из localStorage при загрузке
+	useEffect(() => {
+		const stored = localStorage.getItem(STORAGE_KEY);
+		if (stored) {
+			try {
+				const { competitionId, timestamp } = JSON.parse(stored);
+				const now = Date.now();
+
+				// Проверяем, не истек ли срок (1 день)
+				if (now - timestamp < ONE_DAY_MS) {
+					setSelectedCompetition(competitionId);
+				} else {
+					// Удаляем устаревшие данные
+					localStorage.removeItem(STORAGE_KEY);
+				}
+			} catch (error) {
+				console.error('Error parsing stored competition:', error);
+				localStorage.removeItem(STORAGE_KEY);
+			}
+		}
+	}, []);
+
+	// Сохранение выбранного соревнования в localStorage при изменении
+	useEffect(() => {
+		if (selectedCompetition) {
+			const data = {
+				competitionId: selectedCompetition,
+				timestamp: Date.now(),
+			};
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+		} else {
+			// Если соревнование сброшено, удаляем из localStorage
+			localStorage.removeItem(STORAGE_KEY);
+		}
+	}, [selectedCompetition]);
 
 	const {
 		data: competitionList = [],
