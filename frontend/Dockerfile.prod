@@ -1,32 +1,20 @@
 # Этап сборки
 FROM node:20-alpine AS builder
 
-# Устанавливаем pnpm глобально
-RUN npm install -g pnpm
-
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /frontend
 
-# Копируем файл package.json и pnpm-lock.yaml для установки зависимостей
-COPY package.json pnpm-lock.yaml ./
-
-# Проверяем и удаляем устаревший lock-файл, затем устанавливаем зависимости
-RUN if [ -f pnpm-lock.yaml ]; then \
-      echo "Checking lockfile..."; \
-      pnpm install --frozen-lockfile || (rm pnpm-lock.yaml && pnpm install --no-frozen-lockfile); \
-    else \
-      echo "No lockfile found, proceeding with install..."; \
-      pnpm install --no-frozen-lockfile; \
-    fi
+# Копируем файл package.json и package-lock.json для установки зависимостей
+COPY package.json package-lock.json ./
 
 # Устанавливаем зависимости
-RUN pnpm install --frozen-lockfile
+RUN npm ci --legacy-peer-deps
 
 # Копируем все файлы проекта в контейнер
 COPY . .
 
 # Собираем приложение для продакшена
-RUN pnpm run build
+RUN npm run build
 
 # Этап передачи артефактов (минимальный образ)
 FROM alpine AS artifact
