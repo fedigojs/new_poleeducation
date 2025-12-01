@@ -53,7 +53,7 @@ poleeducation.in.ua {
     }
   }
 
-  # Any other POST not matched → 404 (so SPA won't mask mistakes)
+  # Any other POST not matched → 404 (so SPA won’t mask mistakes)
   @post_not_api method POST
   handle @post_not_api {
     respond 404
