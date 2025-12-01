@@ -9,6 +9,7 @@ const {
 	AthleteAge,
 	AthleteTrend,
 	Level,
+	TotalCompetitionResults,
 } = require('../models');
 const { Op } = require('sequelize');
 
@@ -205,6 +206,10 @@ exports.getAllDrawResults = async (req, res) => {
 							model: AthleteTrend,
 							as: 'AthleteTrend',
 						},
+						{
+							model: TotalCompetitionResults,
+							as: 'totalResult',
+						},
 					],
 				},
 			],
@@ -365,6 +370,7 @@ exports.getDrawResultsByCompetition = async (req, res) => {
 						{ model: Level, as: 'Level' },
 						{ model: AthleteAge, as: 'AthleteAge' },
 						{ model: AthleteTrend, as: 'AthleteTrend' },
+						{ model: TotalCompetitionResults, as: 'totalResult' },
 					],
 				},
 			],
@@ -401,6 +407,7 @@ exports.getDrawResultsByCompetitionAndCoach = async (req, res) => {
 						{ model: Level, as: 'Level' },
 						{ model: AthleteAge, as: 'AthleteAge' },
 						{ model: AthleteTrend, as: 'AthleteTrend' },
+						{ model: TotalCompetitionResults, as: 'totalResult' },
 					],
 				},
 			],

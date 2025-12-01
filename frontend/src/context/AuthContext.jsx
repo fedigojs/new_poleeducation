@@ -7,8 +7,17 @@ export const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true); // Добавляем состояние загрузки
+    const [sessionId, setSessionId] = useState(null);
 
     useEffect(() => {
+        // Генерируем или восстанавливаем sessionId
+        let currentSessionId = localStorage.getItem('judgeSessionId');
+        if (!currentSessionId) {
+            currentSessionId = crypto.randomUUID();
+            localStorage.setItem('judgeSessionId', currentSessionId);
+        }
+        setSessionId(currentSessionId);
+
         const token = localStorage.getItem('authToken');
         if (token) {
             try {
@@ -30,6 +39,11 @@ export const AuthProvider = ({ children }) => {
     const login = (token) => {
         localStorage.setItem('authToken', token);
 
+        // Генерируем новый sessionId при каждом логине
+        const newSessionId = crypto.randomUUID();
+        localStorage.setItem('judgeSessionId', newSessionId);
+        setSessionId(newSessionId);
+
         try {
             const decodedUser = jwtDecode(token);
             setUser({
@@ -45,11 +59,13 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('authToken');
+        localStorage.removeItem('judgeSessionId');
         setUser(null);
+        setSessionId(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, loading, sessionId, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -167,17 +167,25 @@ exports.findAllByAthleteAndParticipation = async (req, res) => {
 exports.findAllByAthleteParticipationTypeAndJudge = async (req, res) => {
 	const { athleteId, competitionParticipationId, protocolTypeId, judgeId } =
 		req.params;
+	const { sessionId } = req.query; // sessionId передается как query параметр
 	try {
+		const whereClause = {
+			athleteId: parseInt(athleteId, 10),
+			competitionParticipationId: parseInt(
+				competitionParticipationId,
+				10
+			),
+			protocolTypeId: parseInt(protocolTypeId, 10),
+			judgeId: parseInt(judgeId, 10),
+		};
+
+		// Добавляем sessionId в условие, если он передан
+		if (sessionId) {
+			whereClause.sessionId = sessionId;
+		}
+
 		const results = await ProtocolElementResult.findAll({
-			where: {
-				athleteId: parseInt(athleteId, 10),
-				competitionParticipationId: parseInt(
-					competitionParticipationId,
-					10
-				),
-				protocolTypeId: parseInt(protocolTypeId, 10),
-				judgeId: parseInt(judgeId, 10),
-			},
+			where: whereClause,
 			include: [
 				{
 					model: ProtocolDetail,
@@ -326,6 +334,7 @@ exports.create = async (req, res) => {
 // Обновление записи
 exports.update = async (req, res) => {
 	const { protocolTypeId, competitionParticipationId, judgeId } = req.params;
+	const { sessionId } = req.query; // sessionId передается как query параметр
 
 	try {
 		if (!protocolTypeId || !competitionParticipationId || !judgeId) {
@@ -334,15 +343,22 @@ exports.update = async (req, res) => {
 				.send({ message: 'Необходимые параметры не указаны' });
 		}
 
+		const whereClause = {
+			protocolTypeId: parseInt(protocolTypeId, 10),
+			competitionParticipationId: parseInt(
+				competitionParticipationId,
+				10
+			),
+			judgeId: parseInt(judgeId, 10),
+		};
+
+		// Добавляем sessionId в условие, если он передан
+		if (sessionId) {
+			whereClause.sessionId = sessionId;
+		}
+
 		const results = await ProtocolElementResult.findAll({
-			where: {
-				protocolTypeId: parseInt(protocolTypeId, 10),
-				competitionParticipationId: parseInt(
-					competitionParticipationId,
-					10
-				),
-				judgeId: parseInt(judgeId, 10),
-			},
+			where: whereClause,
 		});
 
 		if (!results || results.length === 0) {
@@ -400,6 +416,7 @@ exports.update = async (req, res) => {
 // Удаление записи
 exports.delete = async (req, res) => {
 	const { protocolTypeId, competitionParticipationId, judgeId } = req.params;
+	const { sessionId } = req.query; // sessionId передается как query параметр
 
 	try {
 		if (!protocolTypeId || !competitionParticipationId || !judgeId) {
@@ -408,15 +425,22 @@ exports.delete = async (req, res) => {
 				.send({ message: 'Необходимые параметры не указаны' });
 		}
 
+		const whereClause = {
+			protocolTypeId: parseInt(protocolTypeId, 10),
+			competitionParticipationId: parseInt(
+				competitionParticipationId,
+				10
+			),
+			judgeId: parseInt(judgeId, 10),
+		};
+
+		// Добавляем sessionId в условие, если он передан
+		if (sessionId) {
+			whereClause.sessionId = sessionId;
+		}
+
 		const results = await ProtocolElementResult.findAll({
-			where: {
-				protocolTypeId: parseInt(protocolTypeId, 10),
-				competitionParticipationId: parseInt(
-					competitionParticipationId,
-					10
-				),
-				judgeId: parseInt(judgeId, 10),
-			},
+			where: whereClause,
 		});
 
 		if (!results || results.length === 0) {
@@ -425,14 +449,7 @@ exports.delete = async (req, res) => {
 		}
 
 		await ProtocolElementResult.destroy({
-			where: {
-				protocolTypeId: parseInt(protocolTypeId, 10),
-				competitionParticipationId: parseInt(
-					competitionParticipationId,
-					10
-				),
-				judgeId: parseInt(judgeId, 10),
-			},
+			where: whereClause,
 		});
 		// Пересчитываем общий результат
 		const elementScores =

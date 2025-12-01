@@ -55,6 +55,11 @@ module.exports = (sequelize, DataTypes) => {
 				key: 'id',
 			},
 		},
+		sessionId: {
+			type: DataTypes.STRING(36),
+			allowNull: true,
+			comment: 'UUID сессии судьи для разделения протоколов при одном userId',
+		},
 	});
 
 	ProtocolElementResult.associate = function (models) {

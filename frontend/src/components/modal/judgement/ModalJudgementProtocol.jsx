@@ -17,7 +17,7 @@ const ModalJudgementProtocol = ({
 	athleteId,
 }) => {
 	const { t } = useTranslation();
-	const { user } = useContext(AuthContext);
+	const { user, sessionId } = useContext(AuthContext);
 	const [protocolTypeId, setProtocolTypeId] = useState(initialProtocolTypeId);
 	const [isExistingProtocol, setIsExistingProtocol] = useState(false);
 	const [judgeId, setJudgeId] = useState(null);
@@ -84,10 +84,10 @@ const ModalJudgementProtocol = ({
 
 	useEffect(() => {
 		const loadExistingProtocol = async () => {
-			if (isOpen && protocolTypeId && judgeId && !isProtocolLoaded) {
+			if (isOpen && protocolTypeId && judgeId && sessionId && !isProtocolLoaded) {
 				try {
 					const response = await api.get(
-						`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}/judge/${judgeId}`
+						`/api/protocol-result/athlete/${athleteId}/participation/${competitionParticipationId}/type/${protocolTypeId}/judge/${judgeId}?sessionId=${sessionId}`
 					);
 					if (response.data && response.data.length > 0) {
 						const existingProtocol = response.data.map((item) => ({
@@ -119,7 +119,7 @@ const ModalJudgementProtocol = ({
 			}
 		};
 
-		if (isOpen && judgeId && !isProtocolLoaded) {
+		if (isOpen && judgeId && sessionId && !isProtocolLoaded) {
 			loadExistingProtocol();
 		}
 	}, [
@@ -129,6 +129,7 @@ const ModalJudgementProtocol = ({
 		competitionParticipationId,
 		protocolTypeId,
 		judgeId,
+		sessionId,
 		isProtocolLoaded,
 	]);
 
@@ -160,6 +161,7 @@ const ModalJudgementProtocol = ({
 		const scoresWithDate = scores.map((score, index) => ({
 			...score,
 			sessionDate,
+			sessionId, // Добавляем sessionId
 			// Добавить общий комментарий к первому элементу
 			comment: index === 0 ? generalComment : '',
 		}));
@@ -194,7 +196,7 @@ const ModalJudgementProtocol = ({
 			}
 
 			const response = await api.delete(
-				`/api/protocol-result/type/${protocolTypeId}/participation/${competitionParticipationId}/judge/${judgeId}`
+				`/api/protocol-result/type/${protocolTypeId}/participation/${competitionParticipationId}/judge/${judgeId}?sessionId=${sessionId}`
 			);
 			if (response.status === 200) {
 				message.success(t('common.protocol_successfully_removed'));
@@ -213,6 +215,7 @@ const ModalJudgementProtocol = ({
 		const scoresWithDate = scores.map((score, index) => ({
 			...score,
 			sessionDate,
+			sessionId, // Добавляем sessionId
 			// Добавить общий комментарий к первому элементу
 			comment: index === 0 ? generalComment : '',
 		}));
@@ -223,7 +226,7 @@ const ModalJudgementProtocol = ({
 
 		try {
 			const response = await api.put(
-				`/api/protocol-result/type/${protocolTypeId}/participation/${competitionParticipationId}/judge/${judgeId}`,
+				`/api/protocol-result/type/${protocolTypeId}/participation/${competitionParticipationId}/judge/${judgeId}?sessionId=${sessionId}`,
 				filteredScores
 			);
 			if (response.status === 200) {
