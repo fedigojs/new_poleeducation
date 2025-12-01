@@ -1,5 +1,5 @@
 # Переменные
-DOCKER_COMPOSE = docker-compose -f docker-compose.prod.yml
+DOCKER_COMPOSE = docker compose -f docker-compose.prod.yml
 BACKUP_DIR = /var/www/poleeducation/backup
 VOLUME_NAME = poleeducation_db_data
 REMOTE_SERVER = user@your-server.com
