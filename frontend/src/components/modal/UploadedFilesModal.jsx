@@ -20,7 +20,7 @@ const UploadedFilesModal = ({
                     const filesWithFullPath = response.data.uploadedFiles.map(
                         (file) => ({
                             ...file,
-                            filePath: `${process.env.REACT_APP_API_URL}${file.filePath}`,
+                            filePath: `${import.meta.env.VITE_API_URL}${file.filePath}`,
                         })
                     );
                     setFiles(filesWithFullPath);

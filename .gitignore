@@ -4,4 +4,12 @@ backend/upload_files
 frontend/node_modules
 frontend/.pnpm-store
 frontend/build
+frontend/dist
 /db_backups
+
+# Vite
+.vite
+*.local
+
+# Деплой конфигурация (содержит приватные данные)
+.env.deploy

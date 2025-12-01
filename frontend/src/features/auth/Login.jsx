@@ -79,7 +79,7 @@ const Login = () => {
                 <Col xs={12} md={6} lg={4} className="mx-auto">
                     <div className="text-center mb-4">
                         <img
-                            src={`${process.env.PUBLIC_URL}/images/logo_poleeducation.png`}
+                            src="/images/logo_poleeducation.png"
                             alt="Company Logo"
                             width="100"
                             height="100"

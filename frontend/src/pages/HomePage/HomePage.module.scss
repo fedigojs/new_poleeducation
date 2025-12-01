@@ -1,7 +1,7 @@
 .background_color {
     background-color: #343537;
     background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
-        url('../../../public/images/background_home.png'); /* Слой полупрозрачного цвета и изображение */
+        url('/images/background_home.png'); /* Слой полупрозрачного цвета и изображение */
     background-repeat: no-repeat;
     background-size: contain; /* Фон покрывает блок */
     background-position: center; /* Центрируем изображение */

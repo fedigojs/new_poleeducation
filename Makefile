@@ -102,3 +102,47 @@ backup-db-dev:
 		-v $$(pwd)/db_backups:/backups \
 		busybox sh -c "tar czf /backups/poleeducation_db_backup_$$(date +%Y-%m-%d_%H-%M-%S).tar.gz -C /data ." || { echo "Failed to create backup"; exit 1; }
 	@echo "Бэкап создан в ./db_backups/poleeducation_db_backup_$$(date +%Y-%m-%d_%H-%M-%S).tar.gz"
+
+# Применение миграций на проде
+migrate-prod:
+	@echo "Применение миграций на проде..."
+	$(DOCKER_COMPOSE) exec backend sh -c "cd /app && npx sequelize-cli db:migrate" || { echo "Failed to run migrations"; exit 1; }
+	@echo "Миграции применены успешно."
+
+# Откат последней миграции на проде
+migrate-undo-prod:
+	@echo "Откат последней миграции на проде..."
+	$(DOCKER_COMPOSE) exec backend sh -c "cd /app && npx sequelize-cli db:migrate:undo" || { echo "Failed to undo migration"; exit 1; }
+	@echo "Миграция отменена."
+
+# Локальная сборка фронтенда (для экономии RAM на проде)
+build-frontend-local:
+	@echo "Сборка фронтенда локально..."
+	cd frontend && npm run build || { echo "Frontend build failed"; exit 1; }
+	@echo "Фронтенд собран в ./frontend/build"
+
+# Деплой только фронтенда с локальной сборкой
+deploy-frontend-local:
+	@echo "Деплой фронтенда с локальной сборкой..."
+	@if [ ! -d "./frontend/build" ]; then \
+		echo "Build директория не найдена. Запустите 'make build-frontend-local' сначала."; \
+		exit 1; \
+	fi
+	@echo "Копирование build на сервер..."
+	rsync -avz --delete ./frontend/build/ $(REMOTE_SERVER):/var/www/html/ || { echo "Failed to deploy frontend"; exit 1; }
+	ssh $(REMOTE_SERVER) "sudo systemctl reload nginx" || { echo "Failed to reload Nginx"; exit 1; }
+	@echo "Фронтенд задеплоен успешно."
+
+# Полный деплой с локальной сборкой фронтенда (экономит RAM на сервере)
+deploy-with-local-build:
+	@echo "Деплой backend и применение миграций..."
+	$(DOCKER_COMPOSE) down || { echo "Failed to stop containers"; exit 1; }
+	$(DOCKER_COMPOSE) up --build -d db_auth backend || { echo "Failed to start backend"; exit 1; }
+	@echo "Ожидание запуска базы данных..."
+	sleep 5
+	$(MAKE) migrate-prod
+	@echo "Сборка фронтенда локально..."
+	$(MAKE) build-frontend-local
+	@echo "Деплой фронтенда..."
+	$(MAKE) deploy-frontend-local
+	@echo "Деплой завершен."
