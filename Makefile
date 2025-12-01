@@ -43,11 +43,13 @@ deploy-frontend-prod:
 	@echo "Очистка старой версии..."
 	sudo rm -rf /var/www/html/* || { echo "Failed to clear /var/www/html"; exit 1; }
 	@echo "Сборка фронтенда в Docker контейнере..."
-	$(DOCKER_COMPOSE) run --rm frontend-builder sh -c "rm -rf /frontend/build/* && npm install && npm run build" || { echo "Frontend build failed"; exit 1; }
+	docker build -f frontend/Dockerfile.prod --target builder -t frontend-builder-temp ./frontend || { echo "Frontend build failed"; exit 1; }
 	@echo "Копирование build в /var/www/html/..."
-	docker run --rm -v poleeducation_build:/frontend/build -v /var/www/html:/nginx-html alpine sh -c "cp -r /frontend/build/* /nginx-html" || { echo "Failed to copy frontend build to Nginx directory"; exit 1; }
-	@echo "Удаление контейнера frontend-builder..."
-	$(DOCKER_COMPOSE) rm -f frontend-builder 2>/dev/null || true
+	docker create --name frontend-extract frontend-builder-temp || { echo "Failed to create container"; exit 1; }
+	docker cp frontend-extract:/frontend/build/. /var/www/html/ || { echo "Failed to copy build"; exit 1; }
+	@echo "Удаление временных ресурсов..."
+	docker rm frontend-extract || true
+	docker rmi frontend-builder-temp || true
 	docker container prune -f || true
 	@echo "Перезагрузка Nginx..."
 	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
