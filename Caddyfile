@@ -1,0 +1,68 @@
+{
+  email poleeducation@gmail.com
+}
+
+www.poleeducation.in.ua {
+  redir https://poleeducation.in.ua{uri} permanent
+}
+
+poleeducation.in.ua {
+  encode gzip zstd
+
+  header {
+    X-Frame-Options "SAMEORIGIN"
+    X-Content-Type-Options "nosniff"
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  }
+
+  # API (already prefixed) -> backend, and prevent caching
+  @api path /api/* /backend/upload_files/*
+  handle @api {
+    header {
+      Cache-Control "no-store, no-cache, must-revalidate"
+      Pragma "no-cache"
+      Expires "0"
+    }
+    reverse_proxy 127.0.0.1:3002 {
+      header_down X-Served-By "backend"
+    }
+  }
+
+  # Exercise (without /api) -> backend (if you still use it), also no-store
+  @exercise path /exercise /exercise/*
+  handle @exercise {
+    header {
+      Cache-Control "no-store, no-cache, must-revalidate"
+      Pragma "no-cache"
+      Expires "0"
+    }
+    reverse_proxy 127.0.0.1:3002 {
+      header_down X-Served-By "backend"
+    }
+  }
+
+  # Optional: map POST /auth/login -> /api/auth/login
+  @auth_login {
+    path /auth/login
+    method POST
+  }
+  handle @auth_login {
+    rewrite * /api/auth/login
+    reverse_proxy 127.0.0.1:3002 {
+      header_down X-Served-By "backend"
+    }
+  }
+
+  # Any other POST not matched → 404 (so SPA won't mask mistakes)
+  @post_not_api method POST
+  handle @post_not_api {
+    respond 404
+  }
+
+  # SPA fallback LAST
+  handle {
+    root * /var/www/html
+    try_files {path} /index.html
+    file_server
+  }
+}

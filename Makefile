@@ -11,31 +11,39 @@ build-and-deploy:
 	$(DOCKER_COMPOSE) down --remove-orphans || { echo "Failed to stop containers"; exit 1; }
 	docker system prune -a --volumes=false || { echo "Failed to prune Docker caches"; exit 1; }
 	sudo rm -rf /var/www/html/* || { echo "Failed to clear /var/www/html"; exit 1; }
-	if ! sudo systemctl is-active --quiet nginx; then \
-		sudo systemctl start nginx || { echo "Failed to start Nginx"; exit 1; }; \
+	if ! sudo systemctl is-active --quiet caddy; then \
+		sudo systemctl start caddy || { echo "Failed to start Caddy"; exit 1; }; \
 	fi
-	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
+	sudo systemctl reload caddy || { echo "Failed to reload Caddy"; exit 1; }
 	$(DOCKER_COMPOSE) up --build -d db_auth backend || { echo "Failed to start backend containers"; exit 1; }
 	$(DOCKER_COMPOSE) run --rm frontend-builder sh -c "rm -rf /frontend/build/* && npm install && npm run build" || { echo "Frontend build failed"; exit 1; }
-	docker run --rm -v poleeducation_build:/frontend/build -v /var/www/html:/nginx-html alpine sh -c "cp -r /frontend/build/* /nginx-html" || { echo "Failed to copy frontend build to Nginx directory"; exit 1; }
+	docker run --rm -v poleeducation_build:/frontend/build -v /var/www/html:/caddy-html alpine sh -c "cp -r /frontend/build/* /caddy-html" || { echo "Failed to copy frontend build to Caddy directory"; exit 1; }
 	$(DOCKER_COMPOSE) rm -f frontend-builder || { echo "Failed to remove frontend-builder container"; exit 1; }
-	sudo systemctl reload nginx || { echo "Failed to reload Nginx after deployment"; exit 1; }
+	sudo systemctl reload caddy || { echo "Failed to reload Caddy after deployment"; exit 1; }
 	@echo "Деплой завершён."
 
-# SSL Certificate Generation and Installation
+# SSL Certificate - Caddy автоматически управляет сертификатами
+# Просто запустите: sudo systemctl restart caddy
 generate-ssl:
-	@echo "Generating SSL certificate for $(DOMAIN)..."
-	sudo apt update && sudo apt install -y certbot python3-certbot-nginx || { echo "Failed to install Certbot"; exit 1; }
-	sudo certbot --nginx -d $(DOMAIN) --email $(EMAIL) --agree-tos --non-interactive || { echo "Failed to generate SSL certificate"; exit 1; }
-	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
-	@echo "SSL certificate installed successfully!"
+	@echo "Caddy автоматически получает SSL сертификаты от Let's Encrypt"
+	@echo "Перезапускаем Caddy..."
+	sudo systemctl restart caddy || { echo "Failed to restart Caddy"; exit 1; }
+	@echo "SSL certificate will be obtained automatically!"
 
-# Auto-renew SSL Certificate
+# Auto-renew SSL Certificate - Caddy делает это автоматически
 renew-ssl:
-	@echo "Renewing SSL certificate..."
-	sudo certbot renew --quiet || { echo "Failed to renew SSL certificate"; exit 1; }
-	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
-	@echo "SSL certificate renewed successfully."
+	@echo "Caddy автоматически обновляет SSL сертификаты"
+	@echo "Нет необходимости в ручном обновлении"
+
+# Обновление Caddyfile на сервере
+update-caddyfile:
+	@echo "Копирование Caddyfile на сервер..."
+	sudo cp Caddyfile /etc/caddy/Caddyfile || { echo "Failed to copy Caddyfile"; exit 1; }
+	@echo "Проверка конфигурации..."
+	sudo caddy validate --config /etc/caddy/Caddyfile || { echo "Invalid Caddyfile"; exit 1; }
+	@echo "Перезагрузка Caddy..."
+	sudo systemctl reload caddy || { echo "Failed to reload Caddy"; exit 1; }
+	@echo "Caddyfile обновлен успешно! ✅"
 
 # Деплой только фронтенда на сервере (сборка в Docker)
 deploy-frontend-prod:
@@ -51,8 +59,8 @@ deploy-frontend-prod:
 	docker rm frontend-extract || true
 	docker rmi frontend-builder-temp || true
 	docker container prune -f || true
-	@echo "Перезагрузка Nginx..."
-	sudo systemctl reload nginx || { echo "Failed to reload Nginx"; exit 1; }
+	@echo "Перезагрузка Caddy..."
+	sudo systemctl reload caddy || { echo "Failed to reload Caddy"; exit 1; }
 	@echo "Фронтенд успешно задеплоен! ✅"
 
 # Бэкап базы данных с добавлением даты и времени в имя файла
@@ -148,7 +156,7 @@ deploy-frontend-local:
 	fi
 	@echo "Копирование build на сервер..."
 	rsync -avz --delete ./frontend/build/ $(REMOTE_SERVER):/var/www/html/ || { echo "Failed to deploy frontend"; exit 1; }
-	ssh $(REMOTE_SERVER) "sudo systemctl reload nginx" || { echo "Failed to reload Nginx"; exit 1; }
+	ssh $(REMOTE_SERVER) "sudo systemctl reload caddy" || { echo "Failed to reload Caddy"; exit 1; }
 	@echo "Фронтенд задеплоен успешно."
 
 # Полный деплой с локальной сборкой фронтенда (экономит RAM на сервере)
